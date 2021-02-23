@@ -9,5 +9,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>quarkus-person-app</module>
+        <module>quarkus-insurance-app</module>
+    </modules>
 
 </project>
