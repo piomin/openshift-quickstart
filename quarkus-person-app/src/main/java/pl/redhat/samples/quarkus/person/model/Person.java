@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Data
 @NoArgsConstructor
@@ -12,5 +14,6 @@ import javax.persistence.Entity;
 public class Person extends PanacheEntity {
     private String name;
     private int age;
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 }

@@ -1,0 +1,1 @@
+siege -delay=0.5 -file=staging-urls.txt -internet -verbose -reps=200 -concurrent=15 -no-parser

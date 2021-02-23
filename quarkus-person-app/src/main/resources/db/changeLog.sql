@@ -1,9 +1,15 @@
 --liquibase formatted sql
 
 --changeset piomin:1
-insert into person(id, name, age, gender) values(1, 'John Smith', 25, 'MALE');
-insert into person(id, name, age, gender) values(2, 'Paul Walker', 65, 'MALE');
-insert into person(id, name, age, gender) values(3, 'Lewis Hamilton', 35, 'MALE');
-insert into person(id, name, age, gender) values(4, 'Veronica Jones', 20, 'FEMALE');
-insert into person(id, name, age, gender) values(5, 'Anne Brown', 60, 'FEMALE');
-insert into person(id, name, age, gender) values(6, 'Felicia Scott', 45, 'FEMALE');
+create table person (
+  id serial primary key,
+  name varchar(255),
+  gender varchar(255),
+  age int
+);
+insert into person(name, age, gender) values('John Smith', 25, 'MALE');
+insert into person(name, age, gender) values('Paul Walker', 65, 'MALE');
+insert into person(name, age, gender) values('Lewis Hamilton', 35, 'MALE');
+insert into person(name, age, gender) values('Veronica Jones', 20, 'FEMALE');
+insert into person(name, age, gender) values('Anne Brown', 60, 'FEMALE');
+insert into person(name, age, gender) values('Felicia Scott', 45, 'FEMALE');

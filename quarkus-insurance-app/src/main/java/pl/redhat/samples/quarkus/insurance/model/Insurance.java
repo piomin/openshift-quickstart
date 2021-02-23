@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.util.Date;
 
 @Data
@@ -12,6 +14,7 @@ import java.util.Date;
 @Entity
 public class Insurance extends PanacheEntity {
     private Long personId;
+    @Enumerated(EnumType.STRING)
     private InsuranceType type;
     private int amount;
     private Date expiry;
