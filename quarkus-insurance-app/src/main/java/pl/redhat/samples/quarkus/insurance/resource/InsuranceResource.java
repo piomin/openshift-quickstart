@@ -44,7 +44,11 @@ public class InsuranceResource {
     @Path("/{id}/details")
     public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
         Insurance insurance = insuranceRepository.findById(id);
-        InsuranceDetails insuranceDetails = (InsuranceDetails) insurance;
+        InsuranceDetails insuranceDetails = new InsuranceDetails();
+        insuranceDetails.setPersonId(insurance.getPersonId());
+        insuranceDetails.setAmount(insurance.getAmount());
+        insuranceDetails.setType(insurance.getType());
+        insuranceDetails.setExpiry(insurance.getExpiry());
         insuranceDetails.setPerson(personService.getPersonById(insurance.getPersonId()));
         return insuranceDetails;
     }
