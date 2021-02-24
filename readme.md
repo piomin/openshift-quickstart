@@ -1,1 +1,1 @@
-siege -delay=0.5 -file=staging-urls.txt -internet -verbose -reps=200 -concurrent=15 -no-parser
+siege -f k8s/traffic/urls.txt -i -v -r 200 -c 10 --no-parser

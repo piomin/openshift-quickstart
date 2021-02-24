@@ -7,10 +7,10 @@ spec:
   subsets:
     - name: v1
       labels:
-        version: v1
+        app.kubernetes.io/version: v1
     - name: v2
       labels:
-        version: v2
+        app.kubernetes.io/version: v2
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -18,22 +18,30 @@ metadata:
   name: quarkus-person-app-vs
 spec:
   hosts:
-    - quarkus-person-app
+#    - quarkus-person-app
+    - "*"
+  gateways:
+    - microservices-gateway
   http:
+#    - match:
+#        - headers:
+#            X-Version:
+#              exact: v2
+#      route:
+#        - destination:
+#            host: quarkus-person-app
+#            subset: v2
     - match:
-        - headers:
-            X-Version:
-              exact: v2
+      - uri:
+          prefix: "/person"
+      rewrite:
+        uri: " "
       route:
         - destination:
             host: quarkus-person-app
-            subset: v2
-    - route:
-        - destination:
-            host: quarkus-person-app
             subset: v1
-          weight: 100
+          weight: 90
         - destination:
             host: quarkus-person-app
             subset: v2
-          weight: 0
+          weight: 10

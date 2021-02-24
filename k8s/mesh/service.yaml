@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: quarkus-person-app
+  labels:
+    app: quarkus-person-app
 spec:
   type: ClusterIP
   selector:
