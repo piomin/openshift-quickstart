@@ -31,11 +31,11 @@ spec:
         - destination:
             host: quarkus-person-app
             subset: v1
-          weight: 90
+          weight: 100
         - destination:
             host: quarkus-person-app
             subset: v2
-          weight: 10
+          weight: 0
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService

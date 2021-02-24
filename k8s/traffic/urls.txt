@@ -5,3 +5,9 @@ http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260
 http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/person/persons/5
 http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/person/persons/6
 http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/person/persons
+http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/insurance/insurances/1/details
+http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/insurance/insurances/2/details
+http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/insurance/insurances/3/details
+http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/insurance/insurances/4/details
+http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/insurance/insurances/5/details
+http://pminkows-istio-microservices-gateway-t2bpc-istio-system.apps.cluster-7260.7260.sandbox1734.opentlc.com/insurance/insurances/6/details
