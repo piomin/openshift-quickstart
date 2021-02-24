@@ -1,0 +1,39 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: quarkus-person-app-dr
+spec:
+  host: quarkus-person-app
+  subsets:
+    - name: v1
+      labels:
+        version: v1
+    - name: v2
+      labels:
+        version: v2
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: quarkus-person-app-vs
+spec:
+  hosts:
+    - quarkus-person-app
+  http:
+    - match:
+        - headers:
+            X-Version:
+              exact: v2
+      route:
+        - destination:
+            host: quarkus-person-app
+            subset: v2
+    - route:
+        - destination:
+            host: quarkus-person-app
+            subset: v1
+          weight: 100
+        - destination:
+            host: quarkus-person-app
+            subset: v2
+          weight: 0
