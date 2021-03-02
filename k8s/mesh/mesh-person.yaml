@@ -18,7 +18,7 @@ metadata:
   name: quarkus-person-app-vs-via-gw
 spec:
   hosts:
-    - "*"
+    - quarkus-person-app.apps.cluster-d556.d556.sandbox262.opentlc.com
   gateways:
     - microservices-gateway
   http:
