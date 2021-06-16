@@ -1,14 +1,15 @@
 package pl.redhat.samples.quarkus.insurance.model;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Insurance extends PanacheEntity {
+public class Insurance extends PanacheEntityBase {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Integer id;
     public Long personId;
     @Enumerated(EnumType.STRING)
     public InsuranceType type;
