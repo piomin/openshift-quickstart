@@ -8,9 +8,9 @@ import javax.persistence.Enumerated;
 
 @Entity
 public class Person extends PanacheEntity {
-    private String name;
-    private int age;
+    public String name;
+    public int age;
     @Enumerated(EnumType.STRING)
-    private Gender gender;
-    private Integer external;
+    public Gender gender;
+    public Integer external;
 }
