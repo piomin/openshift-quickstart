@@ -11,5 +11,9 @@
 
     <artifactId>mesh-with-db</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>quarkus-insurance-app</module>
+        <module>quarkus-person-app</module>
+    </modules>
 
 </project>

@@ -12,6 +12,7 @@
     <modules>
         <module>basic-with-db</module>
         <module>mesh-with-db</module>
+        <module>micro-springboot</module>
     </modules>
 
 </project>
