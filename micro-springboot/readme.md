@@ -51,10 +51,20 @@ With `oc` client.
 $ oc login -u $USER -p $PASSWORD --server=https://api.qyt1tahi.eastus.aroapp.io:6443
 ```
 
-With web console.
-Go to: https://console-openshift-console.apps.qyt1tahi.eastus.aroapp.io/.
-Switch do the `Developer` perspective.
-Choose `Add+` -> `From Git`.
-Type as Git Repo URL: `https://github.com/piomin/openshift-quickstart.git`, Context dir: `/micro-springboot/person-service`.
+With web console. \
+Go to: https://console-openshift-console.apps.qyt1tahi.eastus.aroapp.io/. \
+Switch do the `Developer` perspective. \
+Choose `Add+` -> `From Git`. \
+Type as Git Repo URL: `https://github.com/piomin/openshift-quickstart.git`, Context dir: `/micro-springboot/person-service`, Git reference: `workshops`.
 Then choose Builder Image version: openjdk-11-ubi8. Then override 'Application name' and `Name` with `person-service`.
-Leave default on the other fields. Click `Create`
+Leave default on the other fields. Click `Create`. 
+You are redirected to the `Topology` view. \
+Click on Java Duke icon -> `Resources` -> See `Pods` -> Click `View logs`. \
+Optionally click `Show in Kibana`. \
+Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Builds` -> Click `#1`. Then choose tab `Logs`. \
+Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Routes` -> Click it.
+```shell
+$ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons 
+[]
+```
+Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up number of instances
