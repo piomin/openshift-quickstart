@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.redhat.samples.insurance.client.PersonClient;
 import pl.redhat.samples.insurance.domain.Insurance;
 import pl.redhat.samples.insurance.domain.InsuranceDetails;
+import pl.redhat.samples.insurance.repository.InsuranceRepository;
 
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
@@ -14,9 +15,11 @@ import java.util.List;
 public class InsuranceController {
 
     private PersonClient personClient;
+    private InsuranceRepository repository;
 
-    public InsuranceController(PersonClient personClient) {
+    public InsuranceController(PersonClient personClient, InsuranceRepository repository) {
         this.personClient = personClient;
+        this.repository = repository;
     }
 
     @GetMapping

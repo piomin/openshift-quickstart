@@ -51,13 +51,13 @@ With `oc` client.
 $ oc login -u $USER -p $PASSWORD --server=https://api.qyt1tahi.eastus.aroapp.io:6443
 ```
 
-With web console. \
+2. Login with web console. 
 Go to: https://console-openshift-console.apps.qyt1tahi.eastus.aroapp.io/. \
 Switch do the `Developer` perspective. \
 Choose `Add+` -> `From Git`. \
-Type as Git Repo URL: `https://github.com/piomin/openshift-quickstart.git`, Context dir: `/micro-springboot/person-service`, Git reference: `workshops`.
-Then choose Builder Image version: openjdk-11-ubi8. Then override 'Application name' and `Name` with `person-service`.
-Leave default on the other fields. Click `Create`. 
+Type as Git Repo URL: `https://github.com/piomin/openshift-quickstart.git`, Context dir: `/micro-springboot/person-service`, Git reference: `workshops`. \
+Then choose Builder Image version: openjdk-11-ubi8. Then override 'Application name' and `Name` with `person-service`. \
+Leave default on the other fields. Click `Create`. \
 You are redirected to the `Topology` view. \
 Click on Java Duke icon -> `Resources` -> See `Pods` -> Click `View logs`. \
 Optionally click `Show in Kibana`. \
@@ -68,3 +68,57 @@ $ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons
 []
 ```
 Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up number of instances
+
+3. Working with a source code
+Clone the repository from GitHub. You can do it using your IDE.
+```shell
+$ git clone https://github.com/piomin/openshift-quickstart.git
+```
+There are two applications. In the first step, we are going to deploy `person-service`.
+```shell
+cd micro-springboot/person-service
+```
+Replace the following line in your `pom.xml`.
+```xml
+<dependency>
+  <groupId>com.h2database</groupId>
+  <artifactId>h2</artifactId>
+  <scope>runtime</scope>
+</dependency>
+```
+With Postgresql driver.
+```xml
+<dependency>
+  <groupId>org.postgresql</groupId>
+  <artifactId>postgresql</artifactId>
+  <scope>runtime</scope>
+</dependency>
+```
+Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` -> `Instantiate Template`. \
+Type `person-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
+Then go to `Secrets` and choose `postgresql` secret. \
+Go back to your source code. You are in the `person-service` directory. First, list all available components with `odo`. \
+```shell
+$ odo catalog list components
+```
+We choose S2I with Java.
+```shell
+$ odo create java --s2i person-app
+```
+Odo created the `.odo` directory and `devfile.yaml` configuration file. You can view their content. \
+Now let's add the following configuration properties to our `application.yml` file. 
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://person-db:5432/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+```
+Set environment variables for `odo`.
+```shell
+$ odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+```
+Finally, deploy the application to OpenShift.
+```shell
+$ odo push
+```
