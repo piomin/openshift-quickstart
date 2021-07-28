@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: department
+  datasource:
+    url: jdbc:postgresql://department-db:5432/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
