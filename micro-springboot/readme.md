@@ -69,7 +69,8 @@ $ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons
 ```
 Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up number of instances
 
-3. Working with a source code
+## Step 2: Develop applications using `odo` client
+
 Clone the repository from GitHub. You can do it using your IDE.
 ```shell
 $ git clone https://github.com/piomin/openshift-quickstart.git
@@ -172,3 +173,48 @@ Push changes into OpenShift with odo.
 ```shell
 $ odo push
 ```
+
+## Step 3: Debugging with `odo` client
+We are going to deploy `insurance-service`. First, got to the `micro-springboot/insurance-service` directory. \
+```shell
+$ cd micro-springboot/insurance-service
+```
+Create S2I Java application with `odo`:
+```shell
+$ odo create java --s2i insurance-app
+```
+Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` -> `Instantiate Template`. \
+Type `insurance-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
+Then go to `Secrets` and choose `insurance-db` secret. \
+Push application to OpenShift:
+```shell
+$ odo push
+```
+Go to the `topology` view. Verify deployment and application logs. What is the reason that application is not running? \
+Choose `Actions` -> `Edit deployment` -> `Environment`. \
+Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource and a right key. \
+Then click `Save` button. Verify application logs after redeploy.
+```yaml
+spring:
+  datasource:
+    url: jdbc:postgresql://person-db:5432/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+```
+Set breakpoint inside the `InsuranceController` class in the following line and detect why person==null.
+```java
+@GetMapping("/{id}/details")
+public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Integer id) {
+    Insurance insurance = repository.findById(id).orElseThrow(); // set breakpoint
+    Person person = personClient.getPersonById(insurance.getId());
+    // TODO - detect why person==null
+    // TODO - finish implementation
+    return null;
+}
+```
+Deploy application in DEBUG mode.
+```shell
+$ odo debug
+```
+
+## Step 4: Modifying OpenShift Topology View

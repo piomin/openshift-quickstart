@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import pl.redhat.samples.insurance.client.PersonClient;
+import pl.redhat.samples.insurance.client.message.Person;
 import pl.redhat.samples.insurance.domain.Insurance;
 import pl.redhat.samples.insurance.domain.InsuranceDetails;
 import pl.redhat.samples.insurance.repository.InsuranceRepository;
@@ -44,8 +45,11 @@ public class InsuranceController {
     }
 
     @GetMapping("/{id}/details")
-    public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
-        // TODO - implement
+    public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Integer id) {
+        Insurance insurance = repository.findById(id).orElseThrow();
+        Person person = personClient.getPersonById(insurance.getId());
+        // TODO - detect why person==null
+        // TODO - finish implementation
         return null;
     }
 }

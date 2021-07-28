@@ -8,7 +8,7 @@ public class Insurance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Long personId;
+    private Integer personId;
     @Enumerated(EnumType.STRING)
     private InsuranceType type;
     private int amount;
@@ -23,11 +23,11 @@ public class Insurance {
         this.id = id;
     }
 
-    public Long getPersonId() {
+    public Integer getPersonId() {
         return personId;
     }
 
-    public void setPersonId(Long personId) {
+    public void setPersonId(Integer personId) {
         this.personId = personId;
     }
 
