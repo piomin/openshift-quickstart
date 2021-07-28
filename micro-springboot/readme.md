@@ -218,3 +218,10 @@ $ odo debug
 ```
 
 ## Step 4: Modifying OpenShift Topology View
+Go to the `Topology` view. 
+Edit `person-app` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.openshift.io/connects-to=person-db`, `app.openshift.io/runtime=spring-boot`, `app.kubernetes.io/component=backend`. \
+Repeat the same step for `insurance-app` by adding names related to that application. \
+Edit `person-db` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.kubernetes.io/instance=person-db`, `app.kubernetes.io/component=database`, `app.openshift.io/runtime=postgresql`. \
+Repeat the same step for `insurance-db` by adding names related to that application. \
+Once again edit `person-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=person-db`.
+Then edit `insurance-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=insurance-db`.
