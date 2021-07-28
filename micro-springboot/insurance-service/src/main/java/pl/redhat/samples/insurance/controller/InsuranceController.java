@@ -1,5 +1,7 @@
 package pl.redhat.samples.insurance.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 import pl.redhat.samples.insurance.client.PersonClient;
 import pl.redhat.samples.insurance.domain.Insurance;
@@ -14,6 +16,7 @@ import java.util.List;
 @RequestMapping("/insurances")
 public class InsuranceController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(InsuranceController.class);
     private PersonClient personClient;
     private InsuranceRepository repository;
 
@@ -24,20 +27,20 @@ public class InsuranceController {
 
     @GetMapping
     public List<Insurance> getAll() {
-        // TODO - implement
-        return new ArrayList<>(0);
+        LOG.info("Get all insurances");
+        return (List<Insurance>) repository.findAll();
     }
 
     @GetMapping("/{id}")
     public Insurance getById(@PathVariable("id") Integer id) {
-        // TODO - implement
-        return null;
+        LOG.info("Get insurance by id={}", id);
+        return repository.findById(id).orElseThrow();
     }
 
     @PostMapping
-    public Insurance addNew(@RequestBody Insurance person) {
-        // TODO - implement
-        return null;
+    public Insurance addNew(@RequestBody Insurance insurance) {
+        LOG.info("Add new insurance: {}", insurance);
+        return repository.save(insurance);
     }
 
     @GetMapping("/{id}/details")

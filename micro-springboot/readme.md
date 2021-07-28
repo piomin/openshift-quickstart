@@ -122,3 +122,53 @@ Finally, deploy the application to OpenShift.
 ```shell
 $ odo push
 ```
+Go to the console -> `Topology`. Verify if `person-app` deployment exists. \
+Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint. \
+```shell
+$ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons 
+[]
+```
+Then, start development. Run the following command in the `person-service` directory.
+```shell
+$ odo watch
+```
+Then go to the `PersonController`. Finish the implementation by replacing TODO with a code. Then save changes and switch back to the terminal. \
+Call the following endpoint once again. \
+```shell
+$ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons
+```
+Then, go to the `pom.xml`. Include the following artifact into dependencies.
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+Then call the endpoint `GET /actuator` using your web browser. Then click endpoint `/actuator/health` and see what is the result. \
+Go to the `application.yml`. Add the following lines.
+```yaml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint.health:
+      show-details: always
+      group:
+        readiness:
+          include: db
+      probes:
+        enabled: true
+```
+After application redeploy type `CTRL+S` to stop `odo watch`. \
+Go to the `Topology` view. Click `person-app` icon. Click `Add health checks`. Then click `Add readiness probe` and type `actuator/readiness`. \
+Analogically add a liveliness probe. Then click `Add` button. The application should be redeployed. \
+Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics. \
+Finally add the following dependencies.
+```xml
+
+```
+Push changes into OpenShift with odo.
+```shell
+$ odo push
+```

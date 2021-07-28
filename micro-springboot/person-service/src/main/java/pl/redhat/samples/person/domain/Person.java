@@ -52,4 +52,15 @@ public class Person {
     public void setExternalId(Integer externalId) {
         this.externalId = externalId;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", gender=" + gender +
+                ", externalId=" + externalId +
+                '}';
+    }
 }

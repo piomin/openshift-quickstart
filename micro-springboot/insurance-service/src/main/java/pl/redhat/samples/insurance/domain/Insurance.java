@@ -54,4 +54,15 @@ public class Insurance {
     public void setExpiry(Date expiry) {
         this.expiry = expiry;
     }
+
+    @Override
+    public String toString() {
+        return "Insurance{" +
+                "id=" + id +
+                ", personId=" + personId +
+                ", type=" + type +
+                ", amount=" + amount +
+                ", expiry=" + expiry +
+                '}';
+    }
 }
