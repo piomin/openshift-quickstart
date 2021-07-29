@@ -225,3 +225,75 @@ Edit `person-db` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/pa
 Repeat the same step for `insurance-db` by adding names related to that application. \
 Once again edit `person-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=person-db`.
 Then edit `insurance-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=insurance-db`.
+
+## Step 5: Logging and communication
+Find the `PersonClient` class. Change the current implementation from the following:
+```java
+public Person getPersonById(Integer personId) {
+    try {
+        return restTemplate.getForObject(personServiceUrl + "/persons/{id}", Person.class, personId);
+    } catch (HttpStatusCodeException e) {
+        return null;
+    }
+}
+```
+Into the implementation that sets a header `CorrelationId` on the request and puts it as MDC field into the thread context.
+```java
+public Person getPersonById(Integer personId) {
+    try {
+        String uuid = UUID.randomUUID().toString();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("CorrelationId", uuid);
+        HttpEntity entity = new HttpEntity(headers);
+        MDC.put("CorrelationId", uuid);
+        ResponseEntity<Person> response = restTemplate
+                .exchange(personServiceUrl + "/persons/{id}", HttpMethod.GET, entity, Person.class, personId);
+        return response.getBody();
+    } catch (HttpStatusCodeException e) {
+        return null;
+    }
+}
+```
+Go to the `person-service`. Open `PersonController`. Change the implementation of `getById()` method into the following:
+```java
+@GetMapping("/{id}")
+public Person getById(@PathVariable("id") Integer id, @RequestHeader("CorrelationId") String correlationId) {
+    LOG.info("Get person by id={}", id);
+    MDC.put("CorrelationId", correlationId);
+    return repository.findById(id).orElseThrow();
+}
+```
+Now, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service`.
+```shell
+$ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insurances/1/details
+```
+View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. We want to display the logs filtered by `CorrelationId`. \
+
+Repeat those steps for both applications. Include the following dependency into `pom.xml`:
+```xml
+<dependency>
+  <groupId>net.logstash.logback</groupId>
+  <artifactId>logstash-logback-encoder</artifactId>
+  <version>6.6</version>
+</dependency>
+```
+Add the file `logback-spring.xml` to the `/src/main/resources` directory with the following content:
+```xml
+<configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+    <logger name="jsonLogger" additivity="false" level="DEBUG">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="consoleAppender"/>
+    </root>
+</configuration>
+```
+Redeploy both application with `odo push` command. \
+Then, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service` once again. \
+```shell
+$ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insurances/1/details
+```
+View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. Now, you should be able to display the logs filtered by `CorrelationId`. \
