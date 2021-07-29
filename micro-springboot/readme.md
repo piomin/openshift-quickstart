@@ -46,27 +46,32 @@ git version 2.24.3 (Apple Git-128)
 ## Step 1: Deploy applications using `oc` client
 
 1. Login to the cluster
+
 With `oc` client.
 ```shell
 $ oc login -u $USER -p $PASSWORD --server=https://api.qyt1tahi.eastus.aroapp.io:6443
 ```
 
 2. Login with web console. 
+
 Go to: https://console-openshift-console.apps.qyt1tahi.eastus.aroapp.io/. \
 Switch do the `Developer` perspective. \
 Choose `Add+` -> `From Git`. \
 Type as Git Repo URL: `https://github.com/piomin/openshift-quickstart.git`, Context dir: `/micro-springboot/person-service`, Git reference: `workshops`. \
-Then choose Builder Image version: openjdk-11-ubi8. Then override 'Application name' and `Name` with `person-service`. \
-Leave default on the other fields. Click `Create`. \
+Then choose Builder Image version: `openjdk-11-ubi8`. Then override 'Application name' and `Name` with `person-service`. \
+Leave default on the other fields. Click `Create`. A new application is created on OpenShift. \
+
 You are redirected to the `Topology` view. \
 Click on Java Duke icon -> `Resources` -> See `Pods` -> Click `View logs`. \
 Optionally click `Show in Kibana`. \
+
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Builds` -> Click `#1`. Then choose tab `Logs`. \
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Routes` -> Click it.
 ```shell
 $ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons 
 []
 ```
+
 Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up number of instances
 
 ## Step 2: Develop applications using `odo` client
@@ -98,14 +103,16 @@ With Postgresql driver.
 Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` -> `Instantiate Template`. \
 Type `person-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
 Then go to `Secrets` and choose `postgresql` secret. \
-Go back to your source code. You are in the `person-service` directory. First, list all available components with `odo`. \
+Go back to your source code. You are in the `person-service` directory. First, list all available components with `odo`.
 ```shell
 $ odo catalog list components
 ```
+
 We choose S2I with Java.
 ```shell
 $ odo create java --s2i person-app
 ```
+
 Odo created the `.odo` directory and `devfile.yaml` configuration file. You can view their content. \
 Now let's add the following configuration properties to our `application.yml` file. 
 ```yaml
@@ -115,29 +122,35 @@ spring:
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
 ```
+
 Set environment variables for `odo`.
 ```shell
 $ odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
 ```
+
 Finally, deploy the application to OpenShift.
 ```shell
 $ odo push
 ```
+
 Go to the console -> `Topology`. Verify if `person-app` deployment exists. \
-Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint. \
+Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint.
 ```shell
 $ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons 
 []
 ```
+
 Then, start development. Run the following command in the `person-service` directory.
 ```shell
 $ odo watch
 ```
+
 Then go to the `PersonController`. Finish the implementation by replacing TODO with a code. Then save changes and switch back to the terminal. \
-Call the following endpoint once again. \
+Call the following endpoint once again.
 ```shell
 $ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons
 ```
+
 Then, go to the `pom.xml`. Include the following artifact into dependencies.
 ```xml
 <dependency>
@@ -145,6 +158,7 @@ Then, go to the `pom.xml`. Include the following artifact into dependencies.
   <artifactId>spring-boot-starter-actuator</artifactId>
 </dependency>
 ```
+
 Then call the endpoint `GET /actuator` using your web browser. Then click endpoint `/actuator/health` and see what is the result. \
 Go to the `application.yml`. Add the following lines.
 ```yaml
@@ -161,11 +175,14 @@ management:
       probes:
         enabled: true
 ```
+
 After application redeploy type `CTRL+S` to stop `odo watch`. \
+
 Go to the `Topology` view. Click `person-app` icon. Click `Add health checks`. Then click `Add readiness probe` and type `actuator/readiness`. \
 Analogically add a liveliness probe. Then click `Add` button. The application should be redeployed. \
 Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics. \
-Finally add the following dependencies.
+
+Finally, add the following dependencies.
 ```xml
 
 ```
@@ -218,13 +235,16 @@ $ odo debug
 ```
 
 ## Step 4: Modifying OpenShift Topology View
-Go to the `Topology` view. 
+Go to the `Topology` view. \
 Edit `person-app` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.openshift.io/runtime=spring-boot`, `app.kubernetes.io/component=backend`. \
+
 Repeat the same step for `insurance-app` by adding names related to that application. \
 Edit `person-db` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.kubernetes.io/instance=person-db`, `app.kubernetes.io/component=database`, `app.openshift.io/runtime=postgresql`. \
+
 Repeat the same step for `insurance-db` by adding names related to that application. \
-Once again edit `person-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=person-db`.
-Then edit `insurance-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=insurance-db`.
+
+Once again edit `person-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=person-db`. \
+Then edit `insurance-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=insurance-db`. 
 
 ## Step 5: Logging and communication
 Find the `PersonClient` class. Change the current implementation from the following:
@@ -267,7 +287,7 @@ Now, let's call the `GET /insurances/{id}/details` endpoint from `insurance-serv
 ```shell
 $ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insurances/1/details
 ```
-View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. We want to display the logs filtered by `CorrelationId`. \
+View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. We want to display the logs filtered by `CorrelationId`. 
 
 Repeat those steps for both applications. Include the following dependency into `pom.xml`:
 ```xml
@@ -292,8 +312,9 @@ Add the file `logback-spring.xml` to the `/src/main/resources` directory with th
 </configuration>
 ```
 Redeploy both application with `odo push` command. \
-Then, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service` once again. \
+Then, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service` once again.
 ```shell
 $ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insurances/1/details
 ```
-View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. Now, you should be able to display the logs filtered by `CorrelationId`. \
+
+View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. Now, you should be able to display the logs filtered by `CorrelationId`.
