@@ -318,3 +318,24 @@ $ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insuran
 ```
 
 View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. Now, you should be able to display the logs filtered by `CorrelationId`.
+
+## Step 6: Metrics
+
+Add the following annotations to the deployment of both applications:
+```properties
+prometheus.io/scrape="true"
+prometheus.io/path=/actuator/prometheus
+prometheus.io/port="8080"
+```
+
+Add the following dependency to the `pom.xml`:
+```xml
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+```
+
+In your web browser display `http://employee-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/actuator/prometheus`. \
+Go to the site `https://prometheus-k8s-openshift-monitoring.apps.qyt1tahi.eastus.aroapp.io` in your web browser. \
+See the value for e.g. `http_requests_total`.
