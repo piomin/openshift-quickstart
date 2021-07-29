@@ -71,7 +71,7 @@ public class DepartmentController {
 
     private List<Employee> findEmployeesByDepartment(Long departmentId) {
         Employee[] employees = restTemplate
-                .getForObject("http://employee//department/{departmentId}", Employee[].class, departmentId);
+                .getForObject("http://employee:8080//department/{departmentId}", Employee[].class, departmentId);
         return Arrays.asList(employees);
     }
 

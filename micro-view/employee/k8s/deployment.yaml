@@ -4,6 +4,11 @@ metadata:
   name: employee
   labels:
     app: employee
+    app.openshift.io/runtime: spring-boot
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: employee-app
+  annotations:
+    app.openshift.io/connects-to: employee-db
 spec:
   replicas: 2
   selector:
@@ -13,6 +18,11 @@ spec:
     metadata:
       labels:
         app: employee
+        app.openshift.io/runtime: spring-boot
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/part-of: employee-app
+      annotations:
+        app.openshift.io/connects-to: employee-db
     spec:
       containers:
         - name: employee
@@ -23,17 +33,17 @@ spec:
             - name: DATABASE_NAME
               valueFrom:
                 secretKeyRef:
-                  name: postgresql
+                  name: employee-db
                   key: database-name
             - name: DATABASE_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgresql
+                  name: employee-db
                   key: database-user
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgresql
+                  name: employee-db
                   key: database-password
 ---
 apiVersion: v1

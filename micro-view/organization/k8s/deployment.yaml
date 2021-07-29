@@ -4,6 +4,11 @@ metadata:
   name: organization
   labels:
     app: organization
+    app.openshift.io/runtime: spring-boot
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: organization-app
+  annotations:
+    app.openshift.io/connects-to: organization-db
 spec:
   replicas: 2
   selector:
@@ -13,6 +18,11 @@ spec:
     metadata:
       labels:
         app: organization
+        app.openshift.io/runtime: spring-boot
+        app.kubernetes.io/component: backend
+        app.kubernetes.io/part-of: organization-app
+      annotations:
+        app.openshift.io/connects-to: organization-db
     spec:
       containers:
         - name: organization
@@ -23,17 +33,17 @@ spec:
             - name: DATABASE_NAME
               valueFrom:
                 secretKeyRef:
-                  name: postgresql
+                  name: organization-db
                   key: database-name
             - name: DATABASE_USER
               valueFrom:
                 secretKeyRef:
-                  name: postgresql
+                  name: organization-db
                   key: database-user
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgresql
+                  name: organization-db
                   key: database-password
 ---
 apiVersion: v1
