@@ -49,16 +49,17 @@ git version 2.24.3 (Apple Git-128)
 
 With `oc` client.
 ```shell
-$ oc login -u $USER -p $PASSWORD --server=https://api.qyt1tahi.eastus.aroapp.io:6443
+$ oc login -u $USER -p $PASSWORD --server=https://api.ocp1.example.lab:6443
 ```
 
 2. Login with web console. 
 
-Go to: https://console-openshift-console.apps.qyt1tahi.eastus.aroapp.io/. \
-Switch do the `Developer` perspective. \
+Go to: `https://console-openshift-console.apps.ocp1.example.lab`. \
+Switch do the `Developer` perspective. 
+
 Choose `Add+` -> `From Git`. \
 Type as Git Repo URL: `https://github.com/piomin/openshift-quickstart.git`, Context dir: `/micro-springboot/person-service`, Git reference: `workshops`. \
-Then choose Builder Image version: `openjdk-11-ubi8`. Then override 'Application name' and `Name` with `person-service`. \
+Then choose Builder Image version: `openjdk-11-ubi8`. Then override `Application name` and `Name` with `person-service`. \
 Leave default on the other fields. Click `Create`. A new application is created on OpenShift. \
 
 You are redirected to the `Topology` view. \
@@ -79,6 +80,7 @@ Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up nu
 Clone the repository from GitHub. You can do it using your IDE.
 ```shell
 $ git clone https://github.com/piomin/openshift-quickstart.git
+$ git checkout workshops
 ```
 There are two applications. In the first step, we are going to deploy `person-service`.
 ```shell
