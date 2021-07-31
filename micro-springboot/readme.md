@@ -60,20 +60,20 @@ Switch do the `Developer` perspective.
 Choose `Add+` -> `From Git`. \
 Type as Git Repo URL: `https://github.com/piomin/openshift-quickstart.git`, Context dir: `/micro-springboot/person-service`, Git reference: `workshops`. \
 Then choose Builder Image version: `openjdk-11-ubi8`. Then override `Application name` and `Name` with `person-service`. \
-Leave default on the other fields. Click `Create`. A new application is created on OpenShift. \
+Leave default on the other fields. Click `Create`. A new application is created on OpenShift. 
 
 You are redirected to the `Topology` view. \
 Click on Java Duke icon -> `Resources` -> See `Pods` -> Click `View logs`. \
-Optionally click `Show in Kibana`. \
+Optionally click `Show in Kibana`. 
 
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Builds` -> Click `#1`. Then choose tab `Logs`. \
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Routes` -> Click it.
 ```shell
-$ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons 
+$ curl http://person-service-<your_project>.apps.ocp1.example.lab/persons 
 []
 ```
 
-Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up number of instances
+Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up number of instances.
 
 ## Step 2: Develop applications using `odo` client
 
@@ -112,7 +112,7 @@ $ odo catalog list components
 
 We choose S2I with Java.
 ```shell
-$ odo create java --s2i person-app
+$ odo create java --s2i person
 ```
 
 Odo created the `.odo` directory and `devfile.yaml` configuration file. You can view their content. \
@@ -138,7 +138,7 @@ $ odo push
 Go to the console -> `Topology`. Verify if `person-app` deployment exists. \
 Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint.
 ```shell
-$ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons 
+$ curl http://http-8080-person-app-<your_project>.apps.ocp1.example.lab/persons 
 []
 ```
 
