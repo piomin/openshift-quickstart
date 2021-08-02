@@ -14,6 +14,7 @@ kind: Deployment
 metadata:
   name: sample-spring-kotlin
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: sample-spring-kotlin
@@ -23,6 +24,7 @@ spec:
         app: sample-spring-kotlin
         app.openshift.io/runtime: spring-boot
         app.kubernetes.io/instance: sample-spring-kotlin
+        app.kubernetes.io/component: backend
     spec:
       containers:
       - name: sample-spring-kotlin
