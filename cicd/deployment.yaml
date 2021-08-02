@@ -22,6 +22,7 @@ spec:
       labels:
         app: sample-spring-kotlin
         app.openshift.io/runtime: spring-boot
+        app.kubernetes.io/instance: sample-spring-kotlin
     spec:
       containers:
       - name: sample-spring-kotlin
