@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-spring-kotlin
+spec:
+  type: ClusterIP
+  selector:
+    app: sample-spring-kotlin
+  ports:
+  - port: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-spring-kotlin
+spec:
+  selector:
+    matchLabels:
+      app: sample-spring-kotlin
+  template:
+    metadata:
+      labels:
+        app: sample-spring-kotlin
+    spec:
+      containers:
+      - name: sample-spring-kotlin
+        image: image-registry.openshift-image-registry.svc:5000/piotr-cicd/sample-spring-kotlin:latest
+        ports:
+        - containerPort: 8080
