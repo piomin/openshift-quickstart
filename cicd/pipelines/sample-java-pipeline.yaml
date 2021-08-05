@@ -1,0 +1,74 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: sample-java-pipeline
+spec:
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: 'https://github.com/piomin/sample-spring-kotlin-microservice.git'
+        - name: revision
+          value: master
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source-dir
+    - name: junit-tests
+      params:
+        - name: GOALS
+          value:
+            - test
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: ClusterTask
+        name: maven
+      workspaces:
+        - name: source
+          workspace: source-dir
+        - name: maven-settings
+          workspace: source-dir
+    - name: build-and-push-image
+      params:
+        - name: IMAGE
+          value: >-
+            image-registry.openshift-image-registry.svc:5000/piotr-cicd/sample-spring-kotlin:$(tasks.get-version.results.version)
+      runAfter:
+        - get-version
+      taskRef:
+        kind: ClusterTask
+        name: jib-maven
+      workspaces:
+        - name: source
+          workspace: source-dir
+    - name: sonarqube
+      params:
+        - name: SONAR_HOST_URL
+          value: 'https://sonarcloud.io'
+        - name: SONAR_PROJECT_KEY
+          value: sample-dotnetcore-ex
+      runAfter:
+        - junit-tests
+      taskRef:
+        kind: Task
+        name: sonarqube-scanner
+      workspaces:
+        - name: source-dir
+          workspace: source-dir
+        - name: sonar-settings
+          workspace: sonar-settings
+    - name: get-version
+      runAfter:
+        - sonarqube
+      taskRef:
+        kind: Task
+        name: maven-get-project-version
+      workspaces:
+        - name: source
+          workspace: source-dir
+  workspaces:
+    - name: source-dir
+    - name: sonar-settings

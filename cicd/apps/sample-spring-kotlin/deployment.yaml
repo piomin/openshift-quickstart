@@ -25,6 +25,6 @@ spec:
     spec:
       containers:
       - name: sample-spring-kotlin
-        image: image-registry.openshift-image-registry.svc:5000/piotr-cicd/sample-spring-kotlin:latest
+        image: image-registry.openshift-image-registry.svc:5000/piotr-cicd/sample-spring-kotlin:1.3.0
         ports:
         - containerPort: 8080
