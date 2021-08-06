@@ -225,7 +225,16 @@ Application is deployed. Does it work properly? Read logs and fix error. \
 Go to the `topology` view. Verify deployment and application logs. What is the reason that application is not running? \
 Choose `Actions` -> `Edit deployment` -> `Environment`. \
 Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key. \
-Then click `Save` button. Verify application logs after redeploy.
+Then click `Save` button. Verify application logs after redeploy. \
+```shell
+$ odo delete insurance
+```
+
+Then let's add insurance application one again, and this time add environment variables properly.
+```shell
+$ odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+```
+
 ```yaml
 spring:
   datasource:
@@ -250,7 +259,7 @@ public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Integer id) {
 ```
 Deploy application in DEBUG mode.
 ```shell
-$ odo debug
+$ odo debug port-forward
 ```
 
 ## Step 4: Modifying OpenShift Topology View
