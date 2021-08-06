@@ -178,23 +178,34 @@ management:
         enabled: true
 ```
 
-After application redeploy type `CTRL+S` to stop `odo watch`. \
+After application redeploy type `CTRL+S` to stop `odo watch`.
 
 Go to the `Topology` view. Click `person-app` icon. Click `Add health checks`. Then click `Add readiness probe` and type `actuator/readiness`. \
 Analogically add a liveliness probe. Then click `Add` button. The application should be redeployed. \
-Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics. \
+Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics.
 
 Finally, add the following dependencies.
 ```xml
-
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-ui</artifactId>
+    <version>1.5.10</version>
+</dependency>
 ```
 Push changes into OpenShift with odo.
 ```shell
 $ odo push
 ```
 
+Go to `/swagger-ui.html` page. Then expand `GET /persons` -> `Try it Out` -> `Execute`. You should get a list of results. \
+Then expand `GET /persons/{id}` -> `Try it Out`. Type 1 as `id` param. Then click `Execute`. You should get a single result. \
+Finally expand `POST /persons` -> `Try it Out`. Type your data. Then click `Execute`. \
+Also, let's see endpoint `/v3/api-docs` in your browser. Choose `Raw Data`.
+Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics. \
+Let's see the exact metrics by calling endpoint `GET \actuator\metrics\http.server.requests?tag=uri:/persons`.
+
 ## Step 3: Debugging with `odo` client
-We are going to deploy `insurance-service`. First, got to the `micro-springboot/insurance-service` directory. \
+We are going to deploy `insurance-service`. First, got to the `micro-springboot/insurance-service` directory.
 ```shell
 $ cd micro-springboot/insurance-service
 ```
@@ -209,17 +220,23 @@ Push application to OpenShift:
 ```shell
 $ odo push
 ```
+
+Application is deployed. Does it work properly? Read logs and fix error. \
 Go to the `topology` view. Verify deployment and application logs. What is the reason that application is not running? \
 Choose `Actions` -> `Edit deployment` -> `Environment`. \
-Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource and a right key. \
+Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key. \
 Then click `Save` button. Verify application logs after redeploy.
 ```yaml
 spring:
   datasource:
-    url: jdbc:postgresql://person-db:5432/${DATABASE_NAME}
+    url: jdbc:postgresql://insurance-db:5432/${DATABASE_NAME}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
 ```
+
 Set breakpoint inside the `InsuranceController` class in the following line and detect why person==null.
 ```java
 @GetMapping("/{id}/details")
@@ -238,12 +255,12 @@ $ odo debug
 
 ## Step 4: Modifying OpenShift Topology View
 Go to the `Topology` view. \
-Edit `person-app` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.openshift.io/runtime=spring-boot`, `app.kubernetes.io/component=backend`. \
+Edit `person-app` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.openshift.io/runtime=spring-boot`, `app.kubernetes.io/component=backend`.
 
 Repeat the same step for `insurance-app` by adding names related to that application. \
-Edit `person-db` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.kubernetes.io/instance=person-db`, `app.kubernetes.io/component=database`, `app.openshift.io/runtime=postgresql`. \
+Edit `person-db` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.kubernetes.io/instance=person-db`, `app.kubernetes.io/component=database`, `app.openshift.io/runtime=postgresql`.
 
-Repeat the same step for `insurance-db` by adding names related to that application. \
+Repeat the same step for `insurance-db` by adding names related to that application.
 
 Once again edit `person-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=person-db`. \
 Then edit `insurance-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=insurance-db`. 
