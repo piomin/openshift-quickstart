@@ -124,3 +124,112 @@ Then call the following endpoints:
 $ curl http://localhost:8080/persons/name/<value-from-changelog>
 $ curl http://localhost:8080/persons/age-greater-than/30
 ```
+
+## Step 2. Local Testing
+
+Let's kill the `mvn quarkus:dev` command for a moment. Add the following dependencies to the Maven `pom.xml`:
+```xml
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-junit5</artifactId>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>io.rest-assured</groupId>
+    <artifactId>rest-assured</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Then create a package `pl.redhat.samples.quarkus.person` and the class `PersonResourceTests` inside that package:
+```java
+@QuarkusTest
+public class PersonResourceTests {
+
+    @Test
+    void getPersons() {
+        List<Person> persons = given().when().get("/persons")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .jsonPath().getList(".", Person.class);
+        assertEquals(persons.size(), 6);
+    }
+
+    @Test
+    void getPersonById() {
+        Person person = given()
+                .pathParam("id", 1)
+                .when().get("/persons/{id}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().as(Person.class);
+        assertNotNull(person);
+        assertEquals(1L, person.id);
+    }
+
+    @Test
+    void newPersonAdd() {
+        Person newPerson = new Person();
+        newPerson.age = 22;
+        newPerson.name = "TestNew";
+        newPerson.gender = Gender.FEMALE;
+        Person person = given()
+                .body(newPerson)
+                .when().post("/persons")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().as(Person.class);
+        assertNotNull(person);
+        assertNotNull(person.id);
+    }
+}
+```
+
+Run the command `mvn quarkus:dev` once again. You should see:
+```text
+Tests paused
+Press [r] to resume testing, [o] Toggle test output, [h] for more options>
+```
+Type `r`. You should have 2 (or 1)/3 tests succeeded. Go to the dev UI console. Find `Test results` icon and click it. See the output for the failed tests. Try to fix them. \
+Especially verify the `newPersonAdd` test. Maybe you should add something after the `.body(newPerson)` line? Then type `r` once again. \
+Kill the `mvn quarkus:dev` command. 
+
+Navigate to the `insurance-app`:
+```shell
+$ cd ../insurance-app
+```
+
+Run application in the dev mode. Then run tests using command line. Not all the tests were passed. Go to the Maven `pom.xml` and add the following dependency:
+```xml
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-junit5-mockito</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Then go to the `pl/redhat/samples/quarkus/insurance/InsuranceResourceTests.java`. Find `newInsuranceAdd()`. This test fails. \
+Go to the `pl/redhat/samples/quarkus/insurance/resource/InsuranceResource.java`. Find the following method:
+```java
+@GET
+@Path("/{id}/details")
+public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
+    return null; // TODO - finish implementation
+}
+```
+
+```java
+@QuarkusTest
+public class InsuranceResourceTests {
+
+    @InjectMock
+    @RestClient
+    PersonService personService;
+    
+    // ... tests
+}
+```
