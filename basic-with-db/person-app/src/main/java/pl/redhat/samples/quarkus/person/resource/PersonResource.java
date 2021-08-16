@@ -30,6 +30,18 @@ public class PersonResource {
     }
 
     @GET
+    @Path("/name/{name}")
+    public List<Person> getPersonsByName(@PathParam("name") String name) {
+        return personRepository.findByName(name);
+    }
+
+    @GET
+    @Path("/age-greater-than/{age}")
+    public List<Person> getPersonsByName(@PathParam("age") int age) {
+        return personRepository.findByAgeGreaterThan(age);
+    }
+
+    @GET
     @Path("/{id}")
     public Person getPersonById(@PathParam("id") Long id) {
         return personRepository.findById(id);
