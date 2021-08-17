@@ -1,4 +1,4 @@
-# Quarkus Workshops
+# Workshop: Quarkus
 
 ## Step 1. Local Development
 
