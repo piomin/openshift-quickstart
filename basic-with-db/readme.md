@@ -375,3 +375,78 @@ $ curl http://<your_route>/insurances/{id}/details
 ```
 
 ## Step 5: Additional Features
+
+Do for both applications. Add the following dependencies into Maven `pom.xml`:
+```shell
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-smallrye-openapi</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-smallrye-health</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-smallrye-metrics</artifactId>
+</dependency>
+```
+Then add the following lines into the `application.properties` file:
+```properties
+quarkus.swagger-ui.always-include=true
+quarkus.smallrye-health.ui.always-include=true
+```
+Redeploy the applications. Verify new versions (e.g. liveness and readiness probes). Then in your web browser view the URLs:
+```text
+http://<your_route>/q/swagger-ui
+http://<your_route>/q/health
+http://<your_route>/q/health-ui
+http://<your_route>/q/health/live
+http://<your_route>/q/health/ready
+http://<your_route>/q/metrics
+```
+
+In Openshift Web Console switch to the `Topology` view. Add the following properties for `person-app` in the `application.properties` file. Then redeploy the app:
+```properties
+quarkus.openshift.annotation."app.openshift.io/connects-to"=person-db
+quarkus.openshift.labels."app.kubernetes.io/part-of"=persons
+```
+Do the same thing for the `insurance-app`. Move back to the `Topology` view. Add the label `app.kubernetes.io/part-of=persons` for `person-db` DC and `app.kubernetes.io/part-of=insurances` for `insurance-db`.
+
+## Step 6. Using odo
+
+First, list all available components with `odo`.
+```shell
+$ odo catalog list components
+```
+
+We choose S2I with Java.
+```shell
+$ odo create java-quarkus person-odo
+```
+
+Set environment variables for `odo`.
+```shell
+$ odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+```
+
+Finally, deploy the application to OpenShift.
+```shell
+$ odo push
+```
+
+Go to the console -> `Topology`. Verify if `person-odo-app` deployment exists. \
+Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint.
+```shell
+$ curl http://http-8080-person-odo-app-<your_project>.apps.ocp1.example.lab/persons 
+[]
+```
+
+Then, start development. Run the following command in the `person-app` directory. 
+```shell
+$ odo watch
+```
+
+Finally, you can add a new endpoint and call it via e.g. swagger-ui. Also call your route and verify the result.
+
+## Thanks for participating in workshops!
