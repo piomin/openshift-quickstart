@@ -262,19 +262,7 @@ Deploy application in DEBUG mode.
 $ odo debug port-forward
 ```
 
-## Step 4: Modifying OpenShift Topology View
-Go to the `Topology` view. \
-Edit `person-app` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.openshift.io/runtime=spring-boot`, `app.kubernetes.io/component=backend`.
-
-Repeat the same step for `insurance-app` by adding names related to that application. \
-Edit `person-db` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.kubernetes.io/instance=person-db`, `app.kubernetes.io/component=database`, `app.openshift.io/runtime=postgresql`.
-
-Repeat the same step for `insurance-db` by adding names related to that application.
-
-Once again edit `person-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=person-db`. \
-Then edit `insurance-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=insurance-db`. 
-
-## Step 5: Logging and communication
+## Step 4: Logging and communication
 Find the `PersonClient` class. Change the current implementation from the following:
 ```java
 public Person getPersonById(Integer personId) {
@@ -347,7 +335,7 @@ $ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insuran
 
 View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. Now, you should be able to display the logs filtered by `CorrelationId`.
 
-## Step 6: Metrics
+## Step 5: Metrics
 
 Add the following annotations to the deployment of both applications:
 ```properties
@@ -367,3 +355,15 @@ Add the following dependency to the `pom.xml`:
 In your web browser display `http://employee-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/actuator/prometheus`. \
 Go to the site `https://prometheus-k8s-openshift-monitoring.apps.qyt1tahi.eastus.aroapp.io` in your web browser. \
 See the value for e.g. `http_requests_total`.
+
+## Step 6: Modifying OpenShift Topology View
+Go to the `Topology` view. \
+Edit `person-app` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.openshift.io/runtime=spring-boot`, `app.kubernetes.io/component=backend`.
+
+Repeat the same step for `insurance-app` by adding names related to that application. \
+Edit `person-db` -> `Actions` -> `Edit labels`. Add labels `app.kubernetes.io/part-of=person-service`, `app.kubernetes.io/instance=person-db`, `app.kubernetes.io/component=database`, `app.openshift.io/runtime=postgresql`.
+
+Repeat the same step for `insurance-db` by adding names related to that application.
+
+Once again edit `person-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=person-db`. \
+Then edit `insurance-app` -> `Actions` -> `Edit annotations`. Add annotation `app.openshift.io/connects-to=insurance-db`. 
