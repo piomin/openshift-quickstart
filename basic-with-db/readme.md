@@ -198,21 +198,33 @@ Type `r`. You should have 2 (or 1)/3 tests succeeded. Go to the dev UI console. 
 Especially verify the `newPersonAdd` test. Maybe you should add something after the `.body(newPerson)` line? Then type `r` once again. \
 Kill the `mvn quarkus:dev` command. 
 
+## Step 3: Communication Between Microservices
+
 Navigate to the `insurance-app`:
 ```shell
 $ cd ../insurance-app
 ```
 
-Run application in the dev mode. Then run tests using command line. Not all the tests were passed. Go to the Maven `pom.xml` and add the following dependency:
+Add the dependency with the REST client:
 ```xml
 <dependency>
     <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-junit5-mockito</artifactId>
-    <scope>test</scope>
+    <artifactId>quarkus-rest-client</artifactId>
 </dependency>
 ```
+Create a declarative client responsible for calling the `GET /persons/{id}` endpoint:
+```java
+@Path("/persons")
+@ApplicationScoped
+@RegisterRestClient
+public interface PersonService {
 
-Then go to the `pl/redhat/samples/quarkus/insurance/InsuranceResourceTests.java`. Find `newInsuranceAdd()`. This test fails. \
+    @GET
+    @Path("/{id}")
+    Person getPersonById(@PathParam("id") Long id);
+}
+```
+
 Go to the `pl/redhat/samples/quarkus/insurance/resource/InsuranceResource.java`. Find the following method:
 ```java
 @GET
@@ -221,10 +233,38 @@ public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
     return null; // TODO - finish implementation
 }
 ```
+Replace it with the following implementation:
+```java
+@GET
+@Path("/{id}/details")
+public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
+    Insurance insurance = insuranceRepository.findById(id);
+    InsuranceDetails insuranceDetails = new InsuranceDetails();
+    insuranceDetails.personId = insurance.personId;
+    insuranceDetails.amount = insurance.amount;
+    insuranceDetails.type = insurance.type;
+    insuranceDetails.expiry = insurance.expiry;
+    insuranceDetails.setPerson(personService.getPersonById(insurance.personId));
+    return insuranceDetails;
+}
+```
 
+Run application in the dev mode. Then run tests using command line. Not all the tests were passed. \
+Go to the `pl/redhat/samples/quarkus/insurance/InsuranceResourceTests.java`. Find `newInsuranceAdd()`. This test fails. \
+
+Go to the Maven `pom.xml` and add the following dependency:
+```xml
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-junit5-mockito</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Back to the `pl/redhat/samples/quarkus/insurance/InsuranceResourceTests.java`. You need to inject `PersonService` into the 
 ```java
 @QuarkusTest
-public class InsuranceResourceTests {
+public class InsuranceResourceTests  {
 
     @InjectMock
     @RestClient
@@ -233,3 +273,105 @@ public class InsuranceResourceTests {
     // ... tests
 }
 ```
+Go to the `getInsuranceDetailsById()` method inside JUnit test class. Mock communication with `person-app` by adding the following Mockito rule at the beginning of the method:
+```java
+Mockito.when(personService.getPersonById(Mockito.anyLong())).thenAnswer(invocationOnMock -> {
+    Long id = invocationOnMock.getArgument(1, Long.class);
+    Person person = new Person();
+    person.setId(id);
+    person.setAge(33);
+    person.setName("Test" + id);
+    person.setGender(Gender.FEMALE);
+    return person;
+});
+```
+Re-run the tests. All should be passed. Then you can kill the command `mvn quarkus:dev`. 
+
+## Step 4: Deploy to OpenShift
+
+First, login to the cluster using the `oc` client:
+```shell
+$ oc login -u $USER -p $PASSWORD --server=https://api.ocp1.example.lab:6443
+```
+
+Go to: https://console-openshift-console.apps.ocp1.example.lab. \
+Switch do the Developer perspective. Click `+Add` -> `Database`. Choose `PostgreSQL`. Set `person-db` as a `Database Service Name`, and leave default values for the rest of fields. \
+Do the same for `insurance-app`.
+
+Go to the `person-app` directory in the source code:
+```shell
+$ cd ../person-app
+```
+
+Add the following dependency into Maven `pom.xml`:
+```xml
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-openshift</artifactId>
+</dependency>
+```
+
+Open the file `src/main/resources/application.properties`. Verify `quarkus.datasource.*` properties. \
+Enable automatic deployment on OpenShift:
+```properties
+quarkus.container-image.build=true
+quarkus.kubernetes.deploy=true
+quarkus.kubernetes.deployment-target=openshift
+quarkus.kubernetes-client.trust-certs=true
+```
+Configure a connection with a database. Before, go the OpenShift Web Console and view the `person-db` secret. Then add the following properties:
+```properties
+quarkus.openshift.env.mapping.postgres_user.from-secret=person-db
+quarkus.openshift.env.mapping.postgres_user.with-key=database-user
+quarkus.openshift.env.mapping.postgres_password.from-secret=person-db
+quarkus.openshift.env.mapping.postgres_password.with-key=database-password
+quarkus.openshift.env.mapping.postgres_db.from-secret=person-db
+quarkus.openshift.env.mapping.postgres_db.with-key=database-name
+```
+Then add some optional fields:
+```properties
+quarkus.openshift.name=person-app
+quarkus.openshift.version=${quarkus.application.version}
+quarkus.openshift.expose=true
+quarkus.openshift.replicas=2
+```
+The same configuration should be added for `insurance-app`. Just change the name of app and secret.
+
+Run `person-app` application in the dev mode. Go to the Dev UI console. Click `Deploy` on the `OpenShift` tile, then `Deploy` on the next window. Wait and watch on the logs, the build is in progress. \
+Go to the OpenShift Web Console. Click `Builds`, choose `person-app` `BuildConfig`. Switch to the `Builds` tab. Choose the latest build. In the `Details` verify `Output to`. \
+Then switch to the `Logs` tab. \
+Then with `oc` client display a list of routes:
+```shell
+$ oc get route
+```
+Copy the path of your `person-app` route. Then call the endpoint e.g.:
+```shell
+$ curl http://<your_route>/persons
+```
+
+Then go back to the code. In your IDE open the file `target/kubernetes/openshift.yml`.
+
+Switch to the `insurance-app` directory:
+```shell
+$ cd ../insurance-app
+```
+
+Execute the following `oc` command to display a list of Kubernetes Services:
+```shell
+$ oc get svc
+```
+In the `application.properties` file add the following line:
+```properties
+pl.redhat.samples.quarkus.insurance.client.PersonService/mp-rest/url=http://person-app:8080
+```
+Then deploy the app using Maven command:
+```shell
+$ mvn clean package
+```
+Once again display a list of routes. Copy the URL of the `insurance-app` route. Call the endpoints:
+```shell
+$ curl http://<your_route>/insurances
+$ curl http://<your_route>/insurances/{id}/details
+```
+
+## Step 5: Additional Features
