@@ -44,6 +44,7 @@ git version 2.24.3 (Apple Git-128)
 ```
 
 6. Environment Variables
+
 CLUSTER_DOMAIN - the address of your OpenShift cluster \
 PROJECT - the name of your project (and namespace) on OpenShift \
 USER - your username to the OpenShift cluster \
