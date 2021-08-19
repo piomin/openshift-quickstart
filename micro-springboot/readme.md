@@ -308,8 +308,8 @@ Go to the `person-service`. Open `PersonController`. Change the implementation o
 ```java
 @GetMapping("/{id}")
 public Person getById(@PathVariable("id") Integer id, @RequestHeader("CorrelationId") String correlationId) {
-    LOG.info("Get person by id={}", id);
     MDC.put("CorrelationId", correlationId);
+    LOG.info("Get person by id={}", id);
     return repository.findById(id).orElseThrow();
 }
 ```
@@ -367,6 +367,7 @@ Add the following dependency to the `pom.xml`:
 ```
 
 In your web browser display `http://employee-service-$PROJECT.apps.$CLUSTER_DOMAIN/actuator/prometheus`. \
+Add a label `apps=springboot` to the application `Service` created by `odo`. \
 Go to the site `https://prometheus-k8s-openshift-monitoring.apps.$CLUSTER_DOMAIN` in your web browser. \
 See the value for e.g. `http_requests_total`.
 
