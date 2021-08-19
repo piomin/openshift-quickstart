@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.redhat.samples.person.domain.Person;
 import pl.redhat.samples.person.repository.PersonRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -23,21 +22,18 @@ public class PersonController {
     @GetMapping
     public List<Person> getAll() {
         LOG.info("Get all persons");
-        // TODO - implement
-        return new ArrayList<>(0);
+        return (List<Person>) repository.findAll();
     }
 
     @GetMapping("/{id}")
     public Person getById(@PathVariable("id") Integer id) {
         LOG.info("Get person by id={}", id);
-        // TODO - implement
-        return null;
+        return repository.findById(id).orElseThrow();
     }
 
     @PostMapping
     public Person addNew(@RequestBody Person person) {
         LOG.info("Add new person: {}", person);
-        // TODO - implement
-        return null;
+        return repository.save(person);
     }
 }

@@ -1,3 +1,23 @@
 spring:
   application:
     name: person-service
+  datasource:
+    url: jdbc:postgresql://person-db:5432/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint.health:
+    show-details: always
+    group:
+      readiness:
+        include: db
+    probes:
+      enabled: true
