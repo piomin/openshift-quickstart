@@ -62,7 +62,7 @@ oc login -u $USER -p $PASSWORD --server=https://api.$CLUSTER_DOMAIN:6443
 2. Login with web console. 
 
 Go to: `https://console-openshift-console.apps.$CLUSTER_DOMAIN`. \
-Create a new project using the `Create Project` button. The name should start with your username. \ 
+Create a new project using the `Create Project` button. The name should start with your username. \
 Switch do the `Developer` perspective. 
 
 Choose `Add+` -> `From Git`. \
@@ -87,6 +87,7 @@ Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up nu
 Clone the repository from GitHub. You can do it using your IDE.
 ```shell
 git clone https://github.com/piomin/openshift-quickstart.git
+cd openshift-quickstart
 git checkout workshops
 ```
 There are two applications. In the first step, we are going to deploy `person-service`.
@@ -131,6 +132,8 @@ spring:
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
 ```
+
+Also configure Hibernate to auto-create tables on startup `spring.jpa.hibernate.ddl-auto` to `create`.
 
 Set environment variables for `odo`.
 ```shell
@@ -188,6 +191,13 @@ After application redeploy type `CTRL+S` to stop `odo watch`.
 
 Go to the `Topology` view. Click `person-app` icon. Click `Add health checks`. Then click `Add readiness probe` and type `actuator/readiness`. \
 Analogically add a liveliness probe. Then click `Add` button. The application should be redeployed. \
+Does it work? \
+Now, let's do the same thing, but after running the application using `oc` client from `master` branch:
+```shell
+oc new-app ubi8-openjdk-11:1.3~https://github.com/piomin/openshift-quickstart.git --name person-master --context-dir micro-springboot/person-service --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+```
+
+Then, let's back to the code. \
 Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics.
 
 Finally, add the following dependencies.
@@ -206,7 +216,7 @@ odo push
 Go to `/swagger-ui.html` page. Then expand `GET /persons` -> `Try it Out` -> `Execute`. You should get a list of results. \
 Then expand `GET /persons/{id}` -> `Try it Out`. Type 1 as `id` param. Then click `Execute`. You should get a single result. \
 Finally expand `POST /persons` -> `Try it Out`. Type your data. Then click `Execute`. \
-Also, let's see endpoint `/v3/api-docs` in your browser. Choose `Raw Data`.
+Also, let's see endpoint `/v3/api-docs` in your browser. Choose `Raw Data`. \
 Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics. \
 Let's see the exact metrics by calling endpoint `GET \actuator\metrics\http.server.requests?tag=uri:/persons`.
 
