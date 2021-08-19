@@ -234,7 +234,7 @@ Type `insurance-db` as `Database Service Name`, leave default values in the rest
 Then go to `Secrets` and choose `insurance-db` secret.
 
 Go to the `topology` view. Choose `Actions` -> `Edit deployment` -> `Environment`. \
-Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key. \
+Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key.
 
 Add database connection settings:
 ```yaml
@@ -258,7 +258,9 @@ Push application to OpenShift:
 odo push
 ```
 
-Set breakpoint inside the `InsuranceController` class in the following line and detect why person==null.
+Does application start successfully? Verify the logs and fix error. The `odo push` once again.
+
+Set breakpoint inside the `InsuranceController` class in the following line and detect why `person==null`.
 ```java
 @GetMapping("/{id}/details")
 public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Integer id) {

@@ -45,7 +45,7 @@ public class InsuranceController {
     }
 
     @GetMapping("/{id}/details")
-    public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Integer id) {
+    public InsuranceDetails getInsuranceDetailsById(@PathVariable("id") Integer id) {
         Insurance insurance = repository.findById(id).orElseThrow();
         Person person = personClient.getPersonById(insurance.getId());
         // TODO - detect why person==null
