@@ -48,6 +48,7 @@ public class InsuranceController {
     public InsuranceDetails getInsuranceDetailsById(@PathVariable("id") Integer id) {
         Insurance insurance = repository.findById(id).orElseThrow();
         Person person = personClient.getPersonById(insurance.getId());
+        LOG.info("Get insurance by details id={}", id);
         // TODO - detect why person==null
         // TODO - finish implementation
         return null;

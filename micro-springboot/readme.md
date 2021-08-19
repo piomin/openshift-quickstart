@@ -227,7 +227,7 @@ cd ../insurance-service
 ```
 Create S2I Java application with `odo`:
 ```shell
-odo create java --s2i insurance-app
+odo create java --s2i insurance
 ```
 Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` -> `Instantiate Template`. \
 Type `insurance-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
