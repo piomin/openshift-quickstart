@@ -43,18 +43,25 @@ $ git version
 git version 2.24.3 (Apple Git-128)
 ```
 
+6. Environment Variables
+
+CLUSTER_DOMAIN - the address of your OpenShift cluster \
+PROJECT - the name of your project (and namespace) on OpenShift \
+USER - your username to the OpenShift cluster \
+PASSWORD - your password to the OpenShift cluster
+
 ## Step 1: Deploy applications using `oc` client
 
 1. Login to the cluster
 
 With `oc` client.
 ```shell
-$ oc login -u $USER -p $PASSWORD --server=https://api.ocp1.example.lab:6443
+$ oc login -u $USER -p $PASSWORD --server=https://api.$CLUSTER_DOMAIN:6443
 ```
 
 2. Login with web console. 
 
-Go to: `https://console-openshift-console.apps.ocp1.example.lab`. \
+Go to: `https://console-openshift-console.apps.$CLUSTER_DOMAIN`. \
 Switch do the `Developer` perspective. 
 
 Choose `Add+` -> `From Git`. \
@@ -69,7 +76,7 @@ Optionally click `Show in Kibana`.
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Builds` -> Click `#1`. Then choose tab `Logs`. \
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Routes` -> Click it.
 ```shell
-$ curl http://person-service-<your_project>.apps.ocp1.example.lab/persons 
+$ curl http://person-service-$PROJECT.apps.$CLUSTER_DOMAIN/persons 
 []
 ```
 
@@ -138,7 +145,7 @@ $ odo push
 Go to the console -> `Topology`. Verify if `person-app` deployment exists. \
 Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint.
 ```shell
-$ curl http://http-8080-person-app-<your_project>.apps.ocp1.example.lab/persons 
+$ curl http://http-8080-person-app-$PROJECT.apps.$CLUSTER_DOMAIN/persons 
 []
 ```
 
@@ -150,7 +157,7 @@ $ odo watch
 Then go to the `PersonController`. Finish the implementation by replacing TODO with a code. Then save changes and switch back to the terminal. \
 Call the following endpoint once again.
 ```shell
-$ curl http://person-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/persons
+$ curl http://http-8080-person-app-$PROJECT.apps.$CLUSTER_DOMAIN/persons
 ```
 
 Then, go to the `pom.xml`. Include the following artifact into dependencies.
@@ -301,7 +308,7 @@ public Person getById(@PathVariable("id") Integer id, @RequestHeader("Correlatio
 ```
 Now, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service`.
 ```shell
-$ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insurances/1/details
+$ curl http://insurance-service-$PROJECT.apps.$CLUSTER_DOMAIN/insurances/1/details
 ```
 View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. We want to display the logs filtered by `CorrelationId`. 
 
@@ -330,7 +337,7 @@ Add the file `logback-spring.xml` to the `/src/main/resources` directory with th
 Redeploy both application with `odo push` command. \
 Then, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service` once again.
 ```shell
-$ curl http://insurance-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/insurances/1/details
+$ curl http://insurance-service-$PROJECT.apps.$CLUSTER_DOMAIN/insurances/1/details
 ```
 
 View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. Now, you should be able to display the logs filtered by `CorrelationId`.
@@ -352,8 +359,8 @@ Add the following dependency to the `pom.xml`:
 </dependency>
 ```
 
-In your web browser display `http://employee-service-piotr-dev.apps.qyt1tahi.eastus.aroapp.io/actuator/prometheus`. \
-Go to the site `https://prometheus-k8s-openshift-monitoring.apps.qyt1tahi.eastus.aroapp.io` in your web browser. \
+In your web browser display `http://employee-service-$PROJECT.apps.$CLUSTER_DOMAIN/actuator/prometheus`. \
+Go to the site `https://prometheus-k8s-openshift-monitoring.apps.$CLUSTER_DOMAIN` in your web browser. \
 See the value for e.g. `http_requests_total`.
 
 ## Step 6: Modifying OpenShift Topology View
