@@ -50,18 +50,19 @@ PROJECT - the name of your project (and namespace) on OpenShift \
 USER - your username to the OpenShift cluster \
 PASSWORD - your password to the OpenShift cluster
 
-## Step 1: Deploy applications using `oc` client
+## Step 1: Deploy applications on OpenShift
 
 1. Login to the cluster
 
 With `oc` client.
 ```shell
-$ oc login -u $USER -p $PASSWORD --server=https://api.$CLUSTER_DOMAIN:6443
+oc login -u $USER -p $PASSWORD --server=https://api.$CLUSTER_DOMAIN:6443
 ```
 
 2. Login with web console. 
 
 Go to: `https://console-openshift-console.apps.$CLUSTER_DOMAIN`. \
+Create a new project using the `Create Project` button. The name should start with your username. \ 
 Switch do the `Developer` perspective. 
 
 Choose `Add+` -> `From Git`. \
@@ -76,8 +77,7 @@ Optionally click `Show in Kibana`.
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Builds` -> Click `#1`. Then choose tab `Logs`. \
 Back to the `Topology` view. Click on Java Duke icon -> `Resources` -> See `Routes` -> Click it.
 ```shell
-$ curl http://person-service-$PROJECT.apps.$CLUSTER_DOMAIN/persons 
-[]
+curl http://person-service-$PROJECT.apps.$CLUSTER_DOMAIN/persons
 ```
 
 Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up number of instances.
@@ -86,8 +86,8 @@ Back to the `Topology` view. Click on Java Duke icon -> `Details` -> scale up nu
 
 Clone the repository from GitHub. You can do it using your IDE.
 ```shell
-$ git clone https://github.com/piomin/openshift-quickstart.git
-$ git checkout workshops
+git clone https://github.com/piomin/openshift-quickstart.git
+git checkout workshops
 ```
 There are two applications. In the first step, we are going to deploy `person-service`.
 ```shell
@@ -114,12 +114,12 @@ Type `person-db` as `Database Service Name`, leave default values in the rest of
 Then go to `Secrets` and choose `postgresql` secret. \
 Go back to your source code. You are in the `person-service` directory. First, list all available components with `odo`.
 ```shell
-$ odo catalog list components
+odo catalog list components
 ```
 
 We choose S2I with Java.
 ```shell
-$ odo create java --s2i person
+odo create java --s2i person
 ```
 
 Odo created the `.odo` directory and `devfile.yaml` configuration file. You can view their content. \
@@ -134,30 +134,29 @@ spring:
 
 Set environment variables for `odo`.
 ```shell
-$ odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
 ```
 
 Finally, deploy the application to OpenShift.
 ```shell
-$ odo push
+odo push
 ```
 
 Go to the console -> `Topology`. Verify if `person-app` deployment exists. \
 Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint.
 ```shell
-$ curl http://http-8080-person-app-$PROJECT.apps.$CLUSTER_DOMAIN/persons 
-[]
+curl http://http-8080-person-app-$PROJECT.apps.$CLUSTER_DOMAIN/persons
 ```
 
 Then, start development. Run the following command in the `person-service` directory.
 ```shell
-$ odo watch
+odo watch
 ```
 
 Then go to the `PersonController`. Finish the implementation by replacing TODO with a code. Then save changes and switch back to the terminal. \
 Call the following endpoint once again.
 ```shell
-$ curl http://http-8080-person-app-$PROJECT.apps.$CLUSTER_DOMAIN/persons
+curl http://http-8080-person-app-$PROJECT.apps.$CLUSTER_DOMAIN/persons
 ```
 
 Then, go to the `pom.xml`. Include the following artifact into dependencies.
@@ -201,7 +200,7 @@ Finally, add the following dependencies.
 ```
 Push changes into OpenShift with odo.
 ```shell
-$ odo push
+odo push
 ```
 
 Go to `/swagger-ui.html` page. Then expand `GET /persons` -> `Try it Out` -> `Execute`. You should get a list of results. \
@@ -214,18 +213,18 @@ Let's see the exact metrics by calling endpoint `GET \actuator\metrics\http.serv
 ## Step 3: Debugging with `odo` client
 We are going to deploy `insurance-service`. First, got to the `micro-springboot/insurance-service` directory.
 ```shell
-$ cd micro-springboot/insurance-service
+cd micro-springboot/insurance-service
 ```
 Create S2I Java application with `odo`:
 ```shell
-$ odo create java --s2i insurance-app
+odo create java --s2i insurance-app
 ```
 Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` -> `Instantiate Template`. \
 Type `insurance-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
 Then go to `Secrets` and choose `insurance-db` secret. \
 Push application to OpenShift:
 ```shell
-$ odo push
+odo push
 ```
 
 Application is deployed. Does it work properly? Read logs and fix error. \
@@ -234,12 +233,12 @@ Choose `Actions` -> `Edit deployment` -> `Environment`. \
 Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key. \
 Then click `Save` button. Verify application logs after redeploy. \
 ```shell
-$ odo delete insurance
+odo delete insurance
 ```
 
 Then let's add insurance application one again, and this time add environment variables properly.
 ```shell
-$ odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
 ```
 
 ```yaml
@@ -266,7 +265,7 @@ public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Integer id) {
 ```
 Deploy application in DEBUG mode.
 ```shell
-$ odo debug port-forward
+odo debug port-forward
 ```
 
 ## Step 4: Logging and communication
@@ -308,7 +307,7 @@ public Person getById(@PathVariable("id") Integer id, @RequestHeader("Correlatio
 ```
 Now, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service`.
 ```shell
-$ curl http://insurance-service-$PROJECT.apps.$CLUSTER_DOMAIN/insurances/1/details
+curl http://insurance-service-$PROJECT.apps.$CLUSTER_DOMAIN/insurances/1/details
 ```
 View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. We want to display the logs filtered by `CorrelationId`. 
 
@@ -337,7 +336,7 @@ Add the file `logback-spring.xml` to the `/src/main/resources` directory with th
 Redeploy both application with `odo push` command. \
 Then, let's call the `GET /insurances/{id}/details` endpoint from `insurance-service` once again.
 ```shell
-$ curl http://insurance-service-$PROJECT.apps.$CLUSTER_DOMAIN/insurances/1/details
+curl http://insurance-service-$PROJECT.apps.$CLUSTER_DOMAIN/insurances/1/details
 ```
 
 View logs from `insurance-service` pod -> `Show in Kibana`. Do the same for `person-service`. Now, you should be able to display the logs filtered by `CorrelationId`.
