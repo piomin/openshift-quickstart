@@ -197,8 +197,8 @@ Now, let's do the same thing, but after running the application using `oc` clien
 oc new-app ubi8-openjdk-11:1.3~https://github.com/piomin/openshift-quickstart.git --name person-master --context-dir micro-springboot/person-service --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
 ```
 
-Then, let's back to the code. \
-Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics.
+Then call the endpoint `GET \actuator\metrics` using web browser (on `person-master`). See HTTP traffic metrics. \
+Then, let's back to the code.
 
 Finally, add the following dependencies.
 ```xml
@@ -223,7 +223,7 @@ Let's see the exact metrics by calling endpoint `GET \actuator\metrics\http.serv
 ## Step 3: Debugging with `odo` client
 We are going to deploy `insurance-service`. First, got to the `micro-springboot/insurance-service` directory.
 ```shell
-cd micro-springboot/insurance-service
+cd ../insurance-service
 ```
 Create S2I Java application with `odo`:
 ```shell
@@ -231,26 +231,12 @@ odo create java --s2i insurance-app
 ```
 Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` -> `Instantiate Template`. \
 Type `insurance-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
-Then go to `Secrets` and choose `insurance-db` secret. \
-Push application to OpenShift:
-```shell
-odo push
-```
+Then go to `Secrets` and choose `insurance-db` secret.
 
-Application is deployed. Does it work properly? Read logs and fix error. \
-Go to the `topology` view. Verify deployment and application logs. What is the reason that application is not running? \
-Choose `Actions` -> `Edit deployment` -> `Environment`. \
+Go to the `topology` view. Choose `Actions` -> `Edit deployment` -> `Environment`. \
 Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key. \
-Then click `Save` button. Verify application logs after redeploy. \
-```shell
-odo delete insurance
-```
 
-Then let's add insurance application one again, and this time add environment variables properly.
-```shell
-odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
-```
-
+Add database connection settings:
 ```yaml
 spring:
   datasource:
@@ -260,6 +246,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+```
+
+Set environment variables for `odo`.
+```shell
+odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+```
+
+Push application to OpenShift:
+```shell
+odo push
 ```
 
 Set breakpoint inside the `InsuranceController` class in the following line and detect why person==null.
