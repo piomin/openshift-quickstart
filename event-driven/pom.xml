@@ -15,6 +15,7 @@
         <module>producer-consumer</module>
         <module>producer</module>
         <module>consumer-a</module>
+        <module>consumer-b</module>
     </modules>
 
 </project>
