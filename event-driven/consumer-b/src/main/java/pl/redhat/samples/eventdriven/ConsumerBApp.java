@@ -25,6 +25,7 @@ public class ConsumerBApp {
     public Consumer<Message<CallmeEvent>> eventConsumer() {
         return event -> {
             LOG.info("Received: {}", event.getPayload());
+//            throw new UnsupportedOperationException();
 //            Acknowledgment acknowledgment = event.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
 //            if (acknowledgment != null) {
 //                LOG.info("Manual Ack");

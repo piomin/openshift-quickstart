@@ -3,15 +3,15 @@ package pl.redhat.samples.eventdriven.message;
 public class CallmeEvent {
 
     private Integer id;
-    private String message;
+    private String messagex;
     private String eventType;
 
-    public CallmeEvent() {
-    }
+//    public CallmeEvent() {
+//    }
 
-    public CallmeEvent(Integer id, String message, String eventType) {
+    public CallmeEvent(Integer id, String messagex, String eventType) {
         this.id = id;
-        this.message = message;
+        this.messagex = messagex;
         this.eventType = eventType;
     }
 
@@ -23,12 +23,12 @@ public class CallmeEvent {
         this.id = id;
     }
 
-    public String getMessage() {
-        return message;
+    public String getMessagex() {
+        return messagex;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessagex(String messagex) {
+        this.messagex = messagex;
     }
 
     public String getEventType() {
@@ -43,7 +43,7 @@ public class CallmeEvent {
     public String toString() {
         return "CallmeEvent{" +
                 "id=" + id +
-                ", message='" + message + '\'' +
+                ", messagex='" + messagex + '\'' +
                 ", eventType='" + eventType + '\'' +
                 '}';
     }
