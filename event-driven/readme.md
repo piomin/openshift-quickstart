@@ -211,4 +211,5 @@ spring.cloud.stream.kafka.binder:
 To that operation for both `producer` and `consumer` applications. \
 Change the name of the topic into the following: `<message_type>.<dataset_name>.<data_name>`. Where `message_type=user`, `dataset_name` is the same as your username at `console.redhat.com` and `data_name` is the name of your event class in lower case. \
 To that operation for both `producer` and `consumer` applications. \
-Restart both applications.
+Restart both applications. \
+You can also consider overriding default value of the property `spring.cloud.stream.kafka.binder.autoCreateTopics` to `false`.
