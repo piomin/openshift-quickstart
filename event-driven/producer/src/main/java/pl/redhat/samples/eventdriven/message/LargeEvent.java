@@ -1,6 +1,5 @@
 package pl.redhat.samples.eventdriven.message;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
@@ -11,7 +10,7 @@ public class LargeEvent {
     private int size;
 
     public LargeEvent() {
-        byte[] array = new byte[200];
+        byte[] array = new byte[2000];
         new Random().nextBytes(array);
         message = new String(array, StandardCharsets.UTF_8);
     }
@@ -20,7 +19,7 @@ public class LargeEvent {
         this.id = id;
         this.eventType = eventType;
         this.size = size;
-        byte[] array = new byte[200];
+        byte[] array = new byte[size];
         new Random().nextBytes(array);
         message = new String(array, StandardCharsets.UTF_8);
     }

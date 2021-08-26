@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.function.context.PollableBean;
 import org.springframework.context.annotation.Bean;
 import pl.redhat.samples.eventdriven.message.CallmeEvent;
+import pl.redhat.samples.eventdriven.message.LargeEvent;
 import reactor.core.publisher.Flux;
 
 import java.util.Random;
@@ -39,8 +40,8 @@ public class ProducerApp {
 //    @Bean
 //    public Supplier<LargeEvent> eventSupplier() {
 //        return () -> {
-//            int i = RAND.nextInt(8);
-//            return new LargeEvent(++id, i == 4 ? "COMMIT" : "PING", 200);
+//            int size = RAND.nextInt(4000);
+//            return new LargeEvent(++id, "PING", 4000 + size);
 //        };
 //    }
 
