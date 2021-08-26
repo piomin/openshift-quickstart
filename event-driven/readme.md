@@ -350,3 +350,51 @@ public Supplier<CallmeEvent> eventSupplier() {
     return () -> new CallmeEvent(++id, "Hello" + id, "PING");
 }
 ```
+Delete the topic (auto-create option is enabled) or switch to your instance of Kafka. \
+Then switch to the `consumer` application. Add the following property in your `application.yml`:
+```yaml
+spring.cloud.stream.bindings.eventConsumer-in-0.consumer.batch-mode: true
+```
+The consumer should receive a `List` of records instead of a single record. Replace the existing implementation of a consumer with the following:
+```java
+@Bean
+public Consumer<List<CallmeEvent>> eventConsumer() {
+    return event -> {
+        LOG.info("Received batches: {}", event.size());
+        event.forEach(ev -> LOG.info("Event: {}", ev));
+    };
+}
+```
+Now kill the consumer. Run `kafkacat` in the consumer mode:
+```shell
+kafkacat -t <your-topic-name> -b "$BOOTSTRAP_SERVER" -X security.protocol=SASL_SSL -X sasl.mechanisms=PLAIN -X sasl.username="$USER" -X sasl.password="$PASSWORD" -C
+```
+Change the implementation of producer into a batch mode and run the application:
+```java
+@Bean
+public Supplier<List<CallmeEvent>> eventSupplier() {
+    return () -> List.of(
+            new CallmeEvent(++id, "T" + id, "PING"),
+            new CallmeEvent(++id, "T" + id, "PING"),
+            new CallmeEvent(++id, "T" + id, "PING"),
+            new CallmeEvent(++id, "T" + id, "PING"),
+            new CallmeEvent(++id, "T" + id, "PING"));
+}
+```
+Finally, you can enable metrics for the consumer application. When running locally change the port number with the `server.port` property. \
+Add the following dependencies to the Maven `pom.xml`. Our goal is to enable metrics generation and exposure for the Kafka consumer in Prometheus format:
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+</dependency>
+```
+Verify the results: `http://localhost:<server.port>/actuator/prometheus`.

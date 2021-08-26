@@ -10,6 +10,7 @@ import pl.redhat.samples.eventdriven.message.CallmeEvent;
 import pl.redhat.samples.eventdriven.message.LargeEvent;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -32,9 +33,14 @@ public class ProducerApp {
         };
     }
 
-//    @PollableBean
-//    public Supplier<Flux<CallmeEvent>> eventSupplier() {
-//        return () -> Flux.just(new CallmeEvent(++id, "T" + id, "COMMIT"), new CallmeEvent(++id, "T" + id, "COMMIT"));
+//    @Bean
+//    public Supplier<List<CallmeEvent>> eventSupplier() {
+//        return () -> List.of(
+//                new CallmeEvent(++id, "T" + id, "COMMIT"),
+//                new CallmeEvent(++id, "T" + id, "COMMIT"),
+//                new CallmeEvent(++id, "T" + id, "COMMIT"),
+//                new CallmeEvent(++id, "T" + id, "COMMIT"),
+//                new CallmeEvent(++id, "T" + id, "COMMIT"));
 //    }
 
 //    @Bean
