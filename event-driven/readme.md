@@ -398,3 +398,139 @@ Add the following dependencies to the Maven `pom.xml`. Our goal is to enable met
 </dependency>
 ```
 Verify the results: `http://localhost:<server.port>/actuator/prometheus`.
+
+## X.X - Enable partitioning and consumer groups
+
+We are going to run several instances of the `consumer` application. First, change the port number to the dynamically generated or disable a web support for the app:
+```yaml
+server.port: 0
+```
+Create a topic with 5 partitions. Then change the configuration inside the `application.yml` file:
+```yaml
+spring.cloud.stream.bindings.eventConsumer-in-0.group=a
+spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned=true
+```
+Run three instances of your application sequentially and observe the logs. Try to find the log starting with `a: partitions assigned: [` for the first instance. \
+Run the second instance of your application. Try to find the log starting with `a: partitions assigned: [` for the second instance. \
+Then back to the logs of the first instance. Find the log starting with `a: partitions revoked: [` and then `a: partitions assigned: [`. \
+Run the third instance of your application. Do the same thing as before.
+
+Switch to the `producer` application. Add the following two lines in the `application.yml` file:
+```yaml
+spring.cloud.stream.bindings.eventSupplier-out-0.producer.partitionKeyExpression: payload.id
+spring.cloud.stream.bindings.eventSupplier-out-0.producer.partitionCount: 5
+```
+Then run a single instance of the `producer` application. Observer the logs of your three instances of the `consumer` application. \
+Then go to `cloud.redhat.com`. Choose your instance of Kafka. Switch to the `Consumer groups` tab. Click your group - in our example the name group is `a`. \
+Then verify current offset on partitions and consumer lag on each partition. \
+Now we will do the same thing using Kafka CLI. Go to your Kafka installation directory, then got to the `config` directory. \
+Create the file `app-service.properties` with the following content:
+```properties
+sasl.mechanism=PLAIN
+security.protocol=SASL_SSL
+
+sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required \
+  username="<your-client-id>" \
+  password="<your-client-secret>" \
+  group.id="a";
+```
+After creating a file switch to the `bin` directory. Run the following command for your Kafka cluster to describe your topic:
+```shell
+./kafka-topics.sh --describe --topic <your-topic-name> --bootstrap-server $BOOTSTRAP_SERVER --command-config ../config/app-services.properties
+```
+Then run the following command to describe your current group, offset and consumer lag:
+```shell
+./kafka-consumer-groups.sh --describe --group a --bootstrap-server $BOOTSTRAP_SERVER --command-config ../config/app-services.properties
+```
+Stop all the applications.
+
+Go to the `cloud.redhat.com`. Choose your instance of Kafka, then edit your topic. Increase number of partitions from 5 to 9 (just to test). Accept change - you will see warning. \ 
+Go to the `consumer` directory. Add the following property in the `application.yml` file:
+```yaml
+spring.cloud.stream.bindings.eventConsumer-in-0.consumer.concurrency: 3
+```
+Re-run your instances of the `consumer` application. Run the following command for your Kafka cluster to describe your topic and compare it to the previous result:
+```shell
+./kafka-topics.sh --describe --topic <your-topic-name> --bootstrap-server $BOOTSTRAP_SERVER --command-config ../config/app-services.properties
+```
+Just to test - you increase a value of property `spring.cloud.stream.bindings.eventConsumer-in-0.consumer.concurrency` to e.g. `6` or run another 4th instance of the `consumer` and compare result of `kafka-consumer-groups.sh`.
+
+Go to the `producer` directory. Change the value of the following property:
+```yaml
+spring.cloud.stream.bindings.eventSupplier-out-0.producer.partitionCount: 9
+```
+Finally, run the instance of the `producer` application and observe logs of the `consumer` applications. \
+Then run the following command to describe your current group, offset and consumer lag:
+```shell
+./kafka-consumer-groups.sh --describe --group a --bootstrap-server $BOOTSTRAP_SERVER --command-config ../config/app-services.properties
+```
+
+Now, let's change the implementation of a Supplier bean for the `producer` application into e.g. the following:
+```java
+@SpringBootApplication
+public class ProducerApp {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProducerApp.class);
+    private static int id = 0;
+    private static final Random RAND = new Random();
+
+    public static void main(String[] args) {
+        SpringApplication.run(ProducerApp.class, args);
+    }
+
+    @Bean
+    public Supplier<CallmeEvent> eventSupplier() {
+        return () -> {
+            int i = RAND.nextInt(8);
+            return new CallmeEvent(++id, "Hello" + id, i == 4 ? "COMMIT" : "PING");
+        };
+    }
+}
+```
+Go to the `consumer` directory. Add the following property to the `application.yml` file:
+```yaml
+spring.cloud.stream.kafka.default.consumer.autoCommitOffset: false
+```
+Then change the implementation of the `Consumer` bean:
+```java
+@SpringBootApplication
+public class ConsumerAApp {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ConsumerAApp.class);
+
+    public static void main(String[] args) {
+        SpringApplication.run(ConsumerAApp.class, args);
+    }
+
+    @Bean
+    public Consumer<Message<CallmeEvent>> eventConsumer() {
+        return event -> {
+            LOG.info("Received: {}", event.getPayload());
+            Acknowledgment acknowledgment = event.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
+            if (acknowledgment != null) {
+                LOG.info("Manual Ack");
+                if (event.getPayload().getEventType().equals("COMMIT")) {
+                    acknowledgment.acknowledge();
+                    LOG.info("Committed");
+                }
+            }
+        };
+    }
+}
+```
+
+Then run all three instances of the `consumer` application, and a single instance of the `producer` application. \
+Observe the logs from the `consumer` application. \
+Stop all the applications. \
+Then run the following command to describe your current group, offset and consumer lag:
+```shell
+./kafka-consumer-groups.sh --describe --group a --bootstrap-server $BOOTSTRAP_SERVER --command-config ../config/app-services.properties
+```
+Run a single instance of the `consumer` application. Observe the logs. How many events did it receive? \
+Then run the following command to describe your current group, offset and consumer lag once again:
+```shell
+./kafka-consumer-groups.sh --describe --group a --bootstrap-server $BOOTSTRAP_SERVER --command-config ../config/app-services.properties
+```
+Clear the logs of the first instance. \
+Run another instance of the `consumer` application. Observe the logs. How many events did it receive? \
+Now, switch back to the logs of the first instance. Did it receive any events once again?
