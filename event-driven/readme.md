@@ -534,3 +534,379 @@ Then run the following command to describe your current group, offset and consum
 Clear the logs of the first instance. \
 Run another instance of the `consumer` application. Observe the logs. How many events did it receive? \
 Now, switch back to the logs of the first instance. Did it receive any events once again?
+
+## X.X - Kafka on OpenShift
+
+Set the following environment variables:
+```shell
+export OPSH_CLUSTER=qyt1tahi.eastus.aroapp.io
+export OPSH_USER=<your-user-name>
+export OPSH_PASSWORD=<your-password>
+```
+Login to the OpenShift cluster:
+```shell
+oc login -u $OPSH_USER -p $OPSH_SERVER --server=https://api.$OPSH_CLUSTER:6443
+```
+Create new project:
+```shell
+oc new-project $OPSH_USER-workshop
+```
+Go to the `producer` directory. Then create new `java` application with `odo`:
+```shell
+cd event-driven/producer
+odo create java --s2i producer
+```
+Check Kafka bootstrap server address:
+```shell
+oc get svc -n kafka | grep kafka-bootstrap
+```
+Replace it in the `producer` `application.yml`:
+```yaml
+spring.kafka.bootstrap-servers=<kafka-bootstrap-service-name>.kafka:9092
+```
+Ensure you have the following properties commented out for now:
+```properties
+spring.cloud.stream.kafka.binder.configuration.security.protocol
+spring.cloud.stream.kafka.binder.configuration.sasl.mechanism
+spring.cloud.stream.kafka.binder.jaas.loginModule
+spring.cloud.stream.kafka.binder.jaas.options.username
+spring.cloud.stream.kafka.binder.jaas.options.password
+```
+Add the following property to the `application.yml`:
+```yaml
+spring.cloud.stream.kafka.binder.autoCreateTopics: false
+```
+Build and deploy your application on OpenShift:
+```shell
+odo push
+```
+Verify the application logs. Did the producer connect with the topic? \
+Create the following YAML manifest, e.g. `topic.yaml`:
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: <your-topic-name>
+  labels:
+    strimzi.io/cluster: my-cluster
+  namespace: kafka
+spec:
+  config:
+    retention.ms: 360000
+    segment.bytes: 102400
+  partitions: 10
+  replicas: 1
+```
+Then apply the configuration to the `kafka` namespace:
+```shell
+oc apply -f topic.yaml -n kafka
+```
+Then verify your application logs:
+```shell
+oc logs -f -l app.kubernetes.io/instance=producer
+```
+Then create a YAML manifest, e.g. `user.yaml`:
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: <your-user-name>
+  labels:
+    strimzi.io/cluster: my-cluster
+  namespace: kafka
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    acls:
+      - resource:
+          type: topic
+          name: <your-topic-name>
+          patternType: literal
+        operation: Read
+        host: '*'
+      - resource:
+          type: topic
+          name: <your-topic-name>
+          patternType: literal
+        operation: Describe
+        host: '*'
+      - resource:
+          type: group
+          name: a
+          patternType: literal
+        operation: Read
+        host: '*'
+      - resource:
+          type: topic
+          name: <your-topic-name>
+          patternType: literal
+        operation: Write
+        host: '*'
+    type: simple
+```
+Then apply the configuration to the `kafka` namespace:
+```shell
+oc apply -f user.yaml -n kafka
+```
+Then verify your application logs:
+```shell
+oc logs -f -l app.kubernetes.io/instance=producer
+```
+Find the secret related to your user:
+```shell
+oc get secret <your-user-name> -n kafka -o yaml
+```
+Run the following command to watch for the changes in the source code:
+```shell
+odo watch
+```
+Add the following properties to the application.yml for both producer and consumer applications:
+```yaml
+spring.cloud.stream.kafka.binder.configuration:
+  security.protocol=SASL_PLAINTEXT
+  sasl.mechanism=SCRAM-SHA-512
+spring.cloud.stream.kafka.binder.jaas:
+  loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
+  options:
+    username: <your-user-name>
+    password: <your-user-password>
+```
+Go to the `consumer` directory:
+```shell
+cd event-driven/consumer
+```
+Ensure to disable dynamic port generation enabled in the previous section. Then create new `java` application with `odo`:
+```shell
+odo create java --s2i consumer
+```
+Then verify your application logs:
+```shell
+oc logs -f -l app.kubernetes.io/instance=consumer
+```
+Scale out the number of `consumer` instances. Verify the logs of all the instances. 
+
+## X.X - Implement event-driven architecture
+
+There are several microservices sending and listening for events, and a gateway exposing REST API for an external client. \
+Let's start with the implementation of an event gateway.
+
+### X.X.X - Event Gateway
+
+Go to the event-gateway directory:
+```shell
+cd event-driven/event-gateway
+```
+Open the class `pl.redhat.samples.eventdriven.gateway.message.AbstractOrderCommand`. \
+In the same package create the class `OrderCommand` as a subclass of `AbstractOrderCommand`. Add a `String` field `id`, with getters/setters.
+
+Add the following dependencies into Maven `pom.xml`:
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+    </dependency>
+</dependencies>
+```
+Add a single POST endpoint into the `OrderController` class. It takes `OrderCommand` as an input. \
+Use `StreamBridge` bean to send the message to the arbitrary output:
+```java
+@PostMapping
+public Boolean orders(@RequestBody OrderCommand orderCommand) {
+    orderCommand.setId(UUID.randomUUID().toString());
+    return streamBridge.send("orders-out-0", orderCommand);
+}
+```
+Configure output destination for the `orders-out-0` binding:
+```yaml
+spring.cloud.stream.source: orders
+spring.cloud.stream.bindings.orders-out-0.destination: <your-topic-name>
+```
+Deploy the application on OpenShift using `odo`.
+
+### X.X.X - Shipment Service
+
+Go to the `shipment-service` directory:
+```shell
+cd event-driven/shipment-service
+```
+Create the `OrderCommand`. You can copy it from the previous service. \
+Also create `OrderEvent` with the following fields:
+```java
+public class OrderEvent {
+
+    private String id;
+    private String commandId;
+    private String type;
+    private String status;
+
+    public OrderEvent() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    public OrderEvent(String commandId, String type, String status) {
+        this.id = UUID.randomUUID().toString();
+        this.commandId = commandId;
+        this.type = type;
+        this.status = status;
+    }
+
+    // GENERATE GETTERS AND SETTERS
+}
+```
+Go to the `pl.redhat.samples.eventdriven.shipment.service.ShipmentService`. Add the method for reserving products. It should return `OrderEvent`: 
+```java
+public OrderEvent reserveProducts(OrderCommand orderCommand) {
+    Product product = productRepository.findById(orderCommand.getProductId()).orElseThrow();
+    product.setReservedCount(product.getReservedCount() - orderCommand.getProductCount());
+    return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
+}
+```
+Then add the `Function` bean to the application main class responsible for processing orders. It listens for an input `OrderCommand` and sends `OrderEvent` as a response: 
+```java
+@Bean
+public Function<OrderCommand, OrderEvent> orders() {
+    return command -> shipmentService.reserveProducts(command);
+}
+```
+Go to the `application.yml`. Configure a destination for the input and output.
+```yaml
+spring.cloud.stream.bindings.orders-in-0.destination: <your-in-topic-name>
+spring.cloud.stream.bindings.orders-out-0.destination: <your-out-topic-name>
+```
+### X.X.X - Payment Service
+
+Go to the `payment-service` directory:
+```shell
+cd event-driven/payment-service
+```
+
+Copy `OrderEvent` and `OrderCommand` from the previous services. \
+Go to the `pl.redhat.samples.eventdriven.payment.service.PaymentService`. Add the method for reserving balance. It should return `OrderEvent`:
+```java
+public OrderEvent reserveBalance(OrderCommand orderCommand) {
+    Account product = accountRepository.findByCustomerId(orderCommand.getCustomerId()).stream().findFirst().orElseThrow();
+    product.setReservedAmount(product.getReservedAmount() - orderCommand.getAmount());
+    return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
+}
+```
+Then add the `Function` bean to the application main class responsible for processing orders. It listens for an input `OrderCommand` and sends `OrderEvent` as a response:
+```java
+@Bean
+public Function<OrderCommand, OrderEvent> orders() {
+    return command -> paymentService.reserveBalance(command);
+}
+```
+Go to the `application.yml`. Configure a destination for the input and output. 
+
+### X.X.X - Order Service
+
+Go to the `order-service` directory:
+```shell
+cd event-driven/order-service
+```
+
+Go to the `pl.redhat.samples.eventdriven.order.service.OrderService`. \
+Add the method for storing a new `OrderCommand`:
+```java
+public void addOrderCommand(OrderCommand orderCommand) {
+    orderCommand.setStatus("NEW");
+    orderCommandRepository.save(orderCommand);
+}
+```
+Then go to the main application class and add the following bean:
+```java
+@Bean
+public Consumer<OrderCommand> orders() {
+    return command -> orderService.addOrderCommand(command);
+}
+```
+
+### X.X.X - SAGA Pattern
+
+In `order-service` add the following a new command `pl.redhat.samples.eventdriven.order.message.ConfirmCommand`:
+```java
+public class ConfirmCommand extends AbstractOrderCommand {
+
+    private String orderId;
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+}
+```
+Copy that command to the `payment-service` and `shipment-service`. \
+Then go to the `pl.redhat.samples.eventdriven.order.service.OrderService` and the method for updating order status or removing it from a cache. \
+If order has been confirmed by the both `payment-service` and `shipment-service` it may be removed and `order-service` sends the confirmation message:
+```java
+public void updateOrderCommandStatus(String id) {
+    OrderCommand orderCommand = orderCommandRepository.findById(id).orElseThrow();
+    if (orderCommand.getStatus().equals("NEW")) {
+        orderCommand.setStatus("PARTIALLY_CONFIRMED");
+        orderCommandRepository.save(orderCommand);
+    } else if (orderCommand.getStatus().equals("PARTIALLY_CONFIRMED")) {
+        ConfirmCommand confirmCommand = new ConfirmCommand();
+        confirmCommand.setOrderId(id);
+        confirmCommand.setAmount(orderCommand.getAmount());
+        confirmCommand.setProductCount(orderCommand.getProductCount());
+        confirmCommand.setProductId(orderCommand.getProductId());
+        confirmCommand.setCustomerId(orderCommand.getCustomerId());
+        streamBridge.send("confirm-out-0", confirmCommand);
+        orderCommandRepository.deleteById(id);
+    }
+}
+```
+Add the following bean to the application main class:
+```java
+@Bean
+public Consumer<OrderEvent> events() {
+    return event -> orderService.updateOrderCommandStatus(event.getCommandId());
+}
+```
+Then add the destination for binding used to send `ConfirmOrder`:
+```yaml
+spring.cloud.stream.bindings.confirm-out-0.destination: <your-topic-name>
+```
+
+Switch to the `shipment-service`. Add the following method to the `pl.redhat.samples.eventdriven.shipment.service.ShipmentService`:
+```java
+public OrderEvent confirmProducts(ConfirmCommand confirmCommand) {
+    Product product = productRepository.findById(confirmCommand.getProductId()).orElseThrow();
+    product.setReservedCount(product.getCurrentCount() - confirmCommand.getProductCount());
+    return new OrderEvent(confirmCommand.getOrderId(), "OK", "CONFIRM");
+}
+```
+Then go to the main class and the following bean:
+```java
+@Bean
+public Consumer<ConfirmCommand> confirmations() {
+    return command -> shipmentService.confirmProducts(command);
+}
+```
+Set the input destination for the `ConfirmCommand`:
+```yaml
+spring.cloud.stream.bindings.confirmations-in-0.destination: <your-topic-name>
+```
+
+Then switch to the `payment-service`. Implement the method `confirmBalance` in the `pl.redhat.samples.eventdriven.payment.service.PaymentService`:
+```java
+public void confirmBalance(ConfirmCommand confirmCommand) {
+    // TODO - implement by yourself
+}
+```
+Add the `Consumer` bean and set the right destination in `application.yml`. \
+Then deploy all the three services `payment-service`, `shipment-service`, `order-service` on OpenShift cluster using`odo`.
+
+Send the test order to the `event-gateway` HTTP endpoint:
+```shell
+curl http://<route-address>/orders -d "{\"customerId\":1,\"productId\":1,\"productCount\":3,\"amount\":1000}"
+```

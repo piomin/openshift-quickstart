@@ -16,6 +16,10 @@
         <module>producer</module>
         <module>consumer-a</module>
         <module>consumer-b</module>
+        <module>event-gateway</module>
+        <module>order-service</module>
+        <module>payment-service</module>
+        <module>shipment-service</module>
     </modules>
 
 </project>

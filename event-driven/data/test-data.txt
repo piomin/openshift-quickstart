@@ -1,5 +1,0 @@
-{"id":1,"eventType":"PING",message:"Test1"}
-{"id":2,"eventType":"PING",message:"Test2"}
-{"id":3,"eventType":"PING",message:"Test3"}
-{"id":4,"eventType":"PING",message:"Test4"}
-{"id":5,"eventType":"PING",message:"Test5"}
