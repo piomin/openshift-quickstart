@@ -12,7 +12,6 @@
     <artifactId>event-driven</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>producer-consumer</module>
         <module>producer</module>
         <module>consumer-a</module>
         <module>consumer-b</module>
@@ -20,6 +19,7 @@
         <module>order-service</module>
         <module>payment-service</module>
         <module>shipment-service</module>
+        <module>order-query-service</module>
     </modules>
 
 </project>

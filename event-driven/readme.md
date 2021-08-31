@@ -910,3 +910,176 @@ Send the test order to the `event-gateway` HTTP endpoint:
 ```shell
 curl http://<route-address>/orders -d "{\"customerId\":1,\"productId\":1,\"productCount\":3,\"amount\":1000}"
 ```
+
+### - CQRS Pattern
+
+Go to the `event-driven` directory. Create `OrderQuery` in the `pl.redhat.samples.eventdriven.gateway.message` package with the following fields:
+```java
+public class OrderQuery {
+
+    private String queryId;
+    private Integer customerId;
+    private Date startDate;
+    private Date endDate;
+
+    // GENERATE GETTERS, SETTERS AND CONSTRUCTORS
+}
+```
+Create or copy that class to `order-query-service` application. In `order-query-service` create a class `OrderQueryResult` with the following fields:
+```java
+public class OrderQueryResult {
+
+    private String queryId;
+    private List<Order> orders;
+
+    // GENERATE GETTERS, SETTERS AND CONSTRUCTORS
+}
+```
+Go to the application main class. \
+Query service should consume both messages `OrderCommand` and `ConfirmCommand`. Here's bean declaration for receiving `OrderCommand`:
+```java
+@Bean
+public Consumer<OrderCommand> orders() {
+    return input -> orderRepository
+            .save(new Order(input.getId(),
+                    input.getCustomerId(),
+                    input.getProductId(),
+                    input.getProductCount(),
+                    input.getAmount(),
+                    "RESERVATION"));
+}
+```
+Create a similar declaration for `ConfirmCommand` messages. Set another event type, e.g. `CONFIRMATION`. \
+Then create receiver/sender bean for handling queries. It takes `OrderQuery` as an input, and returns `OrderQueryResult` as an output. \
+Optionally: you can try to provide more advanced implementation basing also on the `OrderQuery` `startDate` and `endDate`.
+```java
+@Bean
+public Function<OrderQuery, OrderQueryResult> queries() {
+    return input -> {
+        LOG.info("New Query: {}", input.getQueryId());
+        List<Order> orders = orderRepository.findByCustomerId(input.getCustomerId());
+        return new OrderQueryResult(input.getQueryId(), orders);
+    };
+}
+```
+Then switch to the `application.yml` file. There are several functional beans defined, so we need to provide additional configuration containing the names of those beans. For me it the following configuration:
+```yaml
+spring.cloud.function.definition: orders;confirmations;queries
+```
+Now, we need to configure destinations for all the binding. Let's start with consumers. \
+Because we use in-memory database for storing events, each time the application is starting we copy the events topics:
+```yaml
+spring.cloud.stream.bindings.orders-in-0.destination: user.<your_namespace>.ordercommand
+spring.cloud.stream.kafka.bindings.orders-in-0.consumer.startOffset: earliest
+spring.cloud.stream.kafka.bindings.orders-in-0.consumer.resetOffsets: true
+
+spring.cloud.stream.bindings.confirmations-in-0.destination: user.<your_namespace>.confirmcommand
+spring.cloud.stream.kafka.bindings.confirmations-in-0.consumer.startOffset: earliest
+spring.cloud.stream.kafka.bindings.confirmations-in-0.consumer.resetOffsets: true
+```
+Finally, we should set destination for queries:
+```yaml
+spring.cloud.stream.bindings.queries-in-0.destination: user.<your_namespace>.orderquery
+spring.cloud.stream.bindings.queries-out-0.destination: user.<your_namespace>.orderqueryresult
+```
+Create and push the application to the OpenShift cluster:
+```shell
+odo create java --s2i order-query-service 
+odo push
+```
+
+Switch to the `event-gateway` application. \
+Copy `OrderQueryResult` created in `order-query-service`. Alternatively, add the appropriate constructor. \
+Create `pl.redhat.samples.eventdriven.gateway.message.Order` class with the following fields:
+```java
+public class Order {
+
+    private Integer id;
+    private String messageId;
+    private Integer customerId;
+    private Integer productId;
+    private int productCount;
+    private int amount;
+    private String type;
+    private LocalDateTime creationDate;
+
+    // GENERATE GETTERS, SETTERS AND CONSTRUCTORS
+}
+```
+Run `odo` command for inner development loop:
+```shell
+odo watch
+```
+
+In the `OrderController` class add REST endpoint responsible for sending queries to the Kafka topic:
+```java
+@GetMapping("/customer/{customerId}")
+public String query(@PathVariable Integer customerId) {
+    String uuid = UUID.randomUUID().toString();
+    streamBridge.send("queries-out-0", new OrderQuery(uuid, customerId));
+    return uuid;
+}
+```
+Switch to the application main class. Add a bean responsible for handling incoming query results. Also create a `Map` bean for storing responses temporary:
+```java
+@SpringBootApplication
+public class EventGatewayApp {
+
+    public static void main(String[] args) {
+        SpringApplication.run(EventGatewayApp.class, args);
+    }
+
+    @Bean
+    public Consumer<OrderQueryResult> queries() {
+        return input -> results().put(input.getQueryId(), input.getOrders());
+    }
+
+    @Bean
+    Map<String, List<Order>> results() {
+        return new HashMap();
+    }
+}
+```
+Then open the `application.yml` file. Add the following two properties to set binding destinations:
+```yaml
+spring.cloud.stream.bindings.queries-out-0.destination: <output-query-topic-name>
+spring.cloud.stream.bindings.queries-in-0.destination: <input-result-topic-name>
+```
+Optionally, we may print producer log messages:
+```yaml
+logging.level.org.springframework.cloud.stream: DEBUG
+```
+Save the changes. \
+Query for orders sent by the customer with `id=1`:
+```shell
+curl http://<route-address>/orders/customer/1
+```
+See the logs printed by the `order-query-service` application. \
+You should see exception that `java.time.LocalDateTime` is not supported. First verify how many log lines starting with `New Query:` you see. Why? \
+You can customize this behaviour, and increase the number of retries to e.g. `5`:
+```yaml
+spring.cloud.stream.bindings.queries-in-0.consumer.maxAttempts: 5
+```
+Query for orders once again. How many retries do you see now? \
+Fix error. You need to add the following dependency:
+```xml
+<dependency>
+    <groupId>com.fasterxml.jackson.datatype</groupId>
+    <artifactId>jackson-datatype-jsr310</artifactId>
+</dependency>
+```
+Then go to the `Order` class and add the following annotation for `LocalDateTime` field:
+```java
+@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+@JsonSerialize(using = LocalDateTimeSerializer.class)
+```
+Provide the same change the `Order` class implementation in the `event-gateway. \
+Query for orders sent by the customer with `id=1`. You should receive response with `uuid`:
+```shell
+curl http://<route-address>/orders/customer/1
+85b8792d-93f7-40db-8da2-b367d0891671
+```
+Now, obtain the result using a dedicated endpoint and uuid received in the previous response:
+```shell
+curl http://<route-address>/orders/results/{queryId}
+```
