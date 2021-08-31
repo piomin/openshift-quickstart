@@ -34,7 +34,7 @@ public class OrderService {
             confirmCommand.setProductCount(orderCommand.getProductCount());
             confirmCommand.setProductId(orderCommand.getProductId());
             confirmCommand.setCustomerId(orderCommand.getCustomerId());
-            streamBridge.send("events-out-0", confirmCommand);
+            streamBridge.send("confirmations-out-0", confirmCommand);
             orderCommandRepository.deleteById(id);
         }
     }

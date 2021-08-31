@@ -860,7 +860,7 @@ public void updateOrderCommandStatus(String id) {
         confirmCommand.setProductCount(orderCommand.getProductCount());
         confirmCommand.setProductId(orderCommand.getProductId());
         confirmCommand.setCustomerId(orderCommand.getCustomerId());
-        streamBridge.send("confirm-out-0", confirmCommand);
+        streamBridge.send("confirmations-out-0", confirmCommand);
         orderCommandRepository.deleteById(id);
     }
 }
@@ -874,7 +874,12 @@ public Consumer<OrderEvent> events() {
 ```
 Then add the destination for binding used to send `ConfirmOrder`:
 ```yaml
-spring.cloud.stream.bindings.confirm-out-0.destination: <your-topic-name>
+spring.cloud.stream.bindings.confirmations-out-0.destination: <your-topic-name>
+```
+Also add mappping for multiple functional beans and with a source declaration the `StreamBridge` bean:
+```yaml
+spring.cloud.function.definition: orders;events
+spring.cloud.stream.source: confirmations
 ```
 
 Switch to the `shipment-service`. Add the following method to the `pl.redhat.samples.eventdriven.shipment.service.ShipmentService`:
@@ -896,6 +901,10 @@ Set the input destination for the `ConfirmCommand`:
 ```yaml
 spring.cloud.stream.bindings.confirmations-in-0.destination: <your-topic-name>
 ```
+There are multiple functional bean declarations in `shipment-service`. Therefore, the following configuration property is required.
+```yaml
+spring.cloud.function.definition: orders;confirmations
+```
 
 Then switch to the `payment-service`. Implement the method `confirmBalance` in the `pl.redhat.samples.eventdriven.payment.service.PaymentService`:
 ```java
@@ -903,7 +912,7 @@ public void confirmBalance(ConfirmCommand confirmCommand) {
     // TODO - implement by yourself
 }
 ```
-Add the `Consumer` bean and set the right destination in `application.yml`. \
+Add the `Consumer` bean and set the right destination in `application.yml`. Remember about multiple Spring Cloud Function beans defined. \
 Then deploy all the three services `payment-service`, `shipment-service`, `order-service` on OpenShift cluster using`odo`.
 
 Send the test order to the `event-gateway` HTTP endpoint:
@@ -911,7 +920,7 @@ Send the test order to the `event-gateway` HTTP endpoint:
 curl http://<route-address>/orders -d "{\"customerId\":1,\"productId\":1,\"productCount\":3,\"amount\":1000}"
 ```
 
-### - CQRS Pattern
+### X.X.X - CQRS Pattern
 
 Go to the `event-driven` directory. Create `OrderQuery` in the `pl.redhat.samples.eventdriven.gateway.message` package with the following fields:
 ```java
