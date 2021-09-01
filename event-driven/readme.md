@@ -68,10 +68,6 @@ git version 2.24.3 (Apple Git-128)
 ### X.X.X - Account at https://developers.redhat.com/
 In order to create own instance of Apache Kafka there.
 
-```shell
-./kafka-topics.sh --version
-2.8.0 (Commit:ebb1d6e21cc92130)
-
 ## X.X - Create the producer with Spring Cloud Stream
 
 Add the following dependency to Maven `pom.xml`:
