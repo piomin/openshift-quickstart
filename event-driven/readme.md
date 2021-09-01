@@ -764,6 +764,7 @@ Go to the `pl.redhat.samples.eventdriven.shipment.service.ShipmentService`. Add 
 public OrderEvent reserveProducts(OrderCommand orderCommand) {
     Product product = productRepository.findById(orderCommand.getProductId()).orElseThrow();
     product.setReservedCount(product.getReservedCount() - orderCommand.getProductCount());
+    productRepository.save(product);
     return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
 }
 ```
@@ -790,8 +791,9 @@ Copy `OrderEvent` and `OrderCommand` from the previous services. \
 Go to the `pl.redhat.samples.eventdriven.payment.service.PaymentService`. Add the method for reserving balance. It should return `OrderEvent`:
 ```java
 public OrderEvent reserveBalance(OrderCommand orderCommand) {
-    Account product = accountRepository.findByCustomerId(orderCommand.getCustomerId()).stream().findFirst().orElseThrow();
-    product.setReservedAmount(product.getReservedAmount() - orderCommand.getAmount());
+    Account account = accountRepository.findByCustomerId(orderCommand.getCustomerId()).stream().findFirst().orElseThrow();
+    account.setReservedAmount(product.getReservedAmount() - orderCommand.getAmount());
+    accountRepository.save(account);
     return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
 }
 ```
@@ -887,6 +889,7 @@ Switch to the `shipment-service`. Add the following method to the `pl.redhat.sam
 public OrderEvent confirmProducts(ConfirmCommand confirmCommand) {
     Product product = productRepository.findById(confirmCommand.getProductId()).orElseThrow();
     product.setReservedCount(product.getCurrentCount() - confirmCommand.getProductCount());
+    productRepository.save(product);
     return new OrderEvent(confirmCommand.getOrderId(), "OK", "CONFIRM");
 }
 ```
@@ -1091,4 +1094,196 @@ curl http://<route-address>/orders/customer/1
 Now, obtain the result using a dedicated endpoint and uuid received in the previous response:
 ```shell
 curl http://<route-address>/orders/results/{queryId}
+```
+
+### X.X.X - DLQ (Dead Letter Queue) Pattern
+
+Go to the `shipment-service`. Add the following Exception class `pl.redhat.samples.eventdriven.shipment.service.NotEnoughProductsException`:
+```java
+public class NotEnoughProductsException extends RuntimeException {
+
+    public NotEnoughProductsException() {
+        super("Not enough products");
+    }
+}
+```
+Change the implementation of the `reserveProducts` method in `ShipmentService` `@Service` and throw `Exception` if there is not enough products.
+```java
+public OrderEvent reserveProducts(OrderCommand orderCommand) {
+    Product product = productRepository.findById(orderCommand.getProductId()).orElseThrow();
+    product.setReservedCount(product.getReservedCount() - orderCommand.getProductCount());
+    if (product.getReservedCount() > 0)
+        throw new NotEnoughProductsException();
+    productRepository.save(product);
+    return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
+}
+```
+Enable DLQ for the consumer and override the name of DLQ topic:
+```yaml
+spring.cloud.stream.bindings.orders-in-0.consumer.enableDlq: true
+spring.cloud.stream.bindings.orders-in-0.consumer.dlqName: user.<your-namespace>.shipment.ordercommand.dlq
+```
+
+Create the wrapper `pl.redhat.samples.eventdriven.shipment.message.OrderCommandDelayed` for delaying `OrderCommand` received from DLQ topic:
+```java
+public class OrderCommandDelayed implements Delayed {
+
+    private OrderCommand orderCommand;
+    private long startTime;
+
+    public OrderCommandDelayed(OrderCommand orderCommand, long delayInMilliseconds) {
+        this.orderCommand = orderCommand;
+        this.startTime = System.currentTimeMillis() + delayInMilliseconds;
+    }
+
+    @Override
+    public long getDelay(@NotNull TimeUnit unit) {
+        long diff = startTime - System.currentTimeMillis();
+        return unit.convert(diff, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public int compareTo(@NotNull Delayed o) {
+        return (int) (this.startTime - ((OrderCommandDelayed) o).startTime);
+    }
+
+    public OrderCommand getOrderCommand() {
+        return orderCommand;
+    }
+}
+```
+Then declare Java `DelayQueue` `@Bean` for handling delayed events:
+```java
+@Bean
+public DelayQueue<OrderCommandDelayed> delayQueue() {
+    return new DelayQueue<OrderCommandDelayed>();
+}
+```
+After that, declare `Consumer` `@Bean` for consuming events from DLQ topic and pushing them into the `DelayQueue`:
+```java
+@Bean
+public Consumer<OrderCommand> dlqs() {
+    return input -> delayQueue().offer(new OrderCommandDelayed(input, 60000));
+}
+```
+Add a required configuration for bindings in `application.yml`. \
+Then create a special @Service for handling delayed commands. It is based on Spring `@Scheduled`:
+```java
+@Service
+public class DlqService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ShipmentServiceApp.class);
+
+    private DelayQueue<OrderCommandDelayed> delayQueue;
+    private StreamBridge streamBridge;
+    private ShipmentService shipmentService;
+
+    public DlqService(DelayQueue<OrderCommandDelayed> delayQueue, StreamBridge streamBridge, ShipmentService shipmentService) {
+        this.delayQueue = delayQueue;
+        this.streamBridge = streamBridge;
+        this.shipmentService = shipmentService;
+    }
+
+    @Scheduled(fixedDelay = 1000)
+    public void schedule() {
+        try {
+            OrderCommandDelayed delayed = delayQueue.take();
+            OrderEvent event = null;
+            try {
+                shipmentService.reserveProducts(delayed.getOrderCommand());
+                event = new OrderEvent(delayed.getOrderCommand().getId(), "RESERVATION", "OK");
+            } catch (NotEnoughProductsException e) {
+                LOG.error("Not enough products: id={}", delayed.getOrderCommand().getProductId());
+                event = new OrderEvent(delayed.getOrderCommand().getId(), "RESERVATION", "FAILED");
+            }
+            streamBridge.send("orders-out-0", event);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+Annotate the main class with `@EnableScheduling`. If you didn't run `odo watch`, deploy the latest version of application with the following `odo` command:
+```shell
+odo push
+```
+
+### X.X.X - Rollback (SAGA)
+
+Switch to the `payment-service`. \
+Implement negative scenario in `pl.redhat.samples.eventdriven.payment.service.PaymentService`. Just send back `OrderEvent{status=FAILED}` if there is no sufficient funds on the account.
+
+## X.X - Schema versioning
+
+List the services in the kafka namespace:
+```shell
+oc get svc -n kafka | grep apicurio
+```
+List the routes in the kafka namespace:
+```shell
+oc get route -n kafka | grep apicurio
+```
+Visit the schema registry web UI using its route. 
+
+Switch to the `producer` application. \
+In the `src/main/resources` directory create folder `avro`. Then, create a file `callmeevent.avro` with the following content:
+```json
+{
+  "type":"record",
+  "name":"CallmeEvent",
+  "namespace":"pl.redhat.samples.eventdriven.producer.message.avro",
+  "fields": [
+    {
+      "name":"id",
+      "type":"int"
+    },{
+      "name":"message",
+      "type":"string"
+    },{
+      "name":"eventType",
+      "type": "string"
+    }
+  ]
+}
+```
+Switch to the Maven `pom.xml`. Add the following plugin into the plugins list:
+```xml
+<plugin>
+  <groupId>org.apache.avro</groupId>
+  <artifactId>avro-maven-plugin</artifactId>
+  <version>1.10.2</version>
+  <executions>
+    <execution>
+      <phase>generate-sources</phase>
+      <goals>
+        <goal>schema</goal>
+      </goals>
+      <configuration>
+        <sourceDirectory>${project.basedir}/src/main/resources/avro/</sourceDirectory>
+        <outputDirectory>${project.basedir}/target/generated-sources/avro/</outputDirectory>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+```
+To simplify working with the generated code you may also add the following plugin:
+```xml
+<plugin>
+  <groupId>org.codehaus.mojo</groupId>
+  <artifactId>build-helper-maven-plugin</artifactId>
+  <version>3.2.0</version>
+  <executions>
+    <execution>
+      <phase>generate-sources</phase>
+      <goals>
+        <goal>add-source</goal>
+      </goals>
+      <configuration>
+        <sources>
+          <source>${project.build.directory}/generated-sources/avro</source>
+        </sources>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
 ```

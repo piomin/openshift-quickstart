@@ -17,9 +17,14 @@ public class PaymentService {
     }
 
     public OrderEvent reserveBalance(OrderCommand orderCommand) {
-        Account product = accountRepository.findByCustomerId(orderCommand.getCustomerId()).stream().findFirst().orElseThrow();
-        product.setReservedAmount(product.getReservedAmount() - orderCommand.getAmount());
-        return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
+        Account account = accountRepository.findByCustomerId(orderCommand.getCustomerId()).stream().findFirst().orElseThrow();
+        account.setReservedAmount(account.getReservedAmount() - orderCommand.getAmount());
+        if (account.getReservedAmount() > 0) {
+            return new OrderEvent(orderCommand.getId(), "RESERVATION", "FAILED");
+        } else {
+            accountRepository.save(account);
+            return new OrderEvent(orderCommand.getId(), "RESERVATION", "OK");
+        }
     }
 
     public void confirmBalance(ConfirmCommand confirmCommand) {
