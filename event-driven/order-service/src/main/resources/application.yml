@@ -2,10 +2,11 @@ spring.application.name: order-service
 
 spring.kafka.bootstrap-servers: pminkows-k-c-ma--adc-smj-himh-g.bf2.kafka.rhcloud.com:443
 
-spring.cloud.function.definition: orders;events
+spring.cloud.function.definition: orders;events;failedEvents
 spring.cloud.stream.source: confirmations
 spring.cloud.stream.bindings.orders-in-0.destination: user.pminkows.ordercommand
 spring.cloud.stream.bindings.events-in-0.destination: user.pminkows.orderevent
+spring.cloud.stream.bindings.failedEvents-in-0.destination: user.pminkows.orderevent
 spring.cloud.stream.bindings.confirmations-out-0.destination: user.pminkows.confirmcommand
 
 spring.cloud.stream.kafka.binder.configuration.security.protocol: SASL_SSL

@@ -1,3 +1,57 @@
+## X.X - Prerequisites
+
+### X.X.X - JDK11+
+
+```shell
+$ java --version
+java 16.0.2 2021-07-20
+Java(TM) SE Runtime Environment (build 16.0.2+7-67)
+Java HotSpot(TM) 64-Bit Server VM (build 16.0.2+7-67, mixed mode, sharing)
+```
+
+### X.X.X - Maven 3.5+
+
+```shell
+$ mvn -version
+Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
+Maven home: /Users/pminkows/apache-maven-3.6.3
+Java version: 16.0.2, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk-16.0.2.jdk/Contents/Home
+Default locale: en_PL, platform encoding: UTF-8
+```
+
+### X.X.X - `oc` client 4.0+
+
+```shell
+$ oc version
+Client Version: 4.6.12
+```
+
+### X.X.X - `odo` client 2.0+
+
+Tool for deploying app directly from the current version of the code. If you are familiar with other tools then `odo` you may use it instead.
+```shell
+$ odo version  
+odo v2.2.1 (17a078b67)
+```
+### X.X.X - `kafkacat`
+
+```shell
+$ kafkacat -V 
+kafkacat - Apache Kafka producer and consumer tool
+https://github.com/edenhill/kafkacat
+Copyright (c) 2014-2019, Magnus Edenhill
+Version 1.6.0 (JSON, Avro, Transactions, librdkafka 1.7.0 builtin.features=gzip,snappy,ssl,sasl,regex,lz4,sasl_gssapi,sasl_plain,sasl_scram,plugins,zstd,sasl_oauthbearer)
+```
+
+### X.X.X - Kafka CLI 2.7.0+
+
+```shell
+./kafka-topics.sh --version
+2.8.0 (Commit:ebb1d6e21cc92130)
+```
+
+### X.X.X - IDE for Java Development
+The presenter will use IntelliJ IDEA.
 
 ## X.X - Create the producer with Spring Cloud Stream
 
@@ -1208,10 +1262,76 @@ Annotate the main class with `@EnableScheduling`. If you didn't run `odo watch`,
 odo push
 ```
 
-### X.X.X - Rollback (SAGA)
+### X.X.X - Rollback (SAGA) and event routing
 
 Switch to the `payment-service`. \
-Implement negative scenario in `pl.redhat.samples.eventdriven.payment.service.PaymentService`. Just send back `OrderEvent{status=FAILED}` if there is no sufficient funds on the account.
+Implement negative scenario in `pl.redhat.samples.eventdriven.payment.service.PaymentService`. Just send back `OrderEvent{status=FAILED}` if there is no sufficient funds on the account. \
+Modify `OrderEvent` to add a field, e.g. `source` that indicates a producer of the event. Modify it in all the applications. 
+
+Switch to the `order-service`. Add a new command `RollbackCommand`:
+```java
+public class RollbackCommand extends AbstractOrderCommand {
+
+    private String orderId;
+    private String source;
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+}
+```
+Go to the `pl.redhat.samples.eventdriven.order.service.OrderService`. Add the method for handling rollback and fix `TODO`:
+```java
+public void rollbackOrder(String id) {
+    OrderCommand orderCommand = orderCommandRepository.findById(id).orElseThrow();
+    RollbackCommand rollbackCommand = new RollbackCommand();
+    rollbackCommand.setOrderId(id);
+    rollbackCommand.setAmount(orderCommand.getAmount());
+    rollbackCommand.setProductCount(orderCommand.getProductCount());
+    rollbackCommand.setProductId(orderCommand.getProductId());
+    rollbackCommand.setCustomerId(orderCommand.getCustomerId());
+    rollbackCommand.setSource(""); // TODO - change the method signature to obtain a source name
+    streamBridge.send("confirmations-out-0", rollbackCommand);
+    orderCommandRepository.deleteById(id);
+}
+```
+Add new Consumer with the following name and fix `TODO`:
+```java
+@Bean
+public Consumer<OrderEvent> failedEvents() {
+    // TODO - add implementation
+}
+```
+Go to the `application.yml`. How will change the current bindings configuration?:
+```yaml
+spring.cloud.function.definition: orders;events
+spring.cloud.stream.source: confirmations
+spring.cloud.stream.bindings.orders-in-0.destination: user.pminkows.ordercommand
+spring.cloud.stream.bindings.events-in-0.destination: user.pminkows.orderevent
+spring.cloud.stream.bindings.confirmations-out-0.destination: user.pminkows.confirmcommand
+```
+We need to add function router:
+```yaml
+spring.cloud.stream.bindings.functionRouter-in-0.destination=user.pminkows.orderevent
+spring.cloud.stream.bindings.functionRouter-in-0.group=b
+spring.cloud.stream.bindings.functionRouter-in-0.consumer.partitioned=true
+spring.cloud.stream.function.routing.enabled=true
+spring.cloud.function.routing-expression=(payload.status=='FAILED') ? 'failedEvents':'events'
+```
+
+Copy `RollbackCommand` class to the `shipment-service` and `payment-service`. Then do the necessary changes to handle rollback there.
 
 ## X.X - Schema versioning
 

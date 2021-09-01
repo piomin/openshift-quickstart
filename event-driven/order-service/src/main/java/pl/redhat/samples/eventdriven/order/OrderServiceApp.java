@@ -29,4 +29,10 @@ public class OrderServiceApp {
     public Consumer<OrderEvent> events() {
         return event -> orderService.updateOrderCommandStatus(event.getCommandId());
     }
+
+    @Bean
+    public Consumer<OrderEvent> failedEvents() {
+        // TODO - add implementation
+        return event -> orderService.updateOrderCommandStatus(event.getCommandId());
+    }
 }
