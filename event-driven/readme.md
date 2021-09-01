@@ -1,3 +1,8 @@
+# Workshop: Event-driven Architecture with Kafka, Spring Cloud Stream and OpenShift
+In this workshop we will develop a simple event-driven architecture using Spring Cloud Stream framework to show the most commonly used patterns and techniques. \ 
+We will use Kafka deployed on AWS (hybrid-cloud console) and then as deployment on OpenShift (AMQ Streams). \
+Before starting see the list of requirements.
+
 ## X.X - Prerequisites
 
 ### X.X.X - JDK11+
@@ -52,6 +57,13 @@ Version 1.6.0 (JSON, Avro, Transactions, librdkafka 1.7.0 builtin.features=gzip,
 
 ### X.X.X - IDE for Java Development
 The presenter will use IntelliJ IDEA.
+
+### X.X.X - Git client
+
+```shell
+git --version
+git version 2.24.3 (Apple Git-128)
+```
 
 ## X.X - Create the producer with Spring Cloud Stream
 
