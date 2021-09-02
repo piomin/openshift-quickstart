@@ -1,0 +1,20 @@
+spring.application.name: consumer-streams
+
+spring.kafka.bootstrap-servers: pminkows-k-c-nofnjc--vptnt-ehrg.bf2.kafka.rhcloud.com:443
+
+spring.kafka.consumer.key.deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+spring.cloud.stream.bindings.eventConsumer-in-0.destination: streams.pminkows.dev
+spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned: true
+#spring.cloud.stream.bindings.eventConsumer-in-0.consumer.useNativeDecoding: true
+spring.cloud.stream.bindings.eventConsumer-in-0.group: streams
+spring.cloud.stream.kafka.streams.bindings.eventConsumer-in-0.consumer.materializedAs: incoming-stream
+#spring.cloud.stream.kafka.bindings.eventConsumer-in-0.consumer.configuration.key.deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+#spring.cloud.stream.kafka.bindings.default.consumer.configuration.key.deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+#spring.cloud.stream.kafka.streams.binder.configuration.default.key.serde: org.apache.kafka.common.serialization.Serdes$IntegerSerde
+#spring.cloud.stream.kafka.streams.bindings.eventConsumer-in-0.consumer.keySerde: org.apache.kafka.common.serialization.Serdes$IntegerSerde
+#spring.cloud.stream.kafka.streams.bindings.process-in-0.consumer.keySerde=CustomKeySerde
+
+spring.cloud.stream.kafka.streams.binder.configuration.key.deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+spring.cloud.stream.kafka.streams.binder.configuration.security.protocol: SASL_SSL
+spring.cloud.stream.kafka.streams.binder.configuration.sasl.mechanism: PLAIN
+spring.cloud.stream.kafka.streams.binder.configuration.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="srvc-acct-d3c8bc9b-90f6-4460-a5cf-6da91956cfa3" password="b0f98f8a-1450-459c-bfca-26e07a4d1588";

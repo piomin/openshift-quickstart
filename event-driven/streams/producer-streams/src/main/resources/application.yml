@@ -1,0 +1,22 @@
+spring.application.name: producer-streams
+
+spring.kafka.bootstrap-servers: pminkows-k-c-nofnjc--vptnt-ehrg.bf2.kafka.rhcloud.com:443
+
+spring.cloud.stream.bindings.orderSupplier-out-0.destination: streams.pminkows.dev
+spring.cloud.stream.bindings.orderSupplier-out-0.producer.partitionKeyExpression: headers['kafka_messageKey']
+spring.cloud.stream.bindings.orderSupplier-out-0.producer.partitionCount: 5
+spring.cloud.stream.kafka.bindings.orderSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.IntegerSerializer
+
+spring.cloud.stream.bindings.customerSupplier-out-0.destination: streams.pminkows.dev-v2
+spring.cloud.stream.bindings.customerSupplier-out-0.producer.partitionKeyExpression: headers['kafka_messageKey']
+spring.cloud.stream.bindings.customerSupplier-out-0.producer.partitionCount: 5
+
+spring.cloud.stream.kafka.binder.configuration.security.protocol: SASL_SSL
+spring.cloud.stream.kafka.binder.configuration.sasl.mechanism: PLAIN
+spring.cloud.stream.kafka.binder.jaas.loginModule: org.apache.kafka.common.security.plain.PlainLoginModule
+spring.cloud.stream.kafka.binder.jaas.options.username: srvc-acct-d3c8bc9b-90f6-4460-a5cf-6da91956cfa3
+spring.cloud.stream.kafka.binder.jaas.options.password: b0f98f8a-1450-459c-bfca-26e07a4d1588
+
+spring.output.ansi.enabled: ALWAYS
+
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
