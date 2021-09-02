@@ -26,12 +26,12 @@ public class OrderController {
     @GetMapping
     public List<Order> getOrders() {
         List<Order> orders = new ArrayList<>();
-        ReadOnlyKeyValueStore<String, String> keyValueStore =
+        ReadOnlyKeyValueStore<Integer, String> keyValueStore =
                 queryService.getQueryableStore("incoming-stream", QueryableStoreTypes.keyValueStore());
-        KeyValueIterator<String, String> it = keyValueStore.all();
+        KeyValueIterator<Integer, String> it = keyValueStore.all();
         while (it.hasNext()) {
-            KeyValue<String, String> kv = it.next();
-            orders.add(new Order(kv.key, kv.value));
+            KeyValue<Integer, String> kv = it.next();
+            orders.add(new Order(kv.key, kv.value, null));
         }
         return orders;
     }
