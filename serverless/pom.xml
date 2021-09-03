@@ -2,20 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>openshift-quickstart</artifactId>
+        <groupId>pl.redhat.samples</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>pl.redhat.samples</groupId>
-    <artifactId>openshift-quickstart</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>serverless</artifactId>
     <packaging>pom</packaging>
-
     <modules>
-        <module>basic-with-db</module>
-        <module>mesh-with-db</module>
-        <module>micro-springboot</module>
-        <module>micro-view</module>
-        <module>event-driven</module>
-        <module>serverless</module>
+        <module>order-saga</module>
+        <module>payment-saga</module>
     </modules>
 
 </project>
