@@ -7,6 +7,16 @@ public class CustomerOrder {
     private String customerName;
     private String status;
 
+    public CustomerOrder() {
+    }
+
+    public CustomerOrder(Integer id, Integer customerId, String customerName, String status) {
+        this.id = id;
+        this.customerId = customerId;
+        this.customerName = customerName;
+        this.status = status;
+    }
+
     public Integer getId() {
         return id;
     }

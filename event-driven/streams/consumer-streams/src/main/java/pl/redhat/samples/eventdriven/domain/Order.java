@@ -37,4 +37,13 @@ public class Order {
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
     }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", status='" + status + '\'' +
+                ", customerId=" + customerId +
+                '}';
+    }
 }

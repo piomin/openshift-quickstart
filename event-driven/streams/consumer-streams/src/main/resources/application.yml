@@ -14,8 +14,22 @@ spring.cloud.stream.bindings.eventStream-in-0.consumer.partitioned: true
 spring.cloud.stream.bindings.eventStream-in-0.group: streams-02
 spring.cloud.stream.kafka.streams.binder.functions.eventStream.applicationId: streams-02
 
-spring.cloud.function.definition: eventConsumer;eventStream
+spring.cloud.stream.bindings.process-in-0.destination: streams.pminkows.test
+spring.cloud.stream.bindings.process-in-0.consumer.partitioned: true
+spring.cloud.stream.bindings.process-in-0.group: streams-03
+spring.cloud.stream.bindings.process-in-1.destination: streams.pminkows.test2
+spring.cloud.stream.bindings.process-in-1.consumer.partitioned: true
+spring.cloud.stream.bindings.process-in-1.group: streams-03
+spring.cloud.stream.bindings.process-out-0.destination: streams.pminkows.test3
+spring.cloud.stream.kafka.streams.binder.functions.process.applicationId: streams-03
+
+spring.cloud.function.definition: eventConsumer;eventStream;process
 
 spring.cloud.stream.kafka.streams.binder.configuration.security.protocol: SASL_SSL
 spring.cloud.stream.kafka.streams.binder.configuration.sasl.mechanism: PLAIN
 spring.cloud.stream.kafka.streams.binder.configuration.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="srvc-acct-d3c8bc9b-90f6-4460-a5cf-6da91956cfa3" password="b0f98f8a-1450-459c-bfca-26e07a4d1588";
+
+spring.output.ansi.enabled: ALWAYS
+
+logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+

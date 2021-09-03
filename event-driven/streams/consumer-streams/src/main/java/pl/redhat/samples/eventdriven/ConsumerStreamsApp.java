@@ -7,8 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import pl.redhat.samples.eventdriven.domain.Customer;
+import pl.redhat.samples.eventdriven.domain.CustomerOrder;
 import pl.redhat.samples.eventdriven.domain.Order;
 
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 @SpringBootApplication
@@ -30,9 +33,11 @@ public class ConsumerStreamsApp {
         return input -> input.foreach((key, value) -> LOG.info("Stream: key={}, val={}", key, value));
     }
 
-//    @Bean
-//    public BiFunction<KTable<Integer, String>, KTable<Integer, String>, KTable<Integer, CustomerOrder>> process() {
-//        return (tableOrders, tableCustomers) -> (tableOrders.leftJoin(tableCustomers, (orderId, order) -> order.toUpperCase()));
-//    }
+    @Bean
+    public BiFunction<KTable<Integer, Order>, KTable<Integer, Customer>, KTable<Integer, CustomerOrder>> process() {
+        return (tableOrders, tableCustomers) -> tableOrders
+                .leftJoin(tableCustomers, Order::getCustomerId,
+                        (order, customer) -> new CustomerOrder(order.getId(), customer.getId(), customer.getName(), order.getStatus()));
+    }
 
 }
