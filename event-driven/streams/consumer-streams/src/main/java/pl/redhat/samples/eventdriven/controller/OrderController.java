@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
 
-    InteractiveQueryService queryService;
+    private InteractiveQueryService queryService;
 
     public OrderController(InteractiveQueryService queryService) {
         this.queryService = queryService;
