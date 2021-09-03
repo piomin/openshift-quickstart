@@ -1504,3 +1504,180 @@ oc logs -f -l app.kubernetes.io/instance=consumer
 ```
 Do some compliant changes like adding a new field into `callmeevent.avro` without removing anything. Replay the procedure as before. \
 Then go to the Apicurio Schema UI once again. Find your schema. Go to the details. See a new version.
+
+## X.X - Streams and Tables
+
+Go to the `streams` directory:
+```shell
+cd event-driven/streams
+```
+There are two applications: `producer-streams` and `consumer-streams`. First go to the `producer-streams` module. \
+Add a single dependency to Spring Cloud Stream Kafka binder:
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-stream-kafka</artifactId>
+    </dependency>
+</dependencies>
+```
+The message objects are available inside `pl.redhat.samples.eventdriven.streams.producer.message` package. These are `Order` and `Customer`. \
+Go the application main class. Add a sample list of objects to send into the target topic, e.g.:
+```java
+LinkedList<Order> orders = new LinkedList<>(List.of(
+        new Order(1, "NEW", 3),
+        new Order(2, "NEW", 1),
+        new Order(3, "NEW", 2),
+        new Order(1, "PROCESSING", 3),
+        new Order(2, "FINISHED", 1)
+));
+```
+Then add the `Supplier` bean for sending orders. Use `MessageBuilder` and add Kafka key to the message using the header `kafka_messageKey`:
+```java
+@Bean
+public Supplier<Message<Order>> orderSupplier() {
+    return () -> orders.peek() != null ? MessageBuilder
+            .withPayload(orders.peek())
+            .setHeader(KafkaHeaders.MESSAGE_KEY, orders.poll().getId())
+            .build() : null;
+}
+```
+Go to the `application.yml` file and add the following properties:
+```yaml
+spring.cloud.stream.bindings.orderSupplier-out-0.destination: <your-topic-name>
+spring.cloud.stream.bindings.orderSupplier-out-0.producer.partitionKeyExpression: headers['kafka_messageKey']
+spring.cloud.stream.bindings.orderSupplier-out-0.producer.partitionCount: 5
+spring.cloud.stream.kafka.bindings.orderSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.IntegerSerializer
+```
+Also replace Kafka connection settings with your data:
+```yaml
+spring.kafka.bootstrap-servers: <your-broker-url>
+spring.cloud.stream.kafka.binder.configuration.security.protocol: SASL_SSL
+spring.cloud.stream.kafka.binder.configuration.sasl.mechanism: PLAIN
+spring.cloud.stream.kafka.binder.jaas.loginModule: org.apache.kafka.common.security.plain.PlainLoginModule
+spring.cloud.stream.kafka.binder.jaas.options.username: <your-client-id>
+spring.cloud.stream.kafka.binder.jaas.options.password: <your-client-secret>
+```
+You can also add property for detailed logging:
+```yaml
+logging.level.org.springframework.cloud.stream: DEBUG
+```
+
+Switch to the `consumer-streams` module. Add dependency to the Spring Cloud Stream Kafka Streams binder:
+```xml
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-stream-binder-kafka-streams</artifactId>
+</dependency>
+```
+Message classes are available inside the `pl.redhat.samples.eventdriven.domain` package. \
+Go to the application main class. Add the following `Consumer` bean to the application:
+```java
+@Bean
+public Consumer<KStream<Integer, Order>> eventStream() {
+    return input -> input.foreach((key, value) -> LOG.info("Stream: key={}, val={}", key, value));
+}
+```
+In application.yml file add the properties for mapping destinations to the bindings:
+```yaml
+spring.cloud.stream.bindings.eventStream-in-0.destination: <your-topic-name>
+spring.cloud.stream.bindings.eventStream-in-0.consumer.partitioned: true
+spring.cloud.stream.bindings.eventStream-in-0.group: streams-02
+spring.cloud.stream.kafka.streams.binder.functions.eventStream.applicationId: streams-02
+```
+The same as before replace Kafka connection settings with your data. It is a little different then before:
+```yaml
+spring.kafka.bootstrap-servers: <your-broker-url>
+spring.cloud.stream.kafka.streams.binder.configuration.security.protocol: SASL_SSL
+spring.cloud.stream.kafka.streams.binder.configuration.sasl.mechanism: PLAIN
+spring.cloud.stream.kafka.streams.binder.configuration.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="<your-client-id>" password="<your-client-secret>";
+```
+
+After that run `consumer-streams` application, and then `producer-streams`. Observe logs on the consumer side. \
+We can implement some operations on an input stream, like e.g. count events grouped by the message key. Replace a previous implementation with the following:
+```java
+@Bean
+public Consumer<KStream<Integer, Order>> eventStream() {
+    return input -> input.groupByKey()
+            .windowedBy(TimeWindows.of(Duration.ofMillis(10000)))
+            .count()
+            .toStream()
+            .foreach((key, value) -> LOG.info("Stream: key={}, val={}", key, value));
+}
+```
+Then, restart both consumer and producer applications.
+
+Add the `KTable` consumer exactly on the same stream as before. Do not remove `KStream` consumer:
+```java
+@Bean
+public Consumer<KTable<Integer, Order>> eventConsumer() {
+    return input -> input.toStream().foreach((key, value) -> LOG.info("Table: key={}, val={}", key, value));
+}
+```
+Add the following properties into `application.yml`:
+```yaml
+spring.cloud.stream.bindings.eventConsumer-in-0.destination: <your-topic-name>
+spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned: true
+spring.cloud.stream.bindings.eventConsumer-in-0.group: streams-01
+spring.cloud.stream.kafka.streams.binder.functions.eventConsumer.applicationId: streams-01
+spring.cloud.stream.kafka.streams.bindings.eventConsumer-in-0.consumer.materializedAs: orders-view
+```
+Input binding will be materialized as the KV `orders-view`. To fetch data from it, first add the following dependency in Maven `pom.xml`:
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+```
+In your @RestController you would have to inject `InteractiveQueryService` to query data stored in materialized view `orders-view`:
+```java
+@RestController
+@RequestMapping("/orders")
+public class OrderController {
+
+    private InteractiveQueryService queryService;
+
+    public OrderController(InteractiveQueryService queryService) {
+        this.queryService = queryService;
+    }
+
+    @GetMapping
+    public List<Order> getOrders() {
+        List<Order> orders = new ArrayList<>();
+        ReadOnlyKeyValueStore<Integer, Order> keyValueStore =
+                queryService.getQueryableStore("orders-view", QueryableStoreTypes.keyValueStore());
+        KeyValueIterator<Integer, Order> it = keyValueStore.all();
+        while (it.hasNext()) {
+            KeyValue<Integer, Order> kv = it.next();
+            orders.add(kv.value);
+        }
+        return orders;
+    }
+}
+```
+Then, restart `consumer-streams` application and call endpoint:
+```shell
+curl http://localhost:8080/orders
+```
+
+Back to `consumer-streams` main class. Add the following bean with two input `KTable` and a single output: 
+```java
+@Bean
+public BiFunction<KTable<Integer, Order>, KTable<Integer, Customer>, KTable<Integer, CustomerOrder>> process() {
+    return (tableOrders, tableCustomers) -> tableOrders
+            .leftJoin(tableCustomers, Order::getCustomerId,
+                    (order, customer) -> new CustomerOrder(order.getId(), customer.getId(), customer.getName(), order.getStatus()));
+}
+```
+Then add a configuration in `application.yml`:
+```yaml
+spring.cloud.stream.bindings.process-in-0.destination: <your-first-topic-name>
+spring.cloud.stream.bindings.process-in-0.consumer.partitioned: true
+spring.cloud.stream.bindings.process-in-0.group: streams-03
+spring.cloud.stream.bindings.process-in-1.destination: <your-second-topic-name>
+spring.cloud.stream.bindings.process-in-1.consumer.partitioned: true
+spring.cloud.stream.bindings.process-in-1.group: streams-03
+spring.cloud.stream.bindings.process-out-0.destination: <your-output-topic-name>
+spring.cloud.stream.kafka.streams.binder.functions.process.applicationId: streams-03
+```
+After that, add and configure a `Consumer` of the output topic. Materialize this topic with unique name, and provide endpoint for that.
