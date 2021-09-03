@@ -29,9 +29,9 @@ public class ProducerStreamsApp {
     ));
 
     @Bean
-    public Supplier<Message<String>> orderSupplier() {
+    public Supplier<Message<Order>> orderSupplier() {
         return () -> orders.peek() != null ? MessageBuilder
-                .withPayload(orders.peek().getStatus())
+                .withPayload(orders.peek())
                 .setHeader(KafkaHeaders.MESSAGE_KEY, orders.poll().getId())
                 .build() : null;
     }
@@ -43,9 +43,9 @@ public class ProducerStreamsApp {
     ));
 
     @Bean
-    public Supplier<Message<String>> customerSupplier() {
+    public Supplier<Message<Customer>> customerSupplier() {
         return () -> customers.peek() != null ? MessageBuilder
-                .withPayload(customers.peek().getName())
+                .withPayload(customers.peek())
                 .setHeader(KafkaHeaders.MESSAGE_KEY, customers.poll().getId())
                 .build() : null;
     }
