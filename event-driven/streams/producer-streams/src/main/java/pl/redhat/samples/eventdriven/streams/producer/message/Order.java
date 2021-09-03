@@ -17,6 +17,7 @@ public class Order {
     public Order(Integer id, String status, Integer customerId) {
         this.id = id;
         this.status = status;
+        this.customerId = customerId;
     }
 
     public Integer getId() {
