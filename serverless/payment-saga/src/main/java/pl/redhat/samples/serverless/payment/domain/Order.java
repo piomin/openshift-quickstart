@@ -2,9 +2,9 @@ package pl.redhat.samples.serverless.payment.domain;
 
 public class Order {
 
-    private Integer id;
-    private Integer customerId;
-    private Integer productId;
+    private Long id;
+    private Long customerId;
+    private Long productId;
     private int productCount;
     private int amount;
     private String status;
@@ -12,7 +12,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Integer id, Integer customerId, Integer productId, int productCount, int amount, String status) {
+    public Order(Long id, Long customerId, Long productId, int productCount, int amount, String status) {
         this.id = id;
         this.customerId = customerId;
         this.productId = productId;
@@ -21,27 +21,27 @@ public class Order {
         this.status = status;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getCustomerId() {
+    public Long getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Integer customerId) {
+    public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
 
-    public Integer getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
