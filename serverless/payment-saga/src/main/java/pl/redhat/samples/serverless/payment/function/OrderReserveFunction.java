@@ -20,17 +20,14 @@ public class OrderReserveFunction {
 
     @Inject
     AccountRepository repository;
-//    @Inject
-//    @Channel("reserve-events")
+    @Inject
+    @Channel("reserve-events")
     Emitter<Order> orderEmitter;
 
     @Funq
-    @CloudEventMapping
-    public void reserve(@Context CloudEvent<Order> event) {
-        log.info("Cloud Event");
-        log.infof("Received event: %s", event);
-        log.infof("Received order-> %s", event.data());
-//        doReserve(order);
+    public void reserve(Order order) {
+        log.infof("Received order: %s", order);
+        doReserve(order);
     }
 
     private void doReserve(Order order) {
