@@ -1,6 +1,8 @@
 package pl.redhat.samples.serverless.payment.function;
 
+import io.quarkus.funqy.Context;
 import io.quarkus.funqy.Funq;
+import io.quarkus.funqy.knative.events.CloudEvent;
 import io.quarkus.funqy.knative.events.CloudEventMapping;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -17,15 +19,18 @@ public class OrderReserveFunction {
     Logger log;
 
     @Inject
-    private AccountRepository repository;
-    @Inject
-    @Channel("reserve-events")
+    AccountRepository repository;
+//    @Inject
+//    @Channel("reserve-events")
     Emitter<Order> orderEmitter;
 
     @Funq
-    public void reserve(Order order) {
-        log.infof("Received order: %s", order);
-        doReserve(order);
+    @CloudEventMapping
+    public void reserve(@Context CloudEvent<Order> event) {
+        log.info("Cloud Event");
+        log.infof("Received event: %s", event);
+        log.infof("Received order-> %s", event.data());
+//        doReserve(order);
     }
 
     private void doReserve(Order order) {

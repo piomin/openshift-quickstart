@@ -124,15 +124,11 @@ curl http://localhost:8080/reserve -d "{\"customerId\":1,\"productId\":1,\"produ
 ## 5. Deploy Applications on OpenShift Serverless (Knative)
 
 These actions need to be performed for our both applications. \
-Add the following dependencies into Maven `pom.xml`:
+Add the following dependency into Maven `pom.xml`:
 ```xml
 <dependency>
     <groupId>io.quarkus</groupId>
     <artifactId>quarkus-openshift</artifactId>
-</dependency>
-<dependency>
-    <groupId>io.quarkus</groupId>
-    <artifactId>quarkus-container-image-s2i</artifactId>
 </dependency>
 ```
 Add the following properties into the `application.properties` file:
@@ -147,9 +143,14 @@ Just run the following Maven command to build and deploy the applications:
 ```shell
 mvn clean package
 ```
-After build is finished go to the `target/` directory. Open the file `openshift.yml`.
+After build is finished go to the `target/kubernetes/` directory. Open the file `openshift.yml` and `knative.yml`.
 
 ## 6. Configure Knative Eventing
+
+Create a secret on OpenShift for the Kafka SASL authentication:
+```shell
+oc create secret generic kafka-sasl-auth --from-literal=username=<your-username> --from-literal=password=<your-password>
+```
 
 In the `k8s` catalog define the file `kafka-source.yml` with the following content:
 ```yaml
@@ -169,7 +170,21 @@ spec:
       kind: Service
       name: payment-saga
     uri: /reserve
+  net:
+    sasl:
+      enable: true
+      user:
+        secretKeyRef:
+          name: kafka-sasl-auth
+          key: username
+      password:
+        secretKeyRef:
+          name: kafka-sasl-auth
+          key: password
 ```
+Alternatively, you can switch to the `Developer` perspective on OpenShift. Then choose `+Add` -> `Event Source` -> `Kafka Source`. \
+Click button `Create Event Source`. Fill the required fields. Click `Create`.
+
 Also add the file `kafka-binding.yaml` with the following content:
 ```yaml
 apiVersion: bindings.knative.dev/v1beta1

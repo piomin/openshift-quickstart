@@ -17,7 +17,7 @@ public class OrderPublisher {
     public Multi<Order> publishOrder() {
         return Multi.createFrom().ticks().every(Duration.ofSeconds(1))
                 .map(tick -> {
-                    int r = random.nextInt(1000);
+                    int r = random.nextInt(10000);
                     return new Order(r, r%10+1, r%10+1, 5, 100, "NEW");
                 });
     }

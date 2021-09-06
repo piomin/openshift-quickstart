@@ -14,3 +14,14 @@ spec:
       kind: Service
       name: payment-saga
     uri: /reserve
+  net:
+    sasl:
+      enable: true
+      user:
+        secretKeyRef:
+          name: kafka-sasl-auth
+          key: username
+      password:
+        secretKeyRef:
+          name: kafka-sasl-auth
+          key: password
