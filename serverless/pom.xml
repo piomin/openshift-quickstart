@@ -14,6 +14,7 @@
     <modules>
         <module>order-saga</module>
         <module>payment-saga</module>
+        <module>shipment-saga</module>
     </modules>
 
 </project>
