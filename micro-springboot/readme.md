@@ -233,9 +233,6 @@ Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` ->
 Type `insurance-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
 Then go to `Secrets` and choose `insurance-db` secret.
 
-Go to the `topology` view. Choose `Actions` -> `Edit deployment` -> `Environment`. \
-Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key.
-
 Add database connection settings:
 ```yaml
 spring:
