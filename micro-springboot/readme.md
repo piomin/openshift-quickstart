@@ -217,8 +217,8 @@ Go to `/swagger-ui.html` page. Then expand `GET /persons` -> `Try it Out` -> `Ex
 Then expand `GET /persons/{id}` -> `Try it Out`. Type 1 as `id` param. Then click `Execute`. You should get a single result. \
 Finally expand `POST /persons` -> `Try it Out`. Type your data. Then click `Execute`. \
 Also, let's see endpoint `/v3/api-docs` in your browser. Choose `Raw Data`. \
-Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics. \
-Let's see the exact metrics by calling endpoint `GET \actuator\metrics\http.server.requests?tag=uri:/persons`.
+Then call the endpoint `GET /actuator/metrics` using web browser. See HTTP traffic metrics. \
+Let's see the exact metrics by calling endpoint `GET /actuator/metrics/http.server.requests?tag=uri:/persons`.
 
 ## Step 3: Debugging with `odo` client
 We are going to deploy `insurance-service`. First, got to the `micro-springboot/insurance-service` directory.
