@@ -1,4 +1,4 @@
-# Workshop: Quarkus
+# Workshop: Introduction to Quarkus on OpenShift
 
 ## Prerequisites
 
