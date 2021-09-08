@@ -1,13 +1,13 @@
 spring.application.name: consumer-streams
 
-spring.kafka.bootstrap-servers: pminkows-k-c-nofnjc--vptnt-ehrg.bf2.kafka.rhcloud.com:443
+spring.kafka.bootstrap-servers: ${KAFKA_URL}
 
 spring.cloud.stream.bindings.eventConsumer-in-0.destination: streams.pminkows.test
 spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned: true
 spring.cloud.stream.bindings.eventConsumer-in-0.group: streams-01
 spring.cloud.stream.kafka.streams.binder.functions.eventConsumer.applicationId: streams-01
 
-spring.cloud.stream.kafka.streams.bindings.eventConsumer-in-0.consumer.materializedAs: incoming-stream
+spring.cloud.stream.kafka.streams.bindings.eventConsumer-in-0.consumer.materializedAs: orders-view
 
 spring.cloud.stream.bindings.eventStream-in-0.destination: streams.pminkows.test
 spring.cloud.stream.bindings.eventStream-in-0.consumer.partitioned: true
@@ -27,9 +27,10 @@ spring.cloud.function.definition: eventConsumer;eventStream;process
 
 spring.cloud.stream.kafka.streams.binder.configuration.security.protocol: SASL_SSL
 spring.cloud.stream.kafka.streams.binder.configuration.sasl.mechanism: PLAIN
-spring.cloud.stream.kafka.streams.binder.configuration.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="srvc-acct-d3c8bc9b-90f6-4460-a5cf-6da91956cfa3" password="b0f98f8a-1450-459c-bfca-26e07a4d1588";
+spring.cloud.stream.kafka.streams.binder.configuration.sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${KAFKA_USER}" password="${KAFKA_PASSWORD}";
 
 spring.output.ansi.enabled: ALWAYS
 
 logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
 
+server.port: 0
