@@ -1,23 +1,74 @@
 # Workshop: Quarkus
 
+## Prerequisites
+
+1. Install `oc` client
+```shell
+$ oc version
+Client Version: 4.6.12
+Server Version: 4.7.16
+Kubernetes Version: v1.20.0+2817867
+```
+
+2. Install `odo` client
+```shell
+$ odo version
+odo v2.2.1 (17a078b67)
+
+Server: https://api.qyt1tahi.eastus.aroapp.io:6443
+Kubernetes: v1.20.0+2817867
+```
+
+3. Install JDK11+
+```shell
+$ java --version
+java 15.0.2 2021-01-19
+Java(TM) SE Runtime Environment (build 15.0.2+7-27)
+Java HotSpot(TM) 64-Bit Server VM (build 15.0.2+7-27, mixed mode, sharing)
+```
+
+4. Install and configure Maven
+```shell
+$ mvn -version
+Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
+Maven home: /Users/pminkows/apache-maven-3.6.3
+Java version: 15.0.2, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk-15.0.2.jdk/Contents/Home
+Default locale: en_PL, platform encoding: UTF-8
+OS name: "mac os x", version: "10.15.7", arch: "x86_64", family: "mac"
+```
+
+5. Install `git` client
+```shell
+$ git version
+git version 2.24.3 (Apple Git-128)
+```
+
+6. Environment Variables
+
+CLUSTER_DOMAIN - the address of your OpenShift cluster \
+PROJECT - the name of your project (and namespace) on OpenShift \
+USER - your username to the OpenShift cluster \
+PASSWORD - your password to the OpenShift cluster
+
 ## Step 1. Local Development
 
 Clone repository from GitHub:
 ```shell
-$ git clone https://github.com/piomin/openshift-quickstart.git
-$ cd openshift-quickstart/basic-with-db
+git clone https://github.com/piomin/openshift-quickstart.git
+git checkout workshops
+cd openshift-quickstart/basic-with-db
 ```
 
 Run your development IDE (Eclipse/IntelliJ). Import Maven project.
 
 There are two applications `person-app` and `insurance-app`. We will start with `person-app`:
 ```shell
-$ cd person-app
+cd person-app
 ```
 
 Build the application and start it in the dev mode:
 ```shell
-$ mvn quarkus:dev
+mvn quarkus:dev
 ```
 
 Does the application start successfully? \
@@ -40,7 +91,7 @@ Your application is available at `localhost:8080`. \
 In your web browser run open the following URL: `http://localhost:8080`, then click `/q/dev` context path. You will be redirected to the Quarkus Dev UI Console. \
 Let's call example endpoint:
 ```shell
-$ curl http://localhost:8080/persons
+curl http://localhost:8080/persons
 ```
 
 There is not tables created in H2 database. In `src/main/resources` create `db` directory. Then create the `changeLog.sql` file with the following content:
@@ -73,7 +124,7 @@ We will use the Liquibase tool for creating tables with test data. In order to u
 
 Let's call example endpoint once again:
 ```shell
-$ curl http://localhost:8080/persons
+curl http://localhost:8080/persons
 ```
 
 Then, we will finish the implementation of `PersonResource`:
@@ -121,8 +172,8 @@ public class PersonRepository implements PanacheRepository<Person> {
 
 Then call the following endpoints:
 ```shell
-$ curl http://localhost:8080/persons/name/<value-from-changelog>
-$ curl http://localhost:8080/persons/age-greater-than/30
+curl http://localhost:8080/persons/name/<value-from-changelog>
+curl http://localhost:8080/persons/age-greater-than/30
 ```
 
 ## Step 2. Local Testing
@@ -202,7 +253,7 @@ Kill the `mvn quarkus:dev` command.
 
 Navigate to the `insurance-app`:
 ```shell
-$ cd ../insurance-app
+cd ../insurance-app
 ```
 
 Add the dependency with the REST client:
@@ -291,7 +342,7 @@ Re-run the tests. All should be passed. Then you can kill the command `mvn quark
 
 First, login to the cluster using the `oc` client:
 ```shell
-$ oc login -u $USER -p $PASSWORD --server=https://api.ocp1.example.lab:6443
+oc login -u $USER -p $PASSWORD --server=https://api.ocp1.example.lab:6443
 ```
 
 Go to: https://console-openshift-console.apps.ocp1.example.lab. \
@@ -300,7 +351,7 @@ Do the same for `insurance-app`.
 
 Go to the `person-app` directory in the source code:
 ```shell
-$ cd ../person-app
+cd ../person-app
 ```
 
 Add the following dependency into Maven `pom.xml`:
@@ -342,23 +393,23 @@ Go to the OpenShift Web Console. Click `Builds`, choose `person-app` `BuildConfi
 Then switch to the `Logs` tab. \
 Then with `oc` client display a list of routes:
 ```shell
-$ oc get route
+oc get route
 ```
 Copy the path of your `person-app` route. Then call the endpoint e.g.:
 ```shell
-$ curl http://<your_route>/persons
+curl http://<your_route>/persons
 ```
 
 Then go back to the code. In your IDE open the file `target/kubernetes/openshift.yml`.
 
 Switch to the `insurance-app` directory:
 ```shell
-$ cd ../insurance-app
+cd ../insurance-app
 ```
 
 Execute the following `oc` command to display a list of Kubernetes Services:
 ```shell
-$ oc get svc
+oc get svc
 ```
 In the `application.properties` file add the following line:
 ```properties
@@ -366,12 +417,12 @@ pl.redhat.samples.quarkus.insurance.client.PersonService/mp-rest/url=http://pers
 ```
 Then deploy the app using Maven command:
 ```shell
-$ mvn clean package
+mvn clean package
 ```
 Once again display a list of routes. Copy the URL of the `insurance-app` route. Call the endpoints:
 ```shell
-$ curl http://<your_route>/insurances
-$ curl http://<your_route>/insurances/{id}/details
+curl http://<your_route>/insurances
+curl http://<your_route>/insurances/{id}/details
 ```
 
 ## Step 5: Additional Features
@@ -417,34 +468,33 @@ Do the same thing for the `insurance-app`. Move back to the `Topology` view. Add
 
 First, list all available components with `odo`.
 ```shell
-$ odo catalog list components
+odo catalog list components
 ```
 
 We choose S2I with Java.
 ```shell
-$ odo create java-quarkus person-odo
+odo create java-quarkus person-odo
 ```
 
 Set environment variables for `odo`.
 ```shell
-$ odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
 ```
 
 Finally, deploy the application to OpenShift.
 ```shell
-$ odo push
+odo push
 ```
 
 Go to the console -> `Topology`. Verify if `person-odo-app` deployment exists. \
 Go to `Project` -> `Routes`. Call the route with port `8080`. Call the following endpoint.
 ```shell
-$ curl http://http-8080-person-odo-app-<your_project>.apps.ocp1.example.lab/persons 
-[]
+curl http://http-8080-person-odo-app-<your_project>.apps.ocp1.example.lab/persons 
 ```
 
 Then, start development. Run the following command in the `person-app` directory.
 ```shell
-$ odo watch
+odo watch
 ```
 
 Finally, you can add a new endpoint and call it via e.g. swagger-ui. Also call your route and verify the result.
