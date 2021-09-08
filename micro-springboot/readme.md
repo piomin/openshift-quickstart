@@ -1,4 +1,4 @@
-# Workshop: Microservices on OpenShift with Spring Boot
+# Workshop: Development on OpenShift with Spring Boot
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ Kubernetes: v1.20.0+2817867
 
 3. Install JDK11+
 ```shell
-$ java --version
+$ java -version
 java 15.0.2 2021-01-19
 Java(TM) SE Runtime Environment (build 15.0.2+7-27)
 Java HotSpot(TM) 64-Bit Server VM (build 15.0.2+7-27, mixed mode, sharing)
@@ -217,8 +217,8 @@ Go to `/swagger-ui.html` page. Then expand `GET /persons` -> `Try it Out` -> `Ex
 Then expand `GET /persons/{id}` -> `Try it Out`. Type 1 as `id` param. Then click `Execute`. You should get a single result. \
 Finally expand `POST /persons` -> `Try it Out`. Type your data. Then click `Execute`. \
 Also, let's see endpoint `/v3/api-docs` in your browser. Choose `Raw Data`. \
-Then call the endpoint `GET \actuator\metrics` using web browser. See HTTP traffic metrics. \
-Let's see the exact metrics by calling endpoint `GET \actuator\metrics\http.server.requests?tag=uri:/persons`.
+Then call the endpoint `GET /actuator/metrics` using web browser. See HTTP traffic metrics. \
+Let's see the exact metrics by calling endpoint `GET /actuator/metrics/http.server.requests?tag=uri:/persons`.
 
 ## Step 3: Debugging with `odo` client
 We are going to deploy `insurance-service`. First, got to the `micro-springboot/insurance-service` directory.
@@ -232,9 +232,6 @@ odo create java --s2i insurance
 Then go to the OpenShift console. Choose `Add+` -> `Database` -> `PostgreSQL` -> `Instantiate Template`. \
 Type `insurance-db` as `Database Service Name`, leave default values in the rest of fields. Click `Create` button. \
 Then go to `Secrets` and choose `insurance-db` secret.
-
-Go to the `topology` view. Choose `Actions` -> `Edit deployment` -> `Environment`. \
-Choose `Add from ConfigMap or Secret`. Add three environment variables from code visible below. Choose `insurance-db` secret as a resource, and a right key.
 
 Add database connection settings:
 ```yaml
