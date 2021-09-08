@@ -43,7 +43,7 @@ public class InsuranceResource {
     @GET
     @Path("/{id}/details")
     public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
-        return null;
+        return null; // TODO - finish implementation
     }
 
 }

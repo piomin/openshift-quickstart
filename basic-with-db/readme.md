@@ -192,6 +192,7 @@ Let's kill the `mvn quarkus:dev` command for a moment. Add the following depende
 </dependency>
 ```
 
+Add `test/java` in the `src` directory. \
 Then create a package `pl.redhat.samples.quarkus.person` and the class `PersonResourceTests` inside that package:
 ```java
 @QuarkusTest
@@ -290,18 +291,13 @@ Replace it with the following implementation:
 @Path("/{id}/details")
 public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
     Insurance insurance = insuranceRepository.findById(id);
-    InsuranceDetails insuranceDetails = new InsuranceDetails();
-    insuranceDetails.personId = insurance.personId;
-    insuranceDetails.amount = insurance.amount;
-    insuranceDetails.type = insurance.type;
-    insuranceDetails.expiry = insurance.expiry;
-    insuranceDetails.setPerson(personService.getPersonById(insurance.personId));
-    return insuranceDetails;
+    Person person = personService.getPersonById(insurance.personId);
+    return new InsuranceDetails(person, insurance);
 }
 ```
 
 Run application in the dev mode. Then run tests using command line. Not all the tests were passed. \
-Go to the `pl/redhat/samples/quarkus/insurance/InsuranceResourceTests.java`. Find `newInsuranceAdd()`. This test fails. \
+Go to the `pl/redhat/samples/quarkus/insurance/InsuranceResourceTests.java`. Find `newInsuranceAdd()`. That test fails.
 
 Go to the Maven `pom.xml` and add the following dependency:
 ```xml

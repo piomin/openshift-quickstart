@@ -9,7 +9,7 @@ import java.util.Date;
 public class Insurance extends PanacheEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    public Long id;
     public Long personId;
     @Enumerated(EnumType.STRING)
     public InsuranceType type;
