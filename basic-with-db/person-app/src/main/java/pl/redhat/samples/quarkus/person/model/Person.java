@@ -8,7 +8,7 @@ import javax.persistence.*;
 public class Person extends PanacheEntityBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    public Long id;
     public String name;
     public int age;
     @Enumerated(EnumType.STRING)
