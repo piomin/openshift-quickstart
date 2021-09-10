@@ -96,7 +96,7 @@ Let's call example endpoint:
 curl http://localhost:8080/persons
 ```
 
-There is not tables created in H2 database. In `src/main/resources` create `db` directory. Then create the `changeLog.sql` file with the following content:
+There are no tables created in H2 database. In `src/main/resources` create `db` directory. Then create the `changeLog.sql` file with the following content:
 ```text
 --liquibase formatted sql
 
