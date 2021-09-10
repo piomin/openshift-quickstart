@@ -72,7 +72,9 @@ mvn quarkus:dev
 ```
 
 Does the application start successfully? \
-Let's fix some problems. Add the configuration properties for database connection only for a development mode:
+First, you can import a project source code into your IDE, e.g. Eclipse. \
+Choose `File` -> `Import` -> `Existing Maven Projects`. Click `Next`. Open the `openshift-quickstart` directory. Click `Deselect all`. Inside the `basic-with-db` module select `person-app` and `insurance-app` modules. CLick `Finish`. \
+Let's fix some problems. Add the configuration properties for database connection only for a development mode in the `src/main/resources/application.properties` file:
 ```properties
 %dev.quarkus.datasource.db-kind=h2
 %dev.quarkus.datasource.username=sa
