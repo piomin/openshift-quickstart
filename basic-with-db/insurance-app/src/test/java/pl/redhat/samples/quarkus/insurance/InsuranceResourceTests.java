@@ -4,6 +4,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import pl.redhat.samples.quarkus.insurance.model.Insurance;
+import pl.redhat.samples.quarkus.insurance.model.InsuranceDetails;
 import pl.redhat.samples.quarkus.insurance.model.InsuranceType;
 
 import java.time.LocalDate;
@@ -63,15 +64,15 @@ public class InsuranceResourceTests {
     @Test
     void getInsuranceDetailsById() {
 
-        Insurance insurance = given()
+        InsuranceDetails insuranceDetails = given()
                 .pathParam("id", 1)
                 .when().get("/insurances/{id}/details")
                 .then()
                 .statusCode(200)
                 .extract()
-                .body().as(Insurance.class);
-        assertNotNull(insurance);
-        assertEquals(1L, insurance.id);
+                .body().as(InsuranceDetails.class);
+        assertNotNull(insuranceDetails);
+        assertEquals(1L, insuranceDetails.getInsurance().id);
     }
 
 }
