@@ -266,7 +266,7 @@ Add the dependency with the REST client:
     <artifactId>quarkus-rest-client</artifactId>
 </dependency>
 ```
-Create a declarative client responsible for calling the `GET /persons/{id}` endpoint:
+Create a declarative client responsible for calling the `GET /persons/{id}` endpoint. Change the current implementation in the `pl.redhat.samples.quarkus.insurance.client.PersonService` interface:
 ```java
 @Path("/persons")
 @ApplicationScoped
