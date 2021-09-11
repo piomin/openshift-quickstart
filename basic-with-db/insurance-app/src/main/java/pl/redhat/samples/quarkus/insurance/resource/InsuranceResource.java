@@ -2,6 +2,7 @@ package pl.redhat.samples.quarkus.insurance.resource;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import pl.redhat.samples.quarkus.insurance.client.PersonService;
+import pl.redhat.samples.quarkus.insurance.client.message.Person;
 import pl.redhat.samples.quarkus.insurance.model.Insurance;
 import pl.redhat.samples.quarkus.insurance.model.InsuranceDetails;
 import pl.redhat.samples.quarkus.insurance.repository.InsuranceRepository;
@@ -44,13 +45,8 @@ public class InsuranceResource {
     @Path("/{id}/details")
     public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
         Insurance insurance = insuranceRepository.findById(id);
-        InsuranceDetails insuranceDetails = new InsuranceDetails();
-        insuranceDetails.personId = insurance.personId;
-        insuranceDetails.amount = insurance.amount;
-        insuranceDetails.type = insurance.type;
-        insuranceDetails.expiry = insurance.expiry;
-        insuranceDetails.setPerson(personService.getPersonById(insurance.personId));
-        return insuranceDetails;
+        Person person = personService.getPersonById(insurance.personId);
+        return new InsuranceDetails(person, insurance);
     }
 
 }

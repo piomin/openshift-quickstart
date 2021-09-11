@@ -10,6 +10,7 @@ import pl.redhat.samples.quarkus.insurance.client.PersonService;
 import pl.redhat.samples.quarkus.insurance.client.message.Gender;
 import pl.redhat.samples.quarkus.insurance.client.message.Person;
 import pl.redhat.samples.quarkus.insurance.model.Insurance;
+import pl.redhat.samples.quarkus.insurance.model.InsuranceDetails;
 import pl.redhat.samples.quarkus.insurance.model.InsuranceType;
 
 import java.sql.Date;
@@ -73,7 +74,7 @@ public class InsuranceResourceTests {
     @Test
     void getInsuranceDetailsById() {
         Mockito.when(personService.getPersonById(Mockito.anyLong())).thenAnswer(invocationOnMock -> {
-            Long id = invocationOnMock.getArgument(1, Long.class);
+            Long id = invocationOnMock.getArgument(0, Long.class);
             Person person = new Person();
             person.setId(id);
             person.setAge(33);
@@ -82,15 +83,15 @@ public class InsuranceResourceTests {
             return person;
         });
 
-        Insurance insurance = given()
+        InsuranceDetails insuranceDetails = given()
                 .pathParam("id", 1)
                 .when().get("/insurances/{id}/details")
                 .then()
                 .statusCode(200)
                 .extract()
-                .body().as(Insurance.class);
-        assertNotNull(insurance);
-        assertEquals(1L, insurance.id);
+                .body().as(InsuranceDetails.class);
+        assertNotNull(insuranceDetails);
+        assertEquals(1L, insuranceDetails.getInsurance().id);
     }
 
 }
