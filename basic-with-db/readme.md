@@ -325,7 +325,7 @@ public class InsuranceResourceTests  {
 Go to the `getInsuranceDetailsById()` method inside JUnit test class. Mock communication with `person-app` by adding the following Mockito rule at the beginning of the method:
 ```java
 Mockito.when(personService.getPersonById(Mockito.anyLong())).thenAnswer(invocationOnMock -> {
-    Long id = invocationOnMock.getArgument(1, Long.class);
+    Long id = invocationOnMock.getArgument(0, Long.class);
     Person person = new Person();
     person.setId(id);
     person.setAge(33);
