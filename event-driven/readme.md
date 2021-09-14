@@ -3,9 +3,39 @@ In this workshop we will develop a simple event-driven architecture using [Sprin
 We will use Kafka deployed on AWS ([Red Hat Hybrid Cloud Console](https://cloud.redhat.com/)) and then as deployment on OpenShift (AMQ Streams). \
 Before starting see the list of requirements.
 
-## X.X - Prerequisites
+# Table of Contents
+1. [Prerequisites](#1-prerequisites)\
+   1.1. [JDK](#11-jdk11)\
+   1.2. [Maven](#12-maven-35)\
+   1.3. [CLI `oc` client](#13-cli-oc-client-40)\
+   1.4. [CLI `odo` client](#14-cli-odo-client-20)\
+   1.5. [CLI `kafkacat`](#15-cli-kafkacat)\
+   1.6. [CLI `kafka` client](#16-kafka-cli-270)\
+   1.7. [IDE for Java development](#17-ide-for-java-development)\
+   1.8. [Git client](#18-git-client)
+   1.9. [Account on `redhat.developers.com`](#19-account-at-httpsdevelopersredhatcom)
+2. [Create producer with Spring Cloud Stream](#2-create-the-producer-with-spring-cloud-stream)\
+3. [Consume messages using `kafkacat` CLI](#3-consume-messages-using-kafkacat-cli)\
+4. [Create `consumer` with Spring Cloud Stream](#4-create-the-consumer-with-spring-cloud-stream)\
+5. [Shared Kafka cluster](#5-shared-kafka-cluster)\
+6. [Enable metrics](#6-enable-metrics)\
+7. [Enable partitioning and consumer groups](#7-enable-partitioning-and-consumer-groups)\
+8. [Kafka on OpenShift](#8-kafka-on-openshift)\
+9. [Implement event-driven architrecture](#9-implement-event-driven-architecture)\
+   9.1. [Event gateway](#91-event-gateway)
+   9.2. [Shipment service](#92-shipment-service)
+   9.3. [Payment service](#93-payment-service)
+   9.4. [Order service](#94-order-service)
+   9.5. [SAGA pattern](#95-saga-pattern)
+   9.6. [CQRS pattern](#96-cqrs-pattern)
+   9.6. [DLQ pattern](#97-dlq-dead-letter-queue-pattern)
+   9.6. [Rollback SAGA and event routing](#98-rollback-saga-and-event-routing)
+10. [Schema versioning](#10-schema-versioning)
+11. [Streams and Tables](#11-streams-and-tables)
 
-### X.X.X - JDK11+
+## 1. Prerequisites
+
+### 1.1. JDK11+
 
 ```shell
 $ java --version
@@ -14,7 +44,7 @@ Java(TM) SE Runtime Environment (build 16.0.2+7-67)
 Java HotSpot(TM) 64-Bit Server VM (build 16.0.2+7-67, mixed mode, sharing)
 ```
 
-### X.X.X - Maven 3.5+
+### 1.2. Maven 3.5+
 
 ```shell
 $ mvn -version
@@ -24,21 +54,21 @@ Java version: 16.0.2, vendor: Oracle Corporation, runtime: /Library/Java/JavaVir
 Default locale: en_PL, platform encoding: UTF-8
 ```
 
-### X.X.X - `oc` client 4.0+
+### 1.3. CLI `oc` client 4.0+
 
 ```shell
 $ oc version
 Client Version: 4.6.12
 ```
 
-### X.X.X - `odo` client 2.0+
+### 1.4. CLI `odo` client 2.0+
 
 Tool for deploying app directly from the current version of the code. If you are familiar with other tools then `odo` you may use it instead.
 ```shell
 $ odo version  
 odo v2.2.1 (17a078b67)
 ```
-### X.X.X - `kafkacat`
+### 1.5. CLI `kafkacat`
 
 ```shell
 $ kafkacat -V 
@@ -48,27 +78,27 @@ Copyright (c) 2014-2019, Magnus Edenhill
 Version 1.6.0 (JSON, Avro, Transactions, librdkafka 1.7.0 builtin.features=gzip,snappy,ssl,sasl,regex,lz4,sasl_gssapi,sasl_plain,sasl_scram,plugins,zstd,sasl_oauthbearer)
 ```
 
-### X.X.X - Kafka CLI 2.7.0+
+### 1.6. Kafka CLI 2.7.0+
 
 ```shell
 ./kafka-topics.sh --version
 2.8.0 (Commit:ebb1d6e21cc92130)
 ```
 
-### X.X.X - IDE for Java Development
+### 1.7. IDE for Java Development
 The presenter will use IntelliJ IDEA.
 
-### X.X.X - Git client
+### 1.8. Git client
 
 ```shell
 git --version
 git version 2.24.3 (Apple Git-128)
 ```
 
-### X.X.X - Account at https://developers.redhat.com/
+### 1.9. Account at https://developers.redhat.com/
 In order to create own instance of Apache Kafka there.
 
-## X.X - Create the producer with Spring Cloud Stream
+## 2. Create the producer with Spring Cloud Stream
 
 Add the following dependency to Maven `pom.xml`:
 ```xml
@@ -157,7 +187,7 @@ In order to obtain connection settings go to your Kafka instance and choose `Vie
 Then copy client id and client secret. You can also check an external address of your Kafka instance in the `Bootstrap server` field. \
 Finally, start your application.
 
-## X.X Consume messages using Kafkacat CLI
+## 3. Consume messages using Kafkacat CLI
 
 Export the following environment variables:
 ```shell
@@ -172,7 +202,7 @@ kafkacat -t test-topic -b "$BOOTSTRAP_SERVER" -X security.protocol=SASL_SSL -X s
 ```
 Then, kill the command with `CTRL+C`.
 
-## X.X - Create the consumer with Spring Cloud Stream
+## 4. Create the consumer with Spring Cloud Stream
 
 Add the following dependency to Maven `pom.xml`:
 ```xml
@@ -259,7 +289,7 @@ spring.cloud.stream.kafka.binder:
 ```
 Finally, start your application and watch on the logs.
 
-## X.X - Shared Kafka cluster
+## 5. Shared Kafka cluster
 
 Change the address of Kafka inside the `application.yml` file into the shared cluster:
 ```yaml
@@ -284,7 +314,7 @@ Restart both applications. \
 You can also consider overriding default value of the property `spring.cloud.stream.kafka.binder.autoCreateTopics` to `false`. \
 To force naming conventions you can configure the property `auto.create.topics.enable` on the broker.
 
-## X.X - Enable metrics
+## 6. Enable metrics
 
 Change the parameters related with frequency and number of messages sent to the broker: 
 ```yaml
@@ -468,7 +498,7 @@ Add the following dependencies to the Maven `pom.xml`. Our goal is to enable met
 ```
 Verify the results: `http://localhost:<server.port>/actuator/prometheus`.
 
-## X.X - Enable partitioning and consumer groups
+## 7. Enable partitioning and consumer groups
 
 We are going to run several instances of the `consumer` application. First, change the port number to the dynamically generated or disable a web support for the app:
 ```yaml
@@ -604,7 +634,7 @@ Clear the logs of the first instance. \
 Run another instance of the `consumer` application. Observe the logs. How many events did it receive? \
 Now, switch back to the logs of the first instance. Did it receive any events once again?
 
-## X.X - Kafka on OpenShift
+## 8. Kafka on OpenShift
 
 Set the following environment variables:
 ```shell
@@ -755,12 +785,12 @@ oc logs -f -l app.kubernetes.io/instance=consumer
 ```
 Scale out the number of `consumer` instances. Verify the logs of all the instances. 
 
-## X.X - Implement event-driven architecture
+## 9. Implement event-driven architecture
 
 There are several microservices sending and listening for events, and a gateway exposing REST API for an external client. \
 Let's start with the implementation of an event gateway.
 
-### X.X.X - Event Gateway
+### 9.1. Event Gateway
 
 Go to the event-gateway directory:
 ```shell
@@ -798,7 +828,7 @@ spring.cloud.stream.bindings.orders-out-0.destination: <your-topic-name>
 ```
 Deploy the application on OpenShift using `odo`.
 
-### X.X.X - Shipment Service
+### 9.2. Shipment Service
 
 Go to the `shipment-service` directory:
 ```shell
@@ -849,7 +879,7 @@ Go to the `application.yml`. Configure a destination for the input and output.
 spring.cloud.stream.bindings.orders-in-0.destination: <your-in-topic-name>
 spring.cloud.stream.bindings.orders-out-0.destination: <your-out-topic-name>
 ```
-### X.X.X - Payment Service
+### 9.3. Payment Service
 
 Go to the `payment-service` directory:
 ```shell
@@ -875,7 +905,7 @@ public Function<OrderCommand, OrderEvent> orders() {
 ```
 Go to the `application.yml`. Configure a destination for the input and output. 
 
-### X.X.X - Order Service
+### 9.4. Order Service
 
 Go to the `order-service` directory:
 ```shell
@@ -898,7 +928,7 @@ public Consumer<OrderCommand> orders() {
 }
 ```
 
-### X.X.X - SAGA Pattern
+### 9.5. SAGA Pattern
 
 In `order-service` add the following a new command `pl.redhat.samples.eventdriven.order.message.ConfirmCommand`:
 ```java
@@ -992,7 +1022,7 @@ Send the test order to the `event-gateway` HTTP endpoint:
 curl http://<route-address>/orders -d "{\"customerId\":1,\"productId\":1,\"productCount\":3,\"amount\":1000}"
 ```
 
-### X.X.X - CQRS Pattern
+### 9.6. CQRS Pattern
 
 Go to the `event-driven` directory. Create `OrderQuery` in the `pl.redhat.samples.eventdriven.gateway.message` package with the following fields:
 ```java
@@ -1165,7 +1195,7 @@ Now, obtain the result using a dedicated endpoint and uuid received in the previ
 curl http://<route-address>/orders/results/{queryId}
 ```
 
-### X.X.X - DLQ (Dead Letter Queue) Pattern
+### 9.7. DLQ (Dead Letter Queue) Pattern
 
 Go to the `shipment-service`. Add the following Exception class `pl.redhat.samples.eventdriven.shipment.service.NotEnoughProductsException`:
 ```java
@@ -1277,7 +1307,7 @@ Annotate the main class with `@EnableScheduling`. If you didn't run `odo watch`,
 odo push
 ```
 
-### X.X.X - Rollback (SAGA) and event routing
+### 9.8. Rollback (SAGA) and event routing
 
 Switch to the `payment-service`. \
 Implement negative scenario in `pl.redhat.samples.eventdriven.payment.service.PaymentService`. Just send back `OrderEvent{status=FAILED}` if there is no sufficient funds on the account. \
@@ -1348,7 +1378,7 @@ spring.cloud.function.routing-expression=(payload.status=='FAILED') ? 'failedEve
 
 Copy `RollbackCommand` class to the `shipment-service` and `payment-service`. Then do the necessary changes to handle rollback there.
 
-## X.X - Schema versioning
+## 10. Schema versioning
 
 List the services in the kafka namespace:
 ```shell
@@ -1505,7 +1535,7 @@ oc logs -f -l app.kubernetes.io/instance=consumer
 Do some compliant changes like adding a new field into `callmeevent.avro` without removing anything. Replay the procedure as before. \
 Then go to the Apicurio Schema UI once again. Find your schema. Go to the details. See a new version.
 
-## X.X - Streams and Tables
+## 11. Streams and Tables
 
 Go to the `streams` directory:
 ```shell
