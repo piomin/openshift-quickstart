@@ -13,15 +13,15 @@ Before starting see the list of requirements.
    1.6. [CLI `kafka` client](#16-kafka-cli-270)\
    1.7. [IDE for Java development](#17-ide-for-java-development)\
    1.8. [Git client](#18-git-client)\
-   1.9. [Account on `redhat.developers.com`](#19-account-at-httpsdevelopersredhatcom)\
-2. [Create producer with Spring Cloud Stream](#2-create-the-producer-with-spring-cloud-stream)\
-3. [Consume messages using `kafkacat` CLI](#3-consume-messages-using-kafkacat-cli)\
-4. [Create `consumer` with Spring Cloud Stream](#4-create-the-consumer-with-spring-cloud-stream)\
-5. [Shared Kafka cluster](#5-shared-kafka-cluster)\
-6. [Enable metrics](#6-enable-metrics)\
-7. [Enable partitioning and consumer groups](#7-enable-partitioning-and-consumer-groups)\
-8. [Kafka on OpenShift](#8-kafka-on-openshift)\
-9. [Implement event-driven architrecture](#9-implement-event-driven-architecture)\
+   1.9. [Account on `redhat.developers.com`](#19-account-at-httpsdevelopersredhatcom)
+2. [Create producer with Spring Cloud Stream](#2-create-the-producer-with-spring-cloud-stream)
+3. [Consume messages using `kafkacat` CLI](#3-consume-messages-using-kafkacat-cli)
+4. [Create `consumer` with Spring Cloud Stream](#4-create-the-consumer-with-spring-cloud-stream)
+5. [Shared Kafka cluster](#5-shared-kafka-cluster)
+6. [Enable metrics](#6-enable-metrics)
+7. [Enable partitioning and consumer groups](#7-enable-partitioning-and-consumer-groups)
+8. [Kafka on OpenShift](#8-kafka-on-openshift)
+9. [Implement event-driven architrecture](#9-implement-event-driven-architecture)
    9.1. [Event gateway](#91-event-gateway)\
    9.2. [Shipment service](#92-shipment-service)\
    9.3. [Payment service](#93-payment-service)\
@@ -29,8 +29,8 @@ Before starting see the list of requirements.
    9.5. [SAGA pattern](#95-saga-pattern)\
    9.6. [CQRS pattern](#96-cqrs-pattern)\
    9.7. [DLQ pattern](#97-dlq-dead-letter-queue-pattern)\
-   9.8. [Rollback SAGA and event routing](#98-rollback-saga-and-event-routing)\
-10. [Schema versioning](#10-schema-versioning)\
+   9.8. [Rollback SAGA and event routing](#98-rollback-saga-and-event-routing)
+10. [Schema versioning](#10-schema-versioning)
 11. [Streams and Tables](#11-streams-and-tables)
 
 ## 1. Prerequisites
