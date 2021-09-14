@@ -21,7 +21,7 @@ Before starting see the list of requirements.
 6. [Enable metrics](#6-enable-metrics)
 7. [Enable partitioning and consumer groups](#7-enable-partitioning-and-consumer-groups)
 8. [Kafka on OpenShift](#8-kafka-on-openshift)
-9. [Implement event-driven architrecture](#9-implement-event-driven-architecture)
+9. [Implement event-driven architrecture](#9-implement-event-driven-architecture)\
    9.1. [Event gateway](#91-event-gateway)\
    9.2. [Shipment service](#92-shipment-service)\
    9.3. [Payment service](#93-payment-service)\
