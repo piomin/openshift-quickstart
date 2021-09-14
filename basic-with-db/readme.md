@@ -476,7 +476,7 @@ odo create java-quarkus person-odo
 
 Set environment variables for `odo`.
 ```shell
-odo config set --env DATABASE_NAME=<your-value> --env DATABASE_USER=<your-value> --env DATABASE_PASSWORD=<your-value>
+odo config set --env POSTGRES_USER=<your-value> --env POSTGRES_PASSWORD=<your-value> --env POSTGRES_DB=<your-value>
 ```
 
 Finally, deploy the application to OpenShift.
