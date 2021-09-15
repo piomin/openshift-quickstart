@@ -389,6 +389,8 @@ The same configuration should be added for `insurance-app`. Just change the name
 Run `person-app` application in the dev mode. Go to the Dev UI console. Click `Deploy` on the `OpenShift` tile, then `Deploy` on the next window. Wait and watch on the logs, the build is in progress. \
 Go to the OpenShift Web Console. Click `Builds`, choose `person-app` `BuildConfig`. Switch to the `Builds` tab. Choose the latest build. In the `Details` verify `Output to`. \
 Then switch to the `Logs` tab. \
+Verify if application has started succesfully. Check the hostname of the database URL and compare it with OpenShift Service `oc get svc`. \
+Fix error and redeploy application. You can use command `mvn clean package`. \
 Then with `oc` client display a list of routes:
 ```shell
 oc get route
