@@ -654,10 +654,18 @@ Create new project:
 ```shell
 oc new-project $OPSH_USER-workshop
 ```
+Optionally run some `odo` command to familiarize with that tool. List all available components:
+```shell
+odo catalog list components
+```
 Go to the `producer` directory. Then create a new `java` `producer` application with `odo`:
 ```shell
 cd event-driven/producer
 odo create java --s2i producer
+```
+List all the applications created with `odo`:
+```shell
+odo list
 ```
 Check Kafka bootstrap server address:
 ```shell
@@ -679,11 +687,19 @@ Add the following property to the `application.yml`:
 ```yaml
 spring.cloud.stream.kafka.binder.autoCreateTopics: false
 ```
+Just in case, do a cleanup for the application:
+```shell
+mvn clean
+```
 Build and deploy your application on OpenShift:
 ```shell
 odo push
 ```
 Verify the application logs. Did the producer connect with the topic? \
+You can use the following command to print logs:
+```shell
+oc logs -f -l component=producer
+```
 Create the following YAML manifest, e.g. `topic.yaml`:
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
@@ -708,6 +724,49 @@ Then verify your application logs:
 ```shell
 oc logs -f -l app.kubernetes.io/instance=producer
 ```
+You can also increase a level of logging on the producer side to display a size of each message:
+```yaml
+logging.level.org.springframework.cloud.stream: DEBUG
+```
+If needed apply such a change:
+```yaml
+odo push
+```
+In case you no longer need the application running on the cluster remove it:
+```shell
+odo delete producer
+```
+Verify if it has been removed:
+```shell
+odo list
+```
+
+Create the topic with the same name as before on the another Kafka cluster `my-cluster-with-auth` supporting authentication and authorization:
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+   name: <your-kafkatopic-crd-object-name>
+   labels:
+      strimzi.io/cluster: my-cluster-with-auth
+   namespace: kafka
+spec:
+   topicName: <your-topic-name>
+   partitions: 10
+   replicas: 1
+```
+Change the address of the cluster in the `application.yml` file to:
+```yaml
+spring.kafka.bootstrap-servers: my-cluster-with-auth-kafka-bootstrap.kafka:9092
+```
+Deploy your application to the cluster once again:
+```shell
+odo push
+```
+Print the logs from pod:
+```shell
+oc logs -f -l component=producer
+```
 Then create a YAML manifest, e.g. `user.yaml`. To avoid conflicts with different users set the unique name like your username on OpenShift:
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
@@ -715,7 +774,7 @@ kind: KafkaUser
 metadata:
   name: <your-user-name>
   labels:
-    strimzi.io/cluster: my-cluster
+    strimzi.io/cluster: my-cluster-with-auth
   namespace: kafka
 spec:
   authentication:
@@ -805,10 +864,6 @@ spec:
     message.max.bytes: 1024
   partitions: 10
   replicas: 1
-```
-You can also increase a level of logging on the producer side to display a size of each message:
-```yaml
-logging.level.org.springframework.cloud.stream: DEBUG
 ```
 Before re-running the application modify ACLs for your user to support multiple topics. You can use wildcard policy as shown below:  
 ```yaml
