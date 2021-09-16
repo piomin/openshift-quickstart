@@ -6,20 +6,3 @@ logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%1
 
 management.endpoints.web.exposure.include: "*"
 management.endpoint.health.show-details: always
-
-spring.cloud.stream.bindings.eventConsumer-in-0.destination: user.user000-eda.callmeevent
-spring.cloud.stream.bindings.eventConsumer-in-0.group: a
-spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned: true
-
-spring.cloud.stream.kafka.binder.autoCreateTopics: false
-
-spring.kafka.bootstrap-servers: my-cluster-with-auth-kafka-bootstrap.kafka:9092
-
-spring.cloud.stream.kafka.binder.configuration:
-  security.protocol: SASL_PLAINTEXT
-  sasl.mechanism: SCRAM-SHA-512
-spring.cloud.stream.kafka.binder.jaas:
-  loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
-  options:
-    username: user002
-    password: fgUdLYba4API

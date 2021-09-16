@@ -899,7 +899,29 @@ spring.cloud.stream.bindings.eventSupplier-out-0.destination: user.user000-eda.c
 Verify application logs. If needed (no `odo watch` running) deploy a new version of the `producer` application. \
 Then modify the value of the `max.message.bytes` parameter on your `KafkaTopic` to e.g. `1024`. \
 Ensure the value of the `retention.ms` parameter is equal to `1 minute`. \
-Verify application the logs once again.
+Modify some other parameters:
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: <your-topic-name>
+  labels:
+    strimzi.io/cluster: my-cluster-with-auth
+  namespace: kafka
+spec:
+  config:
+    max.message.bytes: 1024
+    retention.ms: 60000
+    segment.bytes: 1024
+    segment.ms: 10000
+  partitions: 10
+  replicas: 1
+```
+Verify application the logs once again - this time with the following `odo` command:
+```shell
+odo log -f
+```
+Undeploy the `producer` application.
 
 Go to the `consumer` directory:
 ```shell
@@ -909,7 +931,7 @@ Ensure to disable dynamic port generation enabled in the previous section. Then 
 ```shell
 odo create java --s2i consumer
 ```
-Set the right destination for the `consumer` (that without `max.message.bytes` and `retention.ms` overridden) and ensure you have partitioning and consumer group enabled:
+Set the right destination for the `consumer` (that WITHOUT `max.message.bytes` and `retention.ms` overridden) and ensure you have partitioning and consumer group enabled:
 ```yaml
 spring.cloud.stream.bindings.eventConsumer-in-0.destination: <your-topic-name>
 spring.cloud.stream.bindings.eventConsumer-in-0.group: a
@@ -927,8 +949,8 @@ Run `odo` command for watching changes:
 ```shell
 odo watch
 ```
-
-Scale out the number of `consumer` instances. Verify the logs of all the instances.
+Change destination into that with `max.message.bytes` and `retention.ms` parameters overridden. \
+Then observe the logs. What happened?
 
 ## 9. Implement event-driven architecture
 
