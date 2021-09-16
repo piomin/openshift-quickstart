@@ -338,7 +338,7 @@ Add the following dependencies to the Maven `pom.xml`. Our goal is to enable met
 </dependency>
 ```
 The metrics are available for the application under endpoint `GET http://localhost:8080/actuator/prometheus`. \
-Verify the values for the following metrics:
+Verify the values for the following metrics: \
 `kafka_producer_request_total` \
 `kafka_producer_topic_record_send_rate` \
 `kafka_producer_node_request_size_avg` \
@@ -432,7 +432,7 @@ Change the following properties in `application.yml` and restart your applicatio
 spring.cloud.stream.kafka.bindings.eventSupplier-out-0.producer.bufferSize: 32768
 spring.cloud.stream.kafka.binder.requiredAcks: 0
 ```
-Then verify the values for the following metrics once again:
+Then verify the values for the following metrics once again: \
 `kafka_producer_request_total` \
 `kafka_producer_topic_record_send_rate` \
 `kafka_producer_node_request_size_avg` \
