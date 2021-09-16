@@ -855,13 +855,13 @@ kind: KafkaTopic
 metadata:
   name: <your-topic-name>
   labels:
-    strimzi.io/cluster: my-cluster
+    strimzi.io/cluster: my-cluster-with-auth
   namespace: kafka
 spec:
   config:
     retention.ms: 60000
     segment.bytes: 102400
-    message.max.bytes: 100
+    max.message.bytes: 100
   partitions: 10
   replicas: 1
 ```
@@ -872,7 +872,7 @@ kind: KafkaUser
 metadata:
   name: <your-user-name>
   labels:
-    strimzi.io/cluster: my-cluster
+    strimzi.io/cluster: my-cluster-with-auth
   namespace: kafka
 spec:
   authentication:
@@ -881,14 +881,14 @@ spec:
     acls:
       - resource:
           type: topic
-          name: <your-topic-prefix>.*
-          patternType: literal
+          name: <your-topic-prefix>
+          patternType: prefix
         operation: Read
         host: '*'
       - resource:
           type: topic
-          name: <your-topic-prefix>.*
-          patternType: literal
+          name: <your-topic-prefix>
+          patternType: prefix
         operation: Describe
         host: '*'
       - resource:
@@ -899,8 +899,8 @@ spec:
         host: '*'
       - resource:
           type: topic
-          name: <your-topic-prefix>.*
-          patternType: literal
+          name: <your-topic-prefix>
+          patternType: prefix
         operation: Write
         host: '*'
     type: simple
