@@ -826,8 +826,8 @@ odo watch
 Add the following properties to the application.yml for both producer and consumer applications:
 ```yaml
 spring.cloud.stream.kafka.binder.configuration:
-  security.protocol=SASL_PLAINTEXT
-  sasl.mechanism=SCRAM-SHA-512
+  security.protocol: SASL_PLAINTEXT
+  sasl.mechanism: SCRAM-SHA-512
 spring.cloud.stream.kafka.binder.jaas:
   loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
   options:
@@ -859,9 +859,9 @@ metadata:
   namespace: kafka
 spec:
   config:
-    retention.ms: 360000
+    retention.ms: 60000
     segment.bytes: 102400
-    message.max.bytes: 1024
+    message.max.bytes: 100
   partitions: 10
   replicas: 1
 ```
