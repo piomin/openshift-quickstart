@@ -644,13 +644,17 @@ export OPSH_PASSWORD=<your-password>
 ```
 Login to the OpenShift cluster:
 ```shell
-oc login -u $OPSH_USER -p $OPSH_SERVER --server=https://api.$OPSH_CLUSTER:6443
+oc login -u $OPSH_USER -p $OPSH_PASSWORD --server=https://api.$OPSH_CLUSTER:6443
+```
+After login ensure you have access to the project with Kafka cluster. Run the following command:
+```shell
+oc get deploy
 ```
 Create new project:
 ```shell
 oc new-project $OPSH_USER-workshop
 ```
-Go to the `producer` directory. Then create new `java` application with `odo`:
+Go to the `producer` directory. Then create a new `java` `producer` application with `odo`:
 ```shell
 cd event-driven/producer
 odo create java --s2i producer
