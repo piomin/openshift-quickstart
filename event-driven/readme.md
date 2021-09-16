@@ -506,8 +506,8 @@ server.port: 0
 ```
 Create a topic with 5 partitions. Then change the configuration inside the `application.yml` file:
 ```yaml
-spring.cloud.stream.bindings.eventConsumer-in-0.group=a
-spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned=true
+spring.cloud.stream.bindings.eventConsumer-in-0.group: a
+spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned: true
 ```
 Run three instances of your application sequentially and observe the logs. Try to find the log starting with `a: partitions assigned: [` for the first instance. \
 Run the second instance of your application. Try to find the log starting with `a: partitions assigned: [` for the second instance. \
@@ -823,7 +823,7 @@ Run the following command to watch for the changes in the source code:
 ```shell
 odo watch
 ```
-Add the following properties to the application.yml for both producer and consumer applications:
+Add the following properties to the `application.yml` for both `producer` and `consumer` applications:
 ```yaml
 spring.cloud.stream.kafka.binder.configuration:
   security.protocol: SASL_PLAINTEXT
@@ -834,21 +834,8 @@ spring.cloud.stream.kafka.binder.jaas:
     username: <your-user-name>
     password: <your-user-password>
 ```
-Go to the `consumer` directory:
-```shell
-cd event-driven/consumer
-```
-Ensure to disable dynamic port generation enabled in the previous section. Then create new `java` application with `odo`:
-```shell
-odo create java --s2i consumer
-```
-Then verify your application logs:
-```shell
-oc logs -f -l app.kubernetes.io/instance=consumer
-```
-Scale out the number of `consumer` instances. Verify the logs of all the instances. 
 
-Create another topic or modify ethe existing one. This type with the `message.max.bytes` parameter:
+Create another topic or modify ethe existing one. This type with the `max.message.bytes` parameter:
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
@@ -865,7 +852,7 @@ spec:
   partitions: 10
   replicas: 1
 ```
-Before re-running the application modify ACLs for your user to support multiple topics. You can use wildcard policy as shown below:  
+Before re-running the application modify ACLs for your user to support multiple topics. You can use `prefix` policy as shown below:
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaUser
@@ -905,9 +892,43 @@ spec:
         host: '*'
     type: simple
 ```
-Then restart your application. \
-You can also decrease a value of the `retention.ms` parameter to e.g. 1 minute. \
-Restart your application once again.
+Change the target topic for the `producer`:
+```yaml
+spring.cloud.stream.bindings.eventSupplier-out-0.destination: user.user000-eda.callmeevent.small
+```
+Verify application logs. If needed (no `odo watch` running) deploy a new version of the `producer` application. \
+Then modify the value of the `max.message.bytes` parameter on your `KafkaTopic` to e.g. `1024`. \
+Ensure the value of the `retention.ms` parameter is equal to `1 minute`. \
+Verify application the logs once again.
+
+Go to the `consumer` directory:
+```shell
+cd event-driven/consumer
+```
+Ensure to disable dynamic port generation enabled in the previous section. Then create new `java` application with `odo`:
+```shell
+odo create java --s2i consumer
+```
+Set the right destination for the `consumer` (that without `max.message.bytes` and `retention.ms` overridden) and ensure you have partitioning and consumer group enabled:
+```yaml
+spring.cloud.stream.bindings.eventConsumer-in-0.destination: <your-topic-name>
+spring.cloud.stream.bindings.eventConsumer-in-0.group: a
+spring.cloud.stream.bindings.eventConsumer-in-0.consumer.partitioned: true
+```
+Deploy the `consumer` application:
+```shell
+odo push
+```
+Then verify your application logs:
+```shell
+odo log -f
+```
+Run `odo` command for watching changes:
+```shell
+odo watch
+```
+
+Scale out the number of `consumer` instances. Verify the logs of all the instances.
 
 ## 9. Implement event-driven architecture
 
