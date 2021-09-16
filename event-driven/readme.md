@@ -785,6 +785,30 @@ oc logs -f -l app.kubernetes.io/instance=consumer
 ```
 Scale out the number of `consumer` instances. Verify the logs of all the instances. 
 
+Create another topic or modify ethe existing one. This type with the `message.max.bytes` parameter:
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: <your-topic-name>
+  labels:
+    strimzi.io/cluster: my-cluster
+  namespace: kafka
+spec:
+  config:
+    retention.ms: 360000
+    segment.bytes: 102400
+    message.max.bytes: 1024
+  partitions: 10
+  replicas: 1
+```
+You can also increase a level of logging on the producer side to display a size of each message:
+```yaml
+logging.level.org.springframework.cloud.stream: DEBUG
+```
+Then restart your application. You can also decrease a value of the `retention.ms` parameter to e.g. 1 minute. \
+Restart your application once again.
+
 ## 9. Implement event-driven architecture
 
 There are several microservices sending and listening for events, and a gateway exposing REST API for an external client. \
