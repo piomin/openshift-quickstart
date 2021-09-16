@@ -1,17 +1,1 @@
 spring.application.name: event-gateway
-
-spring.kafka.bootstrap-servers: pminkows-k-c-ma--adc-smj-himh-g.bf2.kafka.rhcloud.com:443
-
-spring.cloud.stream.source: orders
-spring.cloud.stream.bindings.orders-out-0.destination: user.pminkows.ordercommand
-spring.cloud.stream.bindings.queries-out-0.destination: user.pminkows.orderquery
-spring.cloud.stream.bindings.queries-in-0.destination: user.pminkows.orderqueryresult
-
-spring.cloud.stream.kafka.binder.configuration.security.protocol: SASL_SSL
-spring.cloud.stream.kafka.binder.configuration.sasl.mechanism: PLAIN
-spring.cloud.stream.kafka.binder.jaas.loginModule: org.apache.kafka.common.security.plain.PlainLoginModule
-spring.cloud.stream.kafka.binder.jaas.options.username: srvc-acct-7e2b5429-257e-4b32-a0a7-593d20310267
-spring.cloud.stream.kafka.binder.jaas.options.password: 25f07668-33d8-494b-9791-10acbc485b7f
-
-
-logging.level.org.springframework.cloud.stream: DEBUG

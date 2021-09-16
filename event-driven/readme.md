@@ -1191,7 +1191,7 @@ curl http://<route-address>/orders -d "{\"customerId\":1,\"productId\":1,\"produ
 
 ### 9.6. CQRS Pattern
 
-Go to the `event-driven` directory. Create `OrderQuery` in the `pl.redhat.samples.eventdriven.gateway.message` package with the following fields:
+Go to the `event-gateway` directory. Create `OrderQuery` in the `pl.redhat.samples.eventdriven.gateway.message` package with the following fields:
 ```java
 public class OrderQuery {
 
@@ -1433,7 +1433,7 @@ public Consumer<OrderCommand> dlqs() {
 }
 ```
 Add a required configuration for bindings in `application.yml`. \
-Then create a special @Service for handling delayed commands. It is based on Spring `@Scheduled`:
+Then create a special `@Service` for handling delayed commands. It is based on Spring `@Scheduled`:
 ```java
 @Service
 public class DlqService {
