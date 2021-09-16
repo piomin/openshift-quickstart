@@ -708,7 +708,7 @@ Then verify your application logs:
 ```shell
 oc logs -f -l app.kubernetes.io/instance=producer
 ```
-Then create a YAML manifest, e.g. `user.yaml`:
+Then create a YAML manifest, e.g. `user.yaml`. To avoid conflicts with different users set the unique name like your username on OpenShift:
 ```yaml
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaUser
@@ -810,7 +810,48 @@ You can also increase a level of logging on the producer side to display a size 
 ```yaml
 logging.level.org.springframework.cloud.stream: DEBUG
 ```
-Then restart your application. You can also decrease a value of the `retention.ms` parameter to e.g. 1 minute. \
+Before re-running the application modify ACLs for your user to support multiple topics. You can use wildcard policy as shown below:  
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: <your-user-name>
+  labels:
+    strimzi.io/cluster: my-cluster
+  namespace: kafka
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    acls:
+      - resource:
+          type: topic
+          name: <your-topic-prefix>.*
+          patternType: literal
+        operation: Read
+        host: '*'
+      - resource:
+          type: topic
+          name: <your-topic-prefix>.*
+          patternType: literal
+        operation: Describe
+        host: '*'
+      - resource:
+          type: group
+          name: a
+          patternType: literal
+        operation: Read
+        host: '*'
+      - resource:
+          type: topic
+          name: <your-topic-prefix>.*
+          patternType: literal
+        operation: Write
+        host: '*'
+    type: simple
+```
+Then restart your application. \
+You can also decrease a value of the `retention.ms` parameter to e.g. 1 minute. \
 Restart your application once again.
 
 ## 9. Implement event-driven architecture
