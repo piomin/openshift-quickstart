@@ -1244,7 +1244,7 @@ Switch to the `shipment-service`. Add the following method to the `pl.redhat.sam
 ```java
 public void confirmProducts(ConfirmCommand confirmCommand) {
     Product product = productRepository.findById(confirmCommand.getProductId()).orElseThrow();
-    product.setReservedCount(product.getCurrentCount() - confirmCommand.getProductCount());
+    product.setCurrentCount(product.getCurrentCount() - confirmCommand.getProductCount());
     productRepository.save(product);
 }
 ```
@@ -1308,7 +1308,7 @@ public class OrderQueryResult {
 }
 ```
 Go to the application main class. \
-Query service should consume both messages `OrderCommand` and `ConfirmCommand`. Here's bean declaration for receiving `OrderCommand`:
+The `order-query-service` service should consume both messages `OrderCommand` and `ConfirmCommand`. Here's bean declaration for receiving `OrderCommand`:
 ```java
 @Bean
 public Consumer<OrderCommand> orders() {
