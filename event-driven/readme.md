@@ -1334,6 +1334,8 @@ public Function<OrderQuery, OrderQueryResult> queries() {
     };
 }
 ```
+Add some logs if needed.
+
 Then switch to the `application.yml` file. There are several functional beans defined, so we need to provide additional configuration containing the names of those beans. For me it the following configuration:
 ```yaml
 spring.cloud.function.definition: orders;confirmations;queries
@@ -1354,16 +1356,33 @@ spring.cloud.stream.kafka.bindings.confirmations-in-0.consumer.resetOffsets: tru
 Finally, we should set destination for queries:
 ```yaml
 spring.cloud.stream.bindings.queries-in-0.destination: user.<your_namespace>.orderquery
-spring.cloud.stream.bindings.orders-in-0.group: eda-<your-unique-suffix>
-spring.cloud.stream.bindings.orders-in-0.consumer.partitioned: true
+spring.cloud.stream.bindings.queries-in-0.group: eda-<your-unique-suffix>
+spring.cloud.stream.bindings.queries-in-0.consumer.partitioned: true
 spring.cloud.stream.bindings.queries-out-0.destination: user.<your_namespace>.orderqueryresult
 ```
-Also remember about setting Kafka address and credentials.
+Also remember about setting Kafka address and credentials. \
+Then create a new `KafkaTopic` object for `orderqueryresult` and `orderquery`:
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: user.<your_namespace>.orderquery
+  labels:
+    strimzi.io/cluster: my-cluster-with-auth
+  namespace: kafka
+spec:
+  partitions: 3
+  replicas: 1
+```
 
 Create and push the application to the OpenShift cluster:
 ```shell
 odo create java --s2i order-query-service 
 odo push
+```
+Then verify if the application has been successfully started:
+```shell
+odo log -f
 ```
 
 Switch to the `event-gateway` application. \
@@ -1422,15 +1441,17 @@ Then open the `application.yml` file. Add the following two properties to set bi
 ```yaml
 spring.cloud.stream.bindings.queries-out-0.destination: <output-query-topic-name>
 spring.cloud.stream.bindings.queries-in-0.destination: <input-result-topic-name>
+spring.cloud.stream.bindings.queries-in-0.group: eda-<your-unique-suffix>
+spring.cloud.stream.bindings.queries-in-0.consumer.partitioned: true
 ```
 Optionally, we may print producer log messages:
 ```yaml
 logging.level.org.springframework.cloud.stream: DEBUG
 ```
-Save the changes. \
+Save the changes if `odo watch` or push them with `odo push`. \
 Query for orders sent by the customer with `id=1`:
 ```shell
-curl http://<route-address>/orders/customer/1
+curl http://$ROUTE_ADDRESS/orders/customer/1
 ```
 See the logs printed by the `order-query-service` application. \
 You should see exception that `java.time.LocalDateTime` is not supported. First verify how many log lines starting with `New Query:` you see. Why? \
@@ -1451,15 +1472,29 @@ Then go to the `Order` class and add the following annotation for `LocalDateTime
 @JsonDeserialize(using = LocalDateTimeDeserializer.class)
 @JsonSerialize(using = LocalDateTimeSerializer.class)
 ```
-Provide the same change the `Order` class implementation in the `event-gateway. \
+Provide the same change the `Order` class implementation in the `event-gateway`. \
+In `event-gateway` also add endpoint responsible for returning query results:
+```java
+private Map<String, List<Order>> results;
+
+public OrderController(StreamBridge streamBridge, Map<String, List<Order>> results) {
+    this.streamBridge = streamBridge;
+    this.results = results;
+}
+        
+@GetMapping("/results/{queryId}")
+public List<Order> orders(@PathVariable String queryId) {
+    return results.remove(queryId);
+}
+```
 Query for orders sent by the customer with `id=1`. You should receive response with `uuid`:
 ```shell
-curl http://<route-address>/orders/customer/1
+curl http://$ROUTE_ADDRESS/orders/customer/1
 85b8792d-93f7-40db-8da2-b367d0891671
 ```
 Now, obtain the result using a dedicated endpoint and uuid received in the previous response:
 ```shell
-curl http://<route-address>/orders/results/{queryId}
+curl http://$ROUTE_ADDRESS/orders/results/{queryId}
 ```
 
 ### 9.7. DLQ (Dead Letter Queue) Pattern
