@@ -1215,18 +1215,26 @@ public void updateOrderCommandStatus(String id) {
     }
 }
 ```
-Add the following bean to the application main class:
+Add some logs if needed. \
+Then add the following bean to the application main class:
 ```java
 @Bean
 public Consumer<OrderEvent> events() {
     return event -> orderService.updateOrderCommandStatus(event.getCommandId());
 }
 ```
+Configure an input destination for `OrderEvent` and `events` consumer:
+```yaml
+spring.cloud.stream.bindings.events-in-0.destination: <your-topic-name>
+spring.cloud.stream.bindings.events-in-0.group: eda-<your-unique-suffix>
+spring.cloud.stream.bindings.events-in-0.consumer.partitioned: true
+```
 Then add the destination for binding used to send `ConfirmOrder`:
 ```yaml
 spring.cloud.stream.bindings.confirmations-out-0.destination: <your-topic-name>
 ```
-Also add mappping for multiple functional beans and with a source declaration the `StreamBridge` bean:
+In case of using auth Kafka remember about enabling consumer groups. \
+Also add mapping for multiple functional beans and with a source declaration the `StreamBridge` bean:
 ```yaml
 spring.cloud.function.definition: orders;events
 spring.cloud.stream.source: confirmations
@@ -1234,11 +1242,10 @@ spring.cloud.stream.source: confirmations
 
 Switch to the `shipment-service`. Add the following method to the `pl.redhat.samples.eventdriven.shipment.service.ShipmentService`:
 ```java
-public OrderEvent confirmProducts(ConfirmCommand confirmCommand) {
+public void confirmProducts(ConfirmCommand confirmCommand) {
     Product product = productRepository.findById(confirmCommand.getProductId()).orElseThrow();
     product.setReservedCount(product.getCurrentCount() - confirmCommand.getProductCount());
     productRepository.save(product);
-    return new OrderEvent(confirmCommand.getOrderId(), "OK", "CONFIRM");
 }
 ```
 Then go to the main class and the following bean:
@@ -1264,11 +1271,16 @@ public void confirmBalance(ConfirmCommand confirmCommand) {
 }
 ```
 Add the `Consumer` bean and set the right destination in `application.yml`. Remember about multiple Spring Cloud Function beans defined. \
-Then deploy all the three services `payment-service`, `shipment-service`, `order-service` on OpenShift cluster using`odo`.
+Don't forget to add some using existing 'Logger'. \
+Then deploy all the three services `payment-service`, `shipment-service`, `order-service` on OpenShift cluster using`odo`. \
+Observe logs of all three applications:
+```shell
+odo log -f
+```
 
 Send the test order to the `event-gateway` HTTP endpoint:
 ```shell
-curl http://<route-address>/orders -d "{\"customerId\":1,\"productId\":1,\"productCount\":3,\"amount\":1000}"
+curl http://$ROUTE_ADDRESS/orders -d "{\"customerId\":1,\"productId\":1,\"productCount\":3,\"amount\":1000}" -H "Content-Type: application/json"
 ```
 
 ### 9.6. CQRS Pattern

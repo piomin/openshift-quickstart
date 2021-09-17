@@ -1,5 +1,8 @@
 package pl.redhat.samples.eventdriven.order.message;
 
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
 public abstract class AbstractOrderCommand {
 
     private Integer customerId;
