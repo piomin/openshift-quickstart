@@ -1354,6 +1354,8 @@ Finally, we should set destination for queries:
 spring.cloud.stream.bindings.queries-in-0.destination: user.<your_namespace>.orderquery
 spring.cloud.stream.bindings.queries-out-0.destination: user.<your_namespace>.orderqueryresult
 ```
+Also remember about setting Kafka address and credentials.
+
 Create and push the application to the OpenShift cluster:
 ```shell
 odo create java --s2i order-query-service 
