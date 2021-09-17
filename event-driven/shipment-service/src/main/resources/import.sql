@@ -1,0 +1,9 @@
+insert into product(current_count, reserved_count) values (10000, 10000);
+insert into product(current_count, reserved_count) values (1000, 1000);
+insert into product(current_count, reserved_count) values (100, 100);
+insert into product(current_count, reserved_count) values (10, 10);
+insert into product(current_count, reserved_count) values (1, 1);
+insert into product(current_count, reserved_count) values (5, 5);
+insert into product(current_count, reserved_count) values (10000, 10000);
+insert into product(current_count, reserved_count) values (100, 100);
+insert into product(current_count, reserved_count) values (200, 200);

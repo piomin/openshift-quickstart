@@ -1,0 +1,10 @@
+insert into account(customer_id, current_amount, reserved_amount) values (1, 10000, 10000);
+insert into account(customer_id, current_amount, reserved_amount) values (2, 1000, 1000);
+insert into account(customer_id, current_amount, reserved_amount) values (3, 30000, 30000);
+insert into account(customer_id, current_amount, reserved_amount) values (4, 50000, 50000);
+insert into account(customer_id, current_amount, reserved_amount) values (5, 10000, 10000);
+insert into account(customer_id, current_amount, reserved_amount) values (6, 20000, 20000);
+insert into account(customer_id, current_amount, reserved_amount) values (7, 5000, 5000);
+insert into account(customer_id, current_amount, reserved_amount) values (8, 4000, 4000);
+insert into account(customer_id, current_amount, reserved_amount) values (9, 10000, 10000);
+insert into account(customer_id, current_amount, reserved_amount) values (10, 10000, 10000);

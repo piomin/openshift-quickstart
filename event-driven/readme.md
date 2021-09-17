@@ -1097,7 +1097,7 @@ public OrderEvent reserveBalance(OrderCommand orderCommand) {
     Account account = accountRepository.findByCustomerId(orderCommand.getCustomerId()).stream().findFirst().orElseThrow();
     account.setReservedAmount(product.getReservedAmount() - orderCommand.getAmount());
     accountRepository.save(account);
-    return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
+    return new OrderEvent(orderCommand.getId(), "RESERVATION", "OK");
 }
 ```
 Then add the `Function` bean to the application main class responsible for processing orders. It listens for an input `OrderCommand` and sends `OrderEvent` as a response:
@@ -1157,7 +1157,26 @@ public Consumer<OrderCommand> orders() {
 ```
 
 Repeat all the same steps as for the previous applications.
-
+Then let's verify our deployments:
+```shell
+oc get deploy
+```
+You should have 4 apps running:
+```shell
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+event-gateway      1/1     1            1           121m
+order-service      1/1     1            1           2m23s
+payment-service    1/1     1            1           12m
+shipment-service   1/1     1            1           41m
+```
+List the routes exposed by the `event-gateway` and select that with port `8080` and export it as `ROUTE_ADDRESS` env:
+```shell
+oc get route | grep gateway
+```
+Then send a test request to the `event-gateway`:
+```shell
+curl http://$ROUTE_ADDRESS/orders -d "{\"customerId\":1,\"productId\":1,\"productCount\":5,\"amount\":2000}" -H "Content-Type: application/json" 
+```
 ### 9.5. SAGA Pattern
 
 In `order-service` add the following a new command `pl.redhat.samples.eventdriven.order.message.ConfirmCommand`:
