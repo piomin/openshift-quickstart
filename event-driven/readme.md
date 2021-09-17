@@ -1107,7 +1107,27 @@ public Function<OrderCommand, OrderEvent> orders() {
     return command -> paymentService.reserveBalance(command);
 }
 ```
-Go to the `application.yml`. Configure a destination for the input and output. 
+
+Go to the `application.yml`. Configure a destination for the input and output, credentials and kafka cluster address. \
+The `payment-service` uses the same output topic as the `shipment-service`. \
+Before deploying app you can add some logs, e.g. in `ShipmentService`. To do that first declare a `Logger`:
+```java
+private static final Logger LOG = LoggerFactory.getLogger(ShipmentService.class);
+```
+Then add a log line, e.g.:
+```java
+LOG.info("Product reserved: id={}, orderId={} ", product.getId(), orderCommand.getId());
+```
+If you use Kafka cluster with auth add the following properties into your `application.yml`:
+```yaml
+spring.cloud.stream.bindings.orders-in-0.group: eda-<your-unique-group-suffix>
+spring.cloud.stream.bindings.orders-in-0.consumer.partitioned: true
+```
+Deploy the application on OpenShift using `odo`. \
+Then observe the application logs:
+```shell
+odo log -f
+```
 
 ### 9.4. Order Service
 
