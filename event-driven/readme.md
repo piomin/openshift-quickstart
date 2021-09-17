@@ -1156,6 +1156,8 @@ public Consumer<OrderCommand> orders() {
 }
 ```
 
+Repeat all the same steps as for the previous applications.
+
 ### 9.5. SAGA Pattern
 
 In `order-service` add the following a new command `pl.redhat.samples.eventdriven.order.message.ConfirmCommand`:
