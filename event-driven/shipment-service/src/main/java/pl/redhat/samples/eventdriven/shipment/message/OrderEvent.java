@@ -1,4 +1,4 @@
-package pl.redhat.samples.eventdriven.payment.message;
+package pl.redhat.samples.eventdriven.shipment.message;
 
 import java.util.UUID;
 
@@ -52,3 +52,4 @@ public class OrderEvent {
         this.status = status;
     }
 }
+
