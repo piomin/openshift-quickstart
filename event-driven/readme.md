@@ -1342,16 +1342,20 @@ Now, we need to configure destinations for all the binding. Let's start with con
 Because we use in-memory database for storing events, each time the application is starting we copy the events topics:
 ```yaml
 spring.cloud.stream.bindings.orders-in-0.destination: user.<your_namespace>.ordercommand
-spring.cloud.stream.kafka.bindings.orders-in-0.consumer.startOffset: earliest
+spring.cloud.stream.bindings.orders-in-0.group: eda-<your-unique-suffix>
+spring.cloud.stream.bindings.orders-in-0.consumer.partitioned: true
 spring.cloud.stream.kafka.bindings.orders-in-0.consumer.resetOffsets: true
 
 spring.cloud.stream.bindings.confirmations-in-0.destination: user.<your_namespace>.confirmcommand
-spring.cloud.stream.kafka.bindings.confirmations-in-0.consumer.startOffset: earliest
+spring.cloud.stream.bindings.confirmations-in-0.group: eda-<your-unique-suffix>
+spring.cloud.stream.bindings.confirmations-in-0.consumer.partitioned: true
 spring.cloud.stream.kafka.bindings.confirmations-in-0.consumer.resetOffsets: true
 ```
 Finally, we should set destination for queries:
 ```yaml
 spring.cloud.stream.bindings.queries-in-0.destination: user.<your_namespace>.orderquery
+spring.cloud.stream.bindings.orders-in-0.group: eda-<your-unique-suffix>
+spring.cloud.stream.bindings.orders-in-0.consumer.partitioned: true
 spring.cloud.stream.bindings.queries-out-0.destination: user.<your_namespace>.orderqueryresult
 ```
 Also remember about setting Kafka address and credentials.
