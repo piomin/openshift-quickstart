@@ -1,10 +1,5 @@
 package pl.redhat.samples.eventdriven.order.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -21,8 +16,6 @@ public class Order {
     private int productCount;
     private int amount;
     private String type;
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime creationDate = LocalDateTime.now();
 
     public Order() {
