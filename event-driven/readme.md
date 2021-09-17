@@ -959,7 +959,7 @@ Let's start with the implementation of an event gateway.
 
 ### 9.1. Event Gateway
 
-Go to the event-gateway directory:
+Go to the `event-gateway` directory:
 ```shell
 cd event-driven/event-gateway
 ```
@@ -993,7 +993,13 @@ Configure output destination for the `orders-out-0` binding:
 spring.cloud.stream.source: orders
 spring.cloud.stream.bindings.orders-out-0.destination: <your-topic-name>
 ```
-Deploy the application on OpenShift using `odo`.
+Before running the application ensure you placed the right connection settings and credentials to the Kafka cluster. \
+Then create a topic for the `ordercommand` events on the Kafka cluster. \
+Deploy the application on OpenShift using `odo`. \
+Then observe the application logs:
+```shell
+odo log -f
+```
 
 ### 9.2. Shipment Service
 
@@ -1031,7 +1037,7 @@ public OrderEvent reserveProducts(OrderCommand orderCommand) {
     Product product = productRepository.findById(orderCommand.getProductId()).orElseThrow();
     product.setReservedCount(product.getReservedCount() - orderCommand.getProductCount());
     productRepository.save(product);
-    return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
+    return new OrderEvent(orderCommand.getId(), "RESERVATION", "OK");
 }
 ```
 Then add the `Function` bean to the application main class responsible for processing orders. It listens for an input `OrderCommand` and sends `OrderEvent` as a response: 
@@ -1046,6 +1052,37 @@ Go to the `application.yml`. Configure a destination for the input and output.
 spring.cloud.stream.bindings.orders-in-0.destination: <your-in-topic-name>
 spring.cloud.stream.bindings.orders-out-0.destination: <your-out-topic-name>
 ```
+The same as before ensure you placed the right connection settings and credentials to the Kafka cluster. \
+Then create a topic for the `orderevent` events on the Kafka cluster. \
+Before deploying app you can add some logs, e.g. in `ShipmentService`. To do that first declare a `Logger`:
+```java
+private static final Logger LOG = LoggerFactory.getLogger(ShipmentService.class);
+```
+Then add a log line, e.g.:
+```java
+LOG.info("Product reserved: id={}, orderId={} ", product.getId(), orderCommand.getId());
+```
+If you use Kafka cluster with auth enabled, and you have ACL for group authorization you also need to define consumer group. A consumer group should be unique per application. \
+First modify your `KafkaUser` object in the `kafka` namespace to something similar to:
+```yaml
+      - host: '*'
+        operation: Read
+        resource:
+          name: eda
+          patternType: prefix
+          type: group
+```
+Then add the following properties into your `application.yml`:
+```yaml
+spring.cloud.stream.bindings.orders-in-0.group: eda-<your-unique-group-suffix>
+spring.cloud.stream.bindings.orders-in-0.consumer.partitioned: true
+```
+Deploy the application on OpenShift using `odo`. \
+Then observe the application logs:
+```shell
+odo log -f
+```
+
 ### 9.3. Payment Service
 
 Go to the `payment-service` directory:
