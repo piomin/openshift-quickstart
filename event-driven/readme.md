@@ -96,7 +96,7 @@ git version 2.24.3 (Apple Git-128)
 ```
 
 ### 1.9. Account at https://developers.redhat.com/
-In order to create own instance of Apache Kafka there.
+In order to create own instance of Apache Kafka there. Try login to https://cloud.redhat.com/ using your account.
 
 ## 2. Create the producer with Spring Cloud Stream
 
