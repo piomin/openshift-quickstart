@@ -1513,16 +1513,16 @@ Change the implementation of the `reserveProducts` method in `ShipmentService` `
 public OrderEvent reserveProducts(OrderCommand orderCommand) {
     Product product = productRepository.findById(orderCommand.getProductId()).orElseThrow();
     product.setReservedCount(product.getReservedCount() - orderCommand.getProductCount());
-    if (product.getReservedCount() > 0)
+    if (product.getReservedCount() < 0)
         throw new NotEnoughProductsException();
     productRepository.save(product);
-    return new OrderEvent(orderCommand.getId(), "OK", "RESERVATION");
+    return new OrderEvent(orderCommand.getId(), "RESERVATION", "OK");
 }
 ```
 Enable DLQ for the consumer and override the name of DLQ topic:
 ```yaml
-spring.cloud.stream.bindings.orders-in-0.consumer.enableDlq: true
-spring.cloud.stream.bindings.orders-in-0.consumer.dlqName: user.<your-namespace>.shipment.ordercommand.dlq
+spring.cloud.stream.kafka.bindings.orders-in-0.consumer.enableDlq: true
+spring.cloud.stream.kafka.bindings.orders-in-0.consumer.dlqName: user.<your-namespace>.shipment-service.ordercommand.dlq
 ```
 
 Create the wrapper `pl.redhat.samples.eventdriven.shipment.message.OrderCommandDelayed` for delaying `OrderCommand` received from DLQ topic:
@@ -1538,13 +1538,13 @@ public class OrderCommandDelayed implements Delayed {
     }
 
     @Override
-    public long getDelay(@NotNull TimeUnit unit) {
+    public long getDelay(TimeUnit unit) {
         long diff = startTime - System.currentTimeMillis();
         return unit.convert(diff, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public int compareTo(@NotNull Delayed o) {
+    public int compareTo(Delayed o) {
         return (int) (this.startTime - ((OrderCommandDelayed) o).startTime);
     }
 
@@ -1553,7 +1553,7 @@ public class OrderCommandDelayed implements Delayed {
     }
 }
 ```
-Then declare Java `DelayQueue` `@Bean` for handling delayed events:
+Then declare Java `DelayQueue` `@Bean` in the application main class for handling delayed events:
 ```java
 @Bean
 public DelayQueue<OrderCommandDelayed> delayQueue() {
@@ -1568,6 +1568,7 @@ public Consumer<OrderCommand> dlqs() {
 }
 ```
 Add a required configuration for bindings in `application.yml`. \
+Create `KafkaTopic` object for DLQ. The number of partitions should be the same as for the target topic. \
 Then create a special `@Service` for handling delayed commands. It is based on Spring `@Scheduled`:
 ```java
 @Service
@@ -1607,6 +1608,10 @@ public class DlqService {
 Annotate the main class with `@EnableScheduling`. If you didn't run `odo watch`, deploy the latest version of application with the following `odo` command:
 ```shell
 odo push
+```
+Then send a test request to the `event-gateway` with the number of products that exceeds a current available value:
+```shell
+curl http://$ROUTE_ADDRESS/orders -d "{\"customerId\":1,\"productId\":5,\"productCount\":20,\"amount\":2000}" -H "Content-Type: application/json"
 ```
 
 ### 9.8. Rollback (SAGA) and event routing
@@ -1665,17 +1670,18 @@ Go to the `application.yml`. How will change the current bindings configuration?
 ```yaml
 spring.cloud.function.definition: orders;events
 spring.cloud.stream.source: confirmations
-spring.cloud.stream.bindings.orders-in-0.destination: user.pminkows.ordercommand
-spring.cloud.stream.bindings.events-in-0.destination: user.pminkows.orderevent
-spring.cloud.stream.bindings.confirmations-out-0.destination: user.pminkows.confirmcommand
+spring.cloud.stream.bindings.orders-in-0.destination: user.<your-namespace>.ordercommand
+spring.cloud.stream.bindings.events-in-0.destination: user.<your-namespace>.orderevent
+spring.cloud.stream.bindings.confirmations-out-0.destination: user.<your-namespace>.confirmcommand
 ```
 We need to add function router:
 ```yaml
-spring.cloud.stream.bindings.functionRouter-in-0.destination=user.pminkows.orderevent
-spring.cloud.stream.bindings.functionRouter-in-0.group=b
-spring.cloud.stream.bindings.functionRouter-in-0.consumer.partitioned=true
-spring.cloud.stream.function.routing.enabled=true
-spring.cloud.function.routing-expression=(payload.status=='FAILED') ? 'failedEvents':'events'
+spring.cloud.function.definition: orders;functionRouter
+spring.cloud.stream.bindings.functionRouter-in-0.destination: user.<your-namespace>.orderevent
+spring.cloud.stream.bindings.functionRouter-in-0.group: eda-<your-unique-group>
+spring.cloud.stream.bindings.functionRouter-in-0.consumer.partitioned: true
+spring.cloud.stream.function.routing.enabled: true
+spring.cloud.function.routing-expression: (new String(payload).contains('FAILED')) ? 'failedEvents':'events'
 ```
 
 Copy `RollbackCommand` class to the `shipment-service` and `payment-service`. Then do the necessary changes to handle rollback there.
@@ -1684,11 +1690,11 @@ Copy `RollbackCommand` class to the `shipment-service` and `payment-service`. Th
 
 List the services in the kafka namespace:
 ```shell
-oc get svc -n kafka | grep apicurio
+oc get svc -n kafka | grep schema-registry
 ```
 List the routes in the kafka namespace:
 ```shell
-oc get route -n kafka | grep apicurio
+oc get route -n kafka | grep schema-registry
 ```
 Visit the schema registry web UI using its route. 
 
