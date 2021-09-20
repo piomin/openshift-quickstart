@@ -2,6 +2,64 @@
 
 ## 1. Prerequisites
 
+### 1.1. JDK11+
+
+```shell
+$ java --version
+java 16.0.2 2021-07-20
+Java(TM) SE Runtime Environment (build 16.0.2+7-67)
+Java HotSpot(TM) 64-Bit Server VM (build 16.0.2+7-67, mixed mode, sharing)
+```
+
+### 1.2. Maven 3.5+
+
+```shell
+$ mvn -version
+Apache Maven 3.6.3 (cecedd343002696d0abb50b32b541b8a6ba2883f)
+Maven home: /Users/pminkows/apache-maven-3.6.3
+Java version: 16.0.2, vendor: Oracle Corporation, runtime: /Library/Java/JavaVirtualMachines/jdk-16.0.2.jdk/Contents/Home
+Default locale: en_PL, platform encoding: UTF-8
+```
+
+### 1.3. CLI `oc` client 4.0+
+
+```shell
+$ oc version
+Client Version: 4.6.12
+```
+
+### 1.4. CLI `odo` client 2.0+
+
+Tool for deploying app directly from the current version of the code. If you are familiar with other tools then `odo` you may use it instead.
+```shell
+$ odo version  
+odo v2.2.1 (17a078b67)
+```
+### 1.5. CLI `kn`
+
+```shell
+$ kn version
+Version:      v0.20.0
+Build Date:   2021-01-14 17:12:42
+Git Revision: 8ca5db3a
+Supported APIs:
+* Serving
+  - serving.knative.dev/v1 (knative-serving v0.20.0)
+* Eventing
+  - sources.knative.dev/v1alpha2 (knative-eventing v0.20.0)
+  - eventing.knative.dev/v1beta1 (knative-eventing v0.20.0)
+```
+
+### 1.6. IDE for Java Development
+The presenter will use IntelliJ IDEA.
+
+### 1.7. Git client
+
+```shell
+git --version
+git version 2.24.3 (Apple Git-128)
+```
+
 ## 2. Before start
 
 Clone the following repository from GitHub:
