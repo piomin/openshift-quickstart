@@ -713,7 +713,7 @@ spec:
   config:
     retention.ms: 360000
     segment.bytes: 102400
-  partitions: 10
+  partitions: 3
   replicas: 1
 ```
 Then apply the configuration to the `kafka` namespace:
@@ -752,7 +752,7 @@ metadata:
    namespace: kafka
 spec:
    topicName: <your-topic-name>
-   partitions: 10
+   partitions: 3
    replicas: 1
 ```
 Change the address of the cluster in the `application.yml` file to:
@@ -849,7 +849,7 @@ spec:
     retention.ms: 60000
     segment.bytes: 102400
     max.message.bytes: 100
-  partitions: 10
+  partitions: 3
   replicas: 1
 ```
 Before re-running the application modify ACLs for your user to support multiple topics. You can use `prefix` policy as shown below:
@@ -914,7 +914,7 @@ spec:
     retention.ms: 60000
     segment.bytes: 1024
     segment.ms: 10000
-  partitions: 10
+  partitions: 3
   replicas: 1
 ```
 Verify application the logs once again - this time with the following `odo` command:
