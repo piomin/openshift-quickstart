@@ -183,6 +183,9 @@ spring.cloud.stream.kafka.binder:
       username: <your-client-id>
       password: <your-client-secret>
 ```
+In order to create an instance of Kafka cluster on the `console.redhat.com`. After login click the `Application Services` menu. \
+Then expand `Streams for Apache Kafka`. Choose `Kafka Instances` -> `Use feature in beta`. Click the `Create Kafka Instance` button.
+
 In order to obtain connection settings go to your Kafka instance and choose `View connection information` -> `Service accounts` -> `Create service account`. \
 Then copy client id and client secret. You can also check an external address of your Kafka instance in the `Bootstrap server` field. \
 Finally, start your application.
