@@ -2,26 +2,6 @@ spring.application.name: producer-streams
 
 spring.kafka.bootstrap-servers: ${KAFKA_URL}
 
-spring.cloud.stream.bindings.orderSupplier-out-0.destination: streams.pminkows.test
-spring.cloud.stream.bindings.orderSupplier-out-0.producer.partitionKeyExpression: headers['kafka_messageKey']
-spring.cloud.stream.bindings.orderSupplier-out-0.producer.partitionCount: 5
-spring.cloud.stream.kafka.bindings.orderSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.IntegerSerializer
-
-spring.cloud.stream.bindings.customerSupplier-out-0.destination: streams.pminkows.test2
-spring.cloud.stream.bindings.customerSupplier-out-0.producer.partitionKeyExpression: headers['kafka_messageKey']
-spring.cloud.stream.bindings.customerSupplier-out-0.producer.partitionCount: 5
-spring.cloud.stream.kafka.bindings.customerSupplier-out-0.producer.configuration.key.serializer: org.apache.kafka.common.serialization.IntegerSerializer
-
-spring.cloud.function.definition: orderSupplier;customerSupplier
-
-spring.cloud.stream.kafka.binder.configuration.security.protocol: SASL_SSL
-spring.cloud.stream.kafka.binder.configuration.sasl.mechanism: PLAIN
-spring.cloud.stream.kafka.binder.jaas.loginModule: org.apache.kafka.common.security.plain.PlainLoginModule
-spring.cloud.stream.kafka.binder.jaas.options.username: ${KAFKA_USER}
-spring.cloud.stream.kafka.binder.jaas.options.password: ${KAFKA_PASSWORD}
-
 spring.output.ansi.enabled: ALWAYS
 
 logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
-
-logging.level.org.springframework.cloud.stream: DEBUG

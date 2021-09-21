@@ -1974,6 +1974,7 @@ public Consumer<KStream<Integer, Order>> eventStream() {
             .foreach((key, value) -> LOG.info("Stream: key={}, val={}", key, value));
 }
 ```
+Remember about setting `spring.cloud.function.definition` with the function names. \
 Then, restart both consumer and producer applications.
 
 Add the `KTable` consumer exactly on the same stream as before. Do not remove `KStream` consumer:
