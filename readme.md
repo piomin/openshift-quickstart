@@ -3,7 +3,7 @@
 In this repo you can find several workshops introducing the topic "Java development on OpenShift". \
 For accessing it you will have to switch to the dedicated branch in this repository following instructions below. \
 You can go through these workshops using:
-* CRC (Code Ready Containers) - a single node OpenShift on your laptop
+* [CRC (Code Ready Containers)](https://console.redhat.com/openshift/create/local) - a single node OpenShift on your laptop
 * [On-line Developer Sandbox](https://developers.redhat.com/developer-sandbox/get-started) - only for workshops 1 and 2
 * Dedicated instance of OpenShift - in that case you need to [contact me](#contact-info) for temporary access 
 Currently there are 4 different workshops available:
