@@ -1,4 +1,4 @@
-spring.application.name: producer
+spring.application.name: producer-user001
 
 spring.output.ansi.enabled: ALWAYS
 
@@ -6,3 +6,18 @@ logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%1
 
 management.endpoints.web.exposure.include: "*"
 management.endpoint.health.show-details: always
+
+spring.cloud.stream.bindings.eventSupplier-out-0.destination: test-topic
+
+spring.kafka.bootstrap-servers: piotrm-kaf-c---cjo--btumhg--m-g.bf2.kafka.rhcloud.com:443
+spring.cloud.stream.kafka.binder:
+  configuration:
+    security.protocol: SASL_SSL
+    sasl.mechanism: PLAIN
+  jaas:
+    loginModule: org.apache.kafka.common.security.plain.PlainLoginModule
+    options:
+      username: srvc-acct-0ebf1ce1-77b9-4873-a3af-a4e615c17507
+      password: f1730799-6446-4960-8c4d-e5938a35e105
+
+

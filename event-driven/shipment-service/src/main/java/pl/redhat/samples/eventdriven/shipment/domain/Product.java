@@ -37,4 +37,13 @@ public class Product {
     public void setReservedCount(int reservedCount) {
         this.reservedCount = reservedCount;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", currentCount=" + currentCount +
+                ", reservedCount=" + reservedCount +
+                '}';
+    }
 }

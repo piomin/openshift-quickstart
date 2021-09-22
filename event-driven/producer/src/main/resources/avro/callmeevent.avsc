@@ -1,0 +1,17 @@
+{
+  "type":"record",
+  "name":"CallmeEvent",
+  "namespace":"pl.redhat.samples.eventdriven.producer.message.avro",
+  "fields": [
+    {
+      "name":"id",
+      "type":"int"
+    },{
+      "name":"content",
+      "type":"string"
+    },{
+      "name":"eventType",
+      "type": "string"
+    }
+  ]
+}

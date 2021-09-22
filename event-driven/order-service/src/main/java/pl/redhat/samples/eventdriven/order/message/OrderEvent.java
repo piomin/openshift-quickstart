@@ -8,16 +8,18 @@ public class OrderEvent {
     private String commandId;
     private String type;
     private String status;
+    private String source;
 
     public OrderEvent() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public OrderEvent(String commandId, String type, String status) {
+    public OrderEvent(String commandId, String type, String status, String source) {
         this.id = UUID.randomUUID().toString();
         this.commandId = commandId;
         this.type = type;
         this.status = status;
+        this.source = source;
     }
 
     public String getId() {
@@ -50,5 +52,13 @@ public class OrderEvent {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

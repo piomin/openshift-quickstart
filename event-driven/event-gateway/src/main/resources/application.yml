@@ -3,3 +3,22 @@ spring.application.name: event-gateway
 spring.output.ansi.enabled: ALWAYS
 
 logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+
+spring.kafka.bootstrap-servers: my-cluster-with-auth-kafka-bootstrap.kafka:9092
+
+spring.cloud.stream.source: orders
+spring.cloud.stream.bindings.orders-out-0.destination: user001.user001-eda.ordercommand
+
+spring.cloud.stream.bindings.queries-out-0.destination: user.user000-eda.orderquery
+spring.cloud.stream.bindings.queries-in-0.destination: user.user000-eda.orderqueryresult
+spring.cloud.stream.bindings.queries-in-0.group: eda-eventgateway
+spring.cloud.stream.bindings.queries-in-0.consumer.partitioned: true
+
+spring.cloud.stream.kafka.binder.configuration:
+  security.protocol: SASL_PLAINTEXT
+  sasl.mechanism: SCRAM-SHA-512
+spring.cloud.stream.kafka.binder.jaas:
+  loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
+  options:
+    username: user001
+    password: GfrBREYApg4S

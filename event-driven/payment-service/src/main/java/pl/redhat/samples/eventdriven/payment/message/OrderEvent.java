@@ -1,4 +1,4 @@
-package pl.redhat.samples.eventdriven.shipment.message;
+package pl.redhat.samples.eventdriven.payment.message;
 
 import java.util.UUID;
 

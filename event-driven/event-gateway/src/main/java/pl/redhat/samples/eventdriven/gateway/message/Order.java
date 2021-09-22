@@ -16,6 +16,8 @@ public class Order {
     private int productCount;
     private int amount;
     private String type;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime creationDate = LocalDateTime.now();
 
     public Order() {

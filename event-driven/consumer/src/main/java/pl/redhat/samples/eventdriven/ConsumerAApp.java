@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import pl.redhat.samples.eventdriven.message.CallmeEvent;
+
+import java.util.function.Supplier;
 
 @SpringBootApplication
 public class ConsumerAApp {
@@ -14,4 +17,8 @@ public class ConsumerAApp {
         SpringApplication.run(ConsumerAApp.class, args);
     }
 
+    @Bean
+    public Supplier<CallmeEvent> eventSupplier() {
+        return () -> new CallmeEvent(++id, "Hello" + id, "PING");
+    }
 }

@@ -3,3 +3,35 @@ spring.application.name: order-service
 spring.output.ansi.enabled: ALWAYS
 
 logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+
+spring.kafka.bootstrap-servers: my-cluster-with-auth-kafka-bootstrap.kafka:9092
+
+spring.cloud.stream.bindings.orders-in-0.destination: user001.user001-eda.ordercommand
+spring.cloud.stream.bindings.orders-in-0.group: eda-order
+spring.cloud.stream.bindings.orders-in-0.consumer.partitioned: true
+
+#spring.cloud.stream.bindings.events-in-0.destination: user.user000-eda.orderevent
+#spring.cloud.stream.bindings.events-in-0.group: eda-order
+#spring.cloud.stream.bindings.events-in-0.consumer.partitioned: true
+
+spring.cloud.stream.bindings.confirmations-out-0.destination: user001.user001-eda.confirmcommand
+spring.cloud.function.definition: orders;functionRouter
+#spring.cloud.function.definition: orders
+spring.cloud.stream.source: confirmations
+
+spring.cloud.stream.bindings.functionRouter-in-0.destination: user001.user001-eda.orderevent
+spring.cloud.stream.bindings.functionRouter-in-0.group: eda-order
+spring.cloud.stream.bindings.functionRouter-in-0.consumer.partitioned: true
+spring.cloud.stream.function.routing.enabled: true
+spring.cloud.function.routing-expression: (new String(payload).contains('FAILED')) ? 'failedEvents':'events'
+
+spring.cloud.stream.kafka.binder.configuration:
+  security.protocol: SASL_PLAINTEXT
+  sasl.mechanism: SCRAM-SHA-512
+spring.cloud.stream.kafka.binder.jaas:
+  loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
+  options:
+    username: user001
+    password: GfrBREYApg4S
+
+spring.jpa.show-sql: true

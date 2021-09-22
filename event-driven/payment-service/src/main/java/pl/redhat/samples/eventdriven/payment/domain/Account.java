@@ -46,4 +46,14 @@ public class Account {
     public void setReservedAmount(int reservedAmount) {
         this.reservedAmount = reservedAmount;
     }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", customerId=" + customerId +
+                ", currentAmount=" + currentAmount +
+                ", reservedAmount=" + reservedAmount +
+                '}';
+    }
 }

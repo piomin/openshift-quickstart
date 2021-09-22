@@ -20,4 +20,19 @@ public class OrderServiceApp {
     @Autowired
     OrderService orderService;
 
+    @Bean
+    public Consumer<OrderCommand> orders() {
+        return command -> orderService.addOrderCommand(command);
+    }
+
+    @Bean
+    public Consumer<OrderEvent> events() {
+        return event -> orderService.updateOrderCommandStatus(event.getCommandId());
+    }
+
+    @Bean
+    public Consumer<OrderEvent> failedEvents() {
+        return event -> orderService.rollbackOrder(event.getCommandId(), event.getSource());
+    }
+
 }

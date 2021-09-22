@@ -26,4 +26,11 @@ public class OrderCommand extends AbstractOrderCommand {
         this.status = status;
     }
 
+    @Override
+    public String toString() {
+        return "OrderCommand{" +
+                "id='" + id + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

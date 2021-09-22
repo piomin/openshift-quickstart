@@ -3,3 +3,33 @@ spring.application.name: shipment-service
 spring.output.ansi.enabled: ALWAYS
 
 logging.pattern.console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){faint} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){faint}%n"
+
+spring.kafka.bootstrap-servers: my-cluster-with-auth-kafka-bootstrap.kafka:9092
+
+spring.cloud.stream.bindings.orders-in-0.destination: user001.user001-eda.ordercommand
+spring.cloud.stream.bindings.orders-in-0.group: eda-shipment
+spring.cloud.stream.bindings.orders-in-0.consumer.partitioned: true
+
+spring.cloud.stream.bindings.confirmations-in-0.destination: user001.user001-eda.confirmcommand
+spring.cloud.stream.bindings.confirmations-in-0.group: eda-shipment
+spring.cloud.stream.bindings.confirmations-in-0.consumer.partitioned: true
+
+spring.cloud.stream.bindings.orders-out-0.destination: user001.user001-eda.orderevent
+
+spring.cloud.stream.kafka.bindings.orders-in-0.consumer.enableDlq: true
+spring.cloud.stream.kafka.bindings.orders-in-0.consumer.dlqName: user.user000-eda.shipment-service.ordercommand.dlq
+
+spring.cloud.stream.bindings.dlqs-in-0.destination: user.user000-eda.shipment-service.ordercommand.dlq
+spring.cloud.stream.bindings.dlqs-in-0.group: eda-shipment
+spring.cloud.stream.bindings.dlqs-in-0.consumer.partitioned: true
+
+spring.cloud.function.definition: orders;confirmations;dlqs
+
+spring.cloud.stream.kafka.binder.configuration:
+  security.protocol: SASL_PLAINTEXT
+  sasl.mechanism: SCRAM-SHA-512
+spring.cloud.stream.kafka.binder.jaas:
+  loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
+  options:
+    username: user001
+    password: GfrBREYApg4S
