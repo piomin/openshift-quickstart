@@ -1,0 +1,1 @@
+siege -f k8s/traffic/urls.txt -i -v -r 200 -c 10 --no-parser
