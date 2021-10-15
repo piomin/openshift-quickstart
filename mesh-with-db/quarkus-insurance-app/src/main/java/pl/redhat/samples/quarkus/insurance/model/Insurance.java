@@ -1,16 +1,12 @@
 package pl.redhat.samples.quarkus.insurance.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import java.util.Date;
 
-@Data
-@NoArgsConstructor
 @Entity
 public class Insurance extends PanacheEntity {
     private Long personId;
@@ -18,4 +14,47 @@ public class Insurance extends PanacheEntity {
     private InsuranceType type;
     private int amount;
     private Date expiry;
+
+    public Long getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Long personId) {
+        this.personId = personId;
+    }
+
+    public InsuranceType getType() {
+        return type;
+    }
+
+    public void setType(InsuranceType type) {
+        this.type = type;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public Date getExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(Date expiry) {
+        this.expiry = expiry;
+    }
+
+    @Override
+    public String toString() {
+        return "Insurance{" +
+                "personId=" + personId +
+                ", type=" + type +
+                ", amount=" + amount +
+                ", expiry=" + expiry +
+                ", id=" + id +
+                '}';
+    }
 }
