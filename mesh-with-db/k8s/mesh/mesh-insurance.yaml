@@ -4,7 +4,7 @@ metadata:
   name: quarkus-insurance-app-vs
 spec:
   hosts:
-    - quarkus-insurance-app.apps.cluster-d556.d556.sandbox262.opentlc.com
+    - quarkus-insurance-app.apps.qyt1tahi.eastus.aroapp.io
   gateways:
     - microservices-gateway
   http:
