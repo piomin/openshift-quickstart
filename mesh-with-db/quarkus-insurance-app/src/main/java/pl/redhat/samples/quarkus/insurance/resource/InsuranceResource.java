@@ -1,6 +1,7 @@
 package pl.redhat.samples.quarkus.insurance.resource;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
 import pl.redhat.samples.quarkus.insurance.client.PersonService;
 import pl.redhat.samples.quarkus.insurance.model.Insurance;
 import pl.redhat.samples.quarkus.insurance.model.InsuranceDetails;
@@ -8,15 +9,14 @@ import pl.redhat.samples.quarkus.insurance.repository.InsuranceRepository;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import java.util.List;
 
 @Path("/insurances")
 public class InsuranceResource {
 
+    @Inject
+    Logger log;
     @Inject
     InsuranceRepository insuranceRepository;
     @Inject @RestClient
@@ -42,7 +42,8 @@ public class InsuranceResource {
 
     @GET
     @Path("/{id}/details")
-    public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id) {
+    public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Long id, @HeaderParam("X-Version") String version) {
+        log.infof("getInsuranceDetailsById: id=%d, version=%s", id, version);
         Insurance insurance = insuranceRepository.findById(id);
         InsuranceDetails insuranceDetails = new InsuranceDetails();
         insuranceDetails.setPersonId(insurance.getPersonId());

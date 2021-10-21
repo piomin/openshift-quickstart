@@ -5,6 +5,7 @@ public class Person {
     private String name;
     private int age;
     private Gender gender;
+    private Integer externalId;
 
     public Long getId() {
         return id;
@@ -36,5 +37,13 @@ public class Person {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+    public Integer getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Integer externalId) {
+        this.externalId = externalId;
     }
 }

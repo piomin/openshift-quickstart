@@ -1,0 +1,82 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: quarkus-person-app-vs-via-gw
+spec:
+  hosts:
+    - quarkus-person-app.apps.qyt1tahi.eastus.aroapp.io
+  gateways:
+    - microservices-gateway
+  http:
+    - match:
+      - headers:
+          X-Version:
+            exact: v1
+        uri:
+          prefix: "/person"
+      rewrite:
+        uri: " "
+      route:
+        - destination:
+            host: quarkus-person-app
+            subset: v1
+    - match:
+        - headers:
+            X-Version:
+              exact: v2
+          uri:
+            prefix: "/person"
+      rewrite:
+        uri: " "
+      route:
+        - destination:
+            host: quarkus-person-app
+            subset: v2
+    - match:
+        - uri:
+            prefix: "/person"
+      rewrite:
+        uri: " "
+      route:
+        - destination:
+            host: quarkus-person-app
+            subset: v1
+          weight: 50
+        - destination:
+            host: quarkus-person-app
+            subset: v2
+          weight: 50
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: quarkus-person-app-vs
+spec:
+  hosts:
+    - quarkus-person-app
+  http:
+    - match:
+        - headers:
+            X-Version:
+              exact: v1
+      route:
+        - destination:
+            host: quarkus-person-app
+            subset: v1
+    - match:
+        - headers:
+            X-Version:
+              exact: v2
+      route:
+        - destination:
+            host: quarkus-person-app
+            subset: v2
+    - route:
+        - destination:
+            host: quarkus-person-app
+            subset: v1
+          weight: 50
+        - destination:
+            host: quarkus-person-app
+            subset: v2
+          weight: 50

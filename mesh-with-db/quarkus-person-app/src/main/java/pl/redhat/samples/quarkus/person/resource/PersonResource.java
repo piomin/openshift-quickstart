@@ -1,5 +1,6 @@
 package pl.redhat.samples.quarkus.person.resource;
 
+import org.jboss.logging.Logger;
 import pl.redhat.samples.quarkus.person.model.Person;
 import pl.redhat.samples.quarkus.person.repository.PersonRepository;
 
@@ -11,6 +12,8 @@ import java.util.List;
 @Path("/persons")
 public class PersonResource {
 
+    @Inject
+    Logger log;
     @Inject
     PersonRepository personRepository;
 
@@ -29,6 +32,7 @@ public class PersonResource {
     @GET
     @Path("/{id}")
     public Person getPersonById(@PathParam("id") Long id) {
+        log.infof("getPersonById: id=%d", id);
         return personRepository.findById(id);
     }
 
