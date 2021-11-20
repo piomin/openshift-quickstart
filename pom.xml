@@ -16,6 +16,7 @@
         <module>micro-view</module>
         <module>event-driven</module>
         <module>serverless</module>
+        <module>camel-spring</module>
     </modules>
 
 </project>

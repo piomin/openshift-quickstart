@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: person-service
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/XE
+    username: system
+    password: 84e2279989b2f349
+
+spring.liquibase.change-log: classpath:db/changeLog.sql
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint.health:
+    show-details: always
