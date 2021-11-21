@@ -52,6 +52,10 @@
             <artifactId>camel-http</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-management</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-netty-http-starter</artifactId>
         </dependency>
