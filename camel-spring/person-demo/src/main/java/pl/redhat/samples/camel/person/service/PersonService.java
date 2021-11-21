@@ -20,7 +20,7 @@ public class PersonService {
     }
 
     public Person findById(Integer id) {
-        return null;
+        return repository.findById(id).orElseThrow();
     }
 
     public int countOlderThan(int ageIn) {
