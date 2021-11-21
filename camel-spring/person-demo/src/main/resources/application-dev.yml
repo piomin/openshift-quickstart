@@ -2,9 +2,9 @@ spring:
   application:
     name: person-service
   datasource:
-    url: jdbc:oracle:thin:@ccbdb.oracle:1521/ORCLPDB1
-    username: camel
-    password: qw21QW@!
+    url: jdbc:oracle:thin:@localhost:1521/XE
+    username: system
+    password: 84e2279989b2f349
 
 spring.liquibase.change-log: classpath:db/changeLog.sql
 
