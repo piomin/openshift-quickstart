@@ -13,11 +13,11 @@ public class PersonRouteBuilder extends RouteBuilder {
 
         restConfiguration()
 //                .contextPath("/openapi")
-                .apiContextPath("/api-doc")
+                .apiContextPath("/v3/api-docs")
                 .apiProperty("api.title", "Person Management API")
                 .apiProperty("api.version", "1.0")
                 .apiContextRouteId("doc-api")
-                .component("netty-http")
+//                .component("netty-http")
                 .port(8080)
                 .bindingMode(RestBindingMode.json);
 

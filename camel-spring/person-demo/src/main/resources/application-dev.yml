@@ -11,7 +11,9 @@ spring.liquibase.change-log: classpath:db/changeLog.sql
 management:
   endpoints:
     web:
+      base-path: /
       exposure:
         include: "*"
   endpoint.health:
     show-details: always
+  server.port: 8778
