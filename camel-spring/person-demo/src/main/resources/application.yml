@@ -16,3 +16,6 @@ management:
         include: "*"
   endpoint.health:
     show-details: always
+
+hawtio.authenticationEnabled: false
+camel.springboot.jmx-enabled: true
