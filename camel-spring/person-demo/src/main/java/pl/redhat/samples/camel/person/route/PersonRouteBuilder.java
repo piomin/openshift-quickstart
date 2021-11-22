@@ -18,7 +18,6 @@ public class PersonRouteBuilder extends RouteBuilder {
                 .apiProperty("api.title", "Person Management API")
                 .apiProperty("api.version", "1.0")
                 .apiContextRouteId("doc-api")
-//                .component("netty-http")
                 .port(8080)
                 .bindingMode(RestBindingMode.json);
 
