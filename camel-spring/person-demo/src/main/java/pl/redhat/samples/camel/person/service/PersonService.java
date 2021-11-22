@@ -27,4 +27,12 @@ public class PersonService {
         return repository.countOlderThen(ageIn);
     }
 
+    public Person add(Person person) {
+        return repository.save(person);
+    }
+
+    public void delete(Integer id) {
+        repository.deleteById(id);
+    }
+
 }

@@ -11,7 +11,6 @@ spring.liquibase.change-log: classpath:db/changeLog.sql
 management:
   endpoints:
     web:
-      base-path: /
       exposure:
         include: "*"
   endpoint.health:
