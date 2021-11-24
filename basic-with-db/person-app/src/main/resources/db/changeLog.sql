@@ -2,7 +2,7 @@
 
 --changeset piomin:1
 create table person (
-  id integer GENERATED ALWAYS as IDENTITY(START with 1 INCREMENT by 1),
+  id serial primary key,
   name varchar(255),
   gender varchar(255),
   age int,
@@ -14,15 +14,3 @@ insert into person(name, age, gender) values('Lewis Hamilton', 35, 'MALE');
 insert into person(name, age, gender) values('Veronica Jones', 20, 'FEMALE');
 insert into person(name, age, gender) values('Anne Brown', 60, 'FEMALE');
 insert into person(name, age, gender) values('Felicia Scott', 45, 'FEMALE');
-
---changeset piomin:2
-CREATE OR REPLACE PROCEDURE calculateRent(vehicleId IN NUMBER, rentAmount OUT NUMBER) AS
-  -- variable to hold the number of days
-  rentDuration NUMBER;
-  BEGIN
-    -- fetch dates, calculate the difference in days and assign it to a variable
-    SELECT (return_date - rent_date) into rentDuration FROM vehiclerent
-    WHERE vehicle_id = vehicleId;
-    -- calculate the rent amount assuming the daily rate to be 50 and assign it to output parameter
-    rentAmount := rentDuration * 50;
-  END;
