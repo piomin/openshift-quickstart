@@ -1,0 +1,14 @@
+name: caller-function
+namespace: ""
+runtime: quarkus
+image: quay.io/pminkows/caller-function
+imageDigest: sha256:04dbf587be0bbfbb01b940a6ce8f595777c8b34aa4576cc92e12caf737355f0c
+builder: quay.io/boson/faas-jvm-builder:v0.8.4
+builders: {}
+buildpacks: []
+healthEndpoints: {}
+volumes: []
+envs: []
+annotations: {}
+options: {}
+labels: []

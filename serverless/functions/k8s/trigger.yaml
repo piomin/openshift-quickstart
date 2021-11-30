@@ -1,0 +1,15 @@
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: callme-trigger
+spec:
+  broker: default
+  filter:
+    attributes:
+      type: caller.output
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: callme-function
+    uri: /uppercase

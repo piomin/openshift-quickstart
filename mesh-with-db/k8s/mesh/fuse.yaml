@@ -1,0 +1,48 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: microservices-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - i-insurance-api.apps.cluster-8e1d.8e1d.sandbox114.opentlc.com
+        - i-person-api.apps.cluster-8e1d.8e1d.sandbox114.opentlc.com
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: i-insurance-api-vs
+spec:
+  hosts:
+    - i-insurance-api.apps.cluster-8e1d.8e1d.sandbox114.opentlc.com
+  gateways:
+    - microservices-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/insurance"
+      rewrite:
+        uri: " "
+      route:
+        - destination:
+            host: i-insurance-api
+          weight: 100
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: i-person-api-vs
+spec:
+  hosts:
+    - i-person-api
+  http:
+    - route:
+        - destination:
+            host: i-person-api
+          weight: 100
