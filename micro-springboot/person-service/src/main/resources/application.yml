@@ -11,6 +11,7 @@ spring:
 
 
 management:
+  info.java.enabled: true
   endpoints:
     web:
       exposure:
