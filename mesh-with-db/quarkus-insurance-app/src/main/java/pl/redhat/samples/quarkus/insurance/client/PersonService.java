@@ -10,7 +10,7 @@ import javax.ws.rs.PathParam;
 
 @Path("/persons")
 @RegisterRestClient
-//@RegisterClientHeaders
+@RegisterClientHeaders
 public interface PersonService {
 
     @GET

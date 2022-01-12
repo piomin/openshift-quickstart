@@ -1,0 +1,35 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: microservices-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - quarkus-insurance-app.apps.cluster-e764.e764.sandbox168.opentlc.com
+        - quarkus-person-app.apps.cluster-e764.e764.sandbox168.opentlc.com
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: quarkus-insurance-app-vs
+spec:
+  hosts:
+    - quarkus-insurance-app.apps.cluster-e764.e764.sandbox168.opentlc.com
+  gateways:
+    - microservices-gateway
+  http:
+    - match:
+        - uri:
+            prefix: "/insurance"
+      rewrite:
+        uri: " "
+      route:
+        - destination:
+            host: quarkus-insurance-app
+          weight: 100
