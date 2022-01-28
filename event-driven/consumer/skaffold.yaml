@@ -2,5 +2,5 @@ apiVersion: skaffold/v2beta22
 kind: Config
 build:
   artifacts:
-  - image: piomin/producer
+  - image: piomin/consumer
     jib: {}
