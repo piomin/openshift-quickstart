@@ -11,8 +11,8 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - quarkus-insurance-app.apps.cluster-e764.e764.sandbox168.opentlc.com
-        - quarkus-person-app.apps.cluster-e764.e764.sandbox168.opentlc.com
+        - quarkus-insurance-app.apps.cluster-5935.5935.sandbox474.opentlc.com
+        - quarkus-person-app.apps.cluster-5935.5935.sandbox474.opentlc.com
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
@@ -20,7 +20,7 @@ metadata:
   name: quarkus-insurance-app-vs
 spec:
   hosts:
-    - quarkus-insurance-app.apps.cluster-e764.e764.sandbox168.opentlc.com
+    - quarkus-insurance-app.apps.cluster-5935.5935.sandbox474.opentlc.com
   gateways:
     - microservices-gateway
   http:

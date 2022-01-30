@@ -33,7 +33,9 @@ public class PersonResource {
     @Path("/{id}")
     public Person getPersonById(@PathParam("id") Long id) {
         log.infof("getPersonById: id=%d", id);
-        return personRepository.findById(id);
+        Person p = personRepository.findById(id);
+        log.infof("getPersonById: %s", p);
+        return p;
     }
 
 }

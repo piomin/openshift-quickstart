@@ -11,5 +11,5 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - quarkus-insurance-app.apps.qyt1tahi.eastus.aroapp.io
-        - quarkus-person-app.apps.qyt1tahi.eastus.aroapp.io
+        - quarkus-insurance-app.apps.cluster-5935.5935.sandbox474.opentlc.com
+        - quarkus-person-app.apps.cluster-5935.5935.sandbox474.opentlc.com

@@ -4,7 +4,7 @@ metadata:
   name: quarkus-person-app-vs-via-gw
 spec:
   hosts:
-    - quarkus-person-app.apps.qyt1tahi.eastus.aroapp.io
+    - quarkus-person-app.apps.cluster-5935.5935.sandbox474.opentlc.com
   gateways:
     - microservices-gateway
   http:
@@ -71,6 +71,11 @@ spec:
         - destination:
             host: quarkus-person-app
             subset: v2
+      fault:
+        delay:
+          fixedDelay: 3s
+          percentage:
+            value: 50
     - route:
         - destination:
             host: quarkus-person-app

@@ -13,7 +13,7 @@ public class Person extends PanacheEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 //    TODO - uncomment to enable v2
-//    private Integer externalId;
+    private Integer externalId;
 
     public String getName() {
         return name;
@@ -39,13 +39,13 @@ public class Person extends PanacheEntity {
         this.gender = gender;
     }
 
-//    public Integer getExternalId() {
-//        return externalId;
-//    }
-//
-//    public void setExternalId(Integer externalId) {
-//        this.externalId = externalId;
-//    }
+    public Integer getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(Integer externalId) {
+        this.externalId = externalId;
+    }
 
     @Override
     public String toString() {
@@ -53,7 +53,7 @@ public class Person extends PanacheEntity {
                 "name='" + name + '\'' +
                 ", age=" + age +
                 ", gender=" + gender +
-//                ", externalID=" + externalId +
+                ", externalID=" + externalId +
                 ", id=" + id +
                 '}';
     }
