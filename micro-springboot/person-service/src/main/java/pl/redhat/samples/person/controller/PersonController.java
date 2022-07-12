@@ -31,9 +31,20 @@ public class PersonController {
         return repository.findById(id).orElseThrow();
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable("id") Integer id) {
+        LOG.info("Delete person by id={}", id);
+        repository.deleteById(id);
+    }
+
     @PostMapping
     public Person addNew(@RequestBody Person person) {
         LOG.info("Add new person: {}", person);
         return repository.save(person);
+    }
+
+    @PutMapping
+    public void update(@RequestBody Person person) {
+        repository.save(person);
     }
 }

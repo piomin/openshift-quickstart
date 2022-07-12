@@ -23,3 +23,4 @@ management:
         include: db
     probes:
       enabled: true
+#  server.port: 8081
