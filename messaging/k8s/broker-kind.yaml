@@ -1,0 +1,30 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemis
+metadata:
+  name: ex-aao
+spec:
+  deploymentPlan:
+    size: 3
+    image: placeholder
+    messageMigration: true
+    acceptors:
+      - name: amqp
+        protocols: amqp
+        port: 5672
+        connectionsAllowed: 5
+    resources:
+      limits:
+        cpu: "500m"
+        memory: "1024Mi"
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+---
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemisAddress
+metadata:
+  name: address-1
+spec:
+  addressName: address-1
+  queueName: test-1
+  routingType: anycast
