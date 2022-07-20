@@ -13,6 +13,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>simple-consumer</module>
+        <module>simple-counter</module>
+        <module>simple-producer</module>
     </modules>
 
 </project>
