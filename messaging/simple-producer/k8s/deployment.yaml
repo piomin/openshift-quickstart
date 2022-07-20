@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-producer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: simple-producer
+  template:
+    metadata:
+      labels:
+        app: simple-producer
+    spec:
+      containers:
+        - name: simple-producer
+          image: piomin/simple-producer
+          env:
+            - name: ARTEMIS_URL
+              value: failover:(amqp://ex-aao-amqp-acceptor-0-svc:5672,amqp://ex-aao-amqp-acceptor-1-svc:5672,amqp://ex-aao-amqp-acceptor-2-svc:5672)?failover.randomize=true
+#              value: amqp://ex-aao-amqp-lb:5672
+            - name: DESTINATION
+              value: example
+#---
+#kind: Service
+#apiVersion: v1
+#metadata:
+#  name: ex-aao-amqp-lb
+#  namespace: messaging
+#spec:
+#  ports:
+#    - name: amqp
+#      protocol: TCP
+#      port: 5672
+#  type: ClusterIP
+#  selector:
+#    application: ex-aao-app
