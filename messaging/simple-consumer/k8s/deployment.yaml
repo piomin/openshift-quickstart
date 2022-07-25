@@ -17,14 +17,21 @@ spec:
         image: piomin/simple-consumer
         env:
           - name: ARTEMIS_URL
-            value: failover:(amqp://ex-aao-amqp-acceptor-0-svc:5672,amqp://ex-aao-amqp-acceptor-1-svc:5672,amqp://ex-aao-amqp-acceptor-2-svc:5672)?failover.randomize=true
+            value: failover:(amqp://ex-aao-amqp-0-svc:5672,amqp://ex-aao-amqp-1-svc:5672,amqp://ex-aao-amqp-2-svc:5672)?failover.randomize=true
 #            value: amqp://ex-aao-amqp-lb:5672
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 500m
+          requests:
+            memory: 128Mi
+            cpu: 250m
 ---
 kind: Service
 apiVersion: v1
 metadata:
   name: ex-aao-amqp-lb
-  namespace: messaging
+#  namespace: messaging
 spec:
   ports:
     - name: amqp

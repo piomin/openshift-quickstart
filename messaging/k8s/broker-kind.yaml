@@ -7,11 +7,6 @@ spec:
     size: 3
     image: placeholder
     messageMigration: true
-    acceptors:
-      - name: amqp
-        protocols: amqp
-        port: 5672
-        connectionsAllowed: 5
     resources:
       limits:
         cpu: "500m"
@@ -19,6 +14,13 @@ spec:
       requests:
         cpu: "250m"
         memory: "512Mi"
+  acceptors:
+    - name: amqp
+      protocols: amqp
+      port: 5672
+      connectionsAllowed: 5
+  console:
+    expose: true
 ---
 apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemisAddress

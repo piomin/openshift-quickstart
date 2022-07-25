@@ -11,7 +11,7 @@ public class Listener {
 
     private static final Logger LOG = LoggerFactory.getLogger(Listener.class);
 
-    @JmsListener(destination = "example")
+    @JmsListener(destination = "test-1")
     public void processMsg(SimpleMessage message) {
         LOG.info("============= Received: " + message);
     }
