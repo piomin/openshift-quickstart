@@ -31,7 +31,6 @@ kind: Service
 apiVersion: v1
 metadata:
   name: ex-aao-amqp-lb
-#  namespace: messaging
 spec:
   ports:
     - name: amqp

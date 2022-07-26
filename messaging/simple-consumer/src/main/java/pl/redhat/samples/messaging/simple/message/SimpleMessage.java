@@ -1,6 +1,8 @@
 package pl.redhat.samples.messaging.simple.message;
 
-public class SimpleMessage {
+import java.io.Serializable;
+
+public class SimpleMessage implements Serializable {
 
     private Long id;
     private String source;

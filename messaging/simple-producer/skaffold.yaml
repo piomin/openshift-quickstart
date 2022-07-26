@@ -2,5 +2,5 @@ apiVersion: skaffold/v1
 kind: Config
 build:
   artifacts:
-  - image: piomin/simple-counter
+  - image: piomin/simple-producer
     jib: {}
