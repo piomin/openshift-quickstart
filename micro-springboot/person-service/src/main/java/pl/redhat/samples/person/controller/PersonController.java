@@ -2,9 +2,12 @@ package pl.redhat.samples.person.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.redhat.samples.person.domain.Person;
 import pl.redhat.samples.person.repository.PersonRepository;
+import pl.redhat.samples.person.repository.PersonViewRepository;
+import pl.redhat.samples.person.view.PersonView;
 
 import java.util.List;
 
@@ -14,9 +17,11 @@ public class PersonController {
 
     private static final Logger LOG = LoggerFactory.getLogger(PersonController.class);
     private PersonRepository repository;
+    private PersonViewRepository viewRepository;
 
-    public PersonController(PersonRepository repository) {
+    public PersonController(PersonRepository repository, PersonViewRepository viewRepository) {
         this.repository = repository;
+        this.viewRepository = viewRepository;
     }
 
     @GetMapping
@@ -26,9 +31,15 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public Person getById(@PathVariable("id") Integer id) {
+    public PersonView getById(@PathVariable("id") Integer id) {
         LOG.info("Get person by id={}", id);
-        return repository.findById(id).orElseThrow();
+        return viewRepository.findOne(id);
+    }
+
+    @GetMapping("/age/{age}")
+    public PersonView getByAgeGreaterThan(@PathVariable("age") int age) {
+        LOG.info("Get person by age={}", age);
+        return viewRepository.findByAgeGreaterThan(age);
     }
 
     @DeleteMapping("/{id}")

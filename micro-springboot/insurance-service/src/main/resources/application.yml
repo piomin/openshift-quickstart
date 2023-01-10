@@ -1,3 +1,14 @@
 spring:
   application:
     name: insurance-service
+  datasource:
+    url: jdbc:postgresql://person-db:5432/${DATABASE_NAME}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true

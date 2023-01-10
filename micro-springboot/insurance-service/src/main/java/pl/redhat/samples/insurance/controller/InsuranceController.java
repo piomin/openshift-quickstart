@@ -7,7 +7,9 @@ import pl.redhat.samples.insurance.client.PersonClient;
 import pl.redhat.samples.insurance.client.message.Person;
 import pl.redhat.samples.insurance.domain.Insurance;
 import pl.redhat.samples.insurance.domain.InsuranceDetails;
+import pl.redhat.samples.insurance.domain.InsuranceView;
 import pl.redhat.samples.insurance.repository.InsuranceRepository;
+import pl.redhat.samples.insurance.repository.InsuranceViewRepository;
 
 import javax.websocket.server.PathParam;
 import java.util.ArrayList;
@@ -20,10 +22,12 @@ public class InsuranceController {
     private static final Logger LOG = LoggerFactory.getLogger(InsuranceController.class);
     private PersonClient personClient;
     private InsuranceRepository repository;
+    private InsuranceViewRepository viewRepository;
 
-    public InsuranceController(PersonClient personClient, InsuranceRepository repository) {
+    public InsuranceController(PersonClient personClient, InsuranceRepository repository, InsuranceViewRepository viewRepository) {
         this.personClient = personClient;
         this.repository = repository;
+        this.viewRepository = viewRepository;
     }
 
     @GetMapping
@@ -33,15 +37,21 @@ public class InsuranceController {
     }
 
     @GetMapping("/{id}")
-    public Insurance getById(@PathVariable("id") Integer id) {
+    public InsuranceView getById(@PathVariable("id") Integer id) {
         LOG.info("Get insurance by id={}", id);
-        return repository.findById(id).orElseThrow();
+        return viewRepository.findOne(id);
     }
 
     @PostMapping
     public Insurance addNew(@RequestBody Insurance insurance) {
         LOG.info("Add new insurance: {}", insurance);
         return repository.save(insurance);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable("id") Integer id) {
+        LOG.info("Delete insurance by id={}", id);
+        repository.deleteById(id);
     }
 
     @GetMapping("/{id}/details")

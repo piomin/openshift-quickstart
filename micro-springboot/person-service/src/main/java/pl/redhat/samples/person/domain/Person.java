@@ -7,7 +7,8 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private int age;
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -21,12 +22,20 @@ public class Person {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public int getAge() {
@@ -57,7 +66,7 @@ public class Person {
     public String toString() {
         return "Person{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + firstName + " " + lastName + '\'' +
                 ", age=" + age +
                 ", gender=" + gender +
                 ", externalId=" + externalId +
