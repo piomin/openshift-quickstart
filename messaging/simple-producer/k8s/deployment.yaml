@@ -28,8 +28,8 @@ spec:
           image: piomin/simple-producer
           env:
             - name: ARTEMIS_URL
-              value: failover:(amqp://ex-aao-amqp-acceptor-0-svc:5672,amqp://ex-aao-amqp-acceptor-1-svc:5672,amqp://ex-aao-amqp-acceptor-2-svc:5672)?failover.randomize=true
-#              value: amqp://ex-aao-amqp-lb:5672
+#              value: failover:(amqp://ex-aao-amqp-acceptor-0-svc:5672,amqp://ex-aao-amqp-acceptor-1-svc:5672,amqp://ex-aao-amqp-acceptor-2-svc:5672)?failover.randomize=true
+              value: amqp://ex-aao-amqp-lb:5672
             - name: DESTINATION
               value: test-1
           ports:
