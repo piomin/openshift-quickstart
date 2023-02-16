@@ -17,4 +17,8 @@
         <module>simple-producer</module>
     </modules>
 
+    <properties>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+    </properties>
+
 </project>

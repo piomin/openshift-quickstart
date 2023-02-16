@@ -27,6 +27,7 @@
         <spring-boot.version>2.6.1</spring-boot.version>
         <testcontainers.version>1.17.3</testcontainers.version>
         <blaze.version>1.6.8</blaze.version>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
     <dependencyManagement>

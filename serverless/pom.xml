@@ -12,9 +12,6 @@
     <artifactId>serverless</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>order-saga</module>
-        <module>payment-saga</module>
-        <module>shipment-saga</module>
         <module>functions</module>
     </modules>
 

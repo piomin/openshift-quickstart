@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kafka-broker-config
-data:
-  default.topic.partitions: "10"
-  default.topic.replication.factor: "1"
-  bootstrap.servers: "my-cluster-kafka-bootstrap.kafka:9092"

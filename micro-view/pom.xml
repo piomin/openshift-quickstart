@@ -17,4 +17,8 @@
         <module>organization</module>
     </modules>
 
+    <properties>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+    </properties>
+
 </project>

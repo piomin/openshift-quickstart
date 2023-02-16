@@ -14,6 +14,10 @@
     <version>1.0-SNAPSHOT</version>
     <artifactId>person-app</artifactId>
 
+    <properties>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>

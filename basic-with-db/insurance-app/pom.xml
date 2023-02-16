@@ -11,6 +11,10 @@
 
     <artifactId>insurance-app</artifactId>
 
+    <properties>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
