@@ -14,28 +14,6 @@
     <version>1.0-SNAPSHOT</version>
     <artifactId>person-app</artifactId>
 
-    <properties>
-        <compiler-plugin.version>3.8.1</compiler-plugin.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <quarkus.version>2.13.0.Final</quarkus.version>
-        <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.quarkus</groupId>
-                <artifactId>quarkus-universe-bom</artifactId>
-                <version>${quarkus.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -59,7 +37,7 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-metrics</artifactId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
