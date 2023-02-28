@@ -24,6 +24,7 @@
         <module>serverless</module>
         <module>camel-spring</module>
         <module>messaging</module>
+        <module>cpu-killer</module>
     </modules>
 
     <build>
