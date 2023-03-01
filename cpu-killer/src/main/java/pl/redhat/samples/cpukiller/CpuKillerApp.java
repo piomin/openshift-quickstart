@@ -1,7 +1,6 @@
 package pl.redhat.samples.cpukiller;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jboss.logging.Logger;
 import pl.redhat.samples.cpukiller.message.PingEvent;
@@ -9,10 +8,8 @@ import pl.redhat.samples.cpukiller.message.PingEvent;
 import javax.enterprise.context.ApplicationScoped;
 import java.math.BigInteger;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicLong;
 
 @ApplicationScoped
@@ -25,7 +22,7 @@ public class CpuKillerApp {
         this.log = log;
     }
 
-    ExecutorService executor = Executors.newFixedThreadPool(10);
+    ExecutorService executor = Executors.newFixedThreadPool(15);
 
     @Incoming("events")
     void onEvent(ConsumerRecord<String, PingEvent> event) {
