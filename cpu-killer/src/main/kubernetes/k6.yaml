@@ -1,0 +1,71 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: load-test-cm
+  namespace: demo-apps
+data:
+  load-test.js: |
+    import {
+      Writer,
+      SchemaRegistry,
+      SCHEMA_TYPE_JSON,
+    } from "k6/x/kafka";
+
+    const writer = new Writer({
+      brokers: ["my-cluster-kafka-bootstrap.kafka:9092"],
+      topic: "events",
+    });
+
+    const schemaRegistry = new SchemaRegistry();
+
+    export default function () {
+      writer.produce({
+        messages: [
+          {
+            value: schemaRegistry.serialize({
+              data: {
+                id: 1
+              },
+              schemaType: SCHEMA_TYPE_JSON,
+            }),
+          },
+        ],
+      });
+    }
+    
+    export function teardown(data) {
+      writer.close();
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k6-test
+  namespace: demo-apps
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: k6-test
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: k6-test
+    spec:
+      containers:
+        - image: mostafamoradian/xk6-kafka:latest
+          name: xk6-kafka
+          command:
+            - "k6"
+            - "run"
+            - "--vus"
+            - "20"
+            - "--duration"
+            - "600s"
+            - "/tests/load-test.js"
+          volumeMounts:
+            - mountPath: /tests
+              name: test
+      volumes:
+        - name: test
+          configMap:
+            name: load-test-cm
