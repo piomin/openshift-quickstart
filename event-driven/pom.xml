@@ -11,6 +11,11 @@
 
     <artifactId>event-driven</artifactId>
     <packaging>pom</packaging>
+
+    <properties>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+    </properties>
+
     <modules>
         <module>producer</module>
         <module>consumer</module>
