@@ -16,6 +16,8 @@
     <properties>
         <java.version>17</java.version>
         <camel.version>3.13.0</camel.version>
+        <testcontainers.version>1.16.3</testcontainers.version>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
     <dependencyManagement>
@@ -31,6 +33,13 @@
                 <groupId>org.apache.camel.springboot</groupId>
                 <artifactId>camel-spring-boot-dependencies</artifactId>
                 <version>${camel.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>${testcontainers.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -112,13 +121,11 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>oracle-xe</artifactId>
-            <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -131,5 +138,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

@@ -21,7 +21,6 @@
         <module>micro-springboot</module>
         <module>micro-view</module>
         <module>event-driven</module>
-        <module>serverless</module>
         <module>camel-spring</module>
         <module>messaging</module>
         <module>cpu-killer</module>
