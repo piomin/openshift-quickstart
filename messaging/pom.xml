@@ -23,7 +23,7 @@
     <properties>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
         <java.version>11</java.version>
-        <amqp.version>2.5.6</amqp.version>
+        <amqp.version>2.5.17</amqp.version>
     </properties>
 
 </project>
