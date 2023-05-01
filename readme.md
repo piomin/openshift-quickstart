@@ -1,4 +1,12 @@
-# Workshops: Java Development on OpenShift
+# Workshops: Java Development on OpenShift [![Twitter](https://img.shields.io/twitter/follow/piotr_minkowski.svg?style=social&logo=twitter&label=Follow%20Me)](https://twitter.com/piotr_minkowski)
+
+[![CircleCI](https://circleci.com/gh/piomin/openshift-quickstart.svg?style=svg)](https://circleci.com/gh/piomin/openshift-quickstart)
+
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=piomin_openshift-quickstart)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=piomin_openshift-quickstart&metric=bugs)](https://sonarcloud.io/dashboard?id=piomin_openshift-quickstart)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=piomin_openshift-quickstart&metric=coverage)](https://sonarcloud.io/dashboard?id=piomin_openshift-quickstart)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=piomin_openshift-quickstart&metric=ncloc)](https://sonarcloud.io/dashboard?id=piomin_openshift-quickstart)
+
 
 In this repo you can find several workshops introducing the topic "Java development on OpenShift". \
 For accessing it you will have to switch to the dedicated branch in this repository following instructions below. \

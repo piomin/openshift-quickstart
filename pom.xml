@@ -13,6 +13,10 @@
         <sonar.projectKey>piomin_openshift-quickstart</sonar.projectKey>
         <sonar.organization>piomin</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <java.version>17</java.version>
+        <spring.version>2.7.11</spring.version>
+        <quarkus.version>3.0.1.Final</quarkus.version>
+        <testcontainers.version>1.18.0</testcontainers.version>
     </properties>
 
     <modules>
