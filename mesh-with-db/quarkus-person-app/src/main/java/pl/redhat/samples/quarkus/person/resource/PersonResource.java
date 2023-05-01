@@ -4,9 +4,9 @@ import org.jboss.logging.Logger;
 import pl.redhat.samples.quarkus.person.model.Person;
 import pl.redhat.samples.quarkus.person.repository.PersonRepository;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.*;
 import java.util.List;
 
 @Path("/persons")
