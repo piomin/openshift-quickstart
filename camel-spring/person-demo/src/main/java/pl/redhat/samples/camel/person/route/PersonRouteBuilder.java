@@ -22,26 +22,19 @@ public class PersonRouteBuilder extends RouteBuilder {
                 .bindingMode(RestBindingMode.json);
 
         rest("/persons")
-                .get("/{id}")
-                    .route()
-                    .bean(PersonService.class, "findById(${header.id})")
-                .endRest()
-                .get("/")
-                    .route()
-                    .bean(PersonService.class, "findAll")
-                .endRest()
-                .get("/older-than/{age}")
-                    .route()
-                    .bean(PersonService.class, "countOlderThan(${header.age})")
-                .endRest()
-                .post().consumes("application/json").type(Person.class)
-                    .route()
-                    .bean(PersonService.class, "add(${body})")
-                    .log("New: ${body}")
-                .endRest()
-                .delete("/{id}")
-                    .route()
-                    .bean(PersonService.class, "delete(${header.id})")
-                .endRest();
+            .get("/{id}").to("direct:findById")
+            .get("/").to("direct:findAll")
+            .get("/older-than/{age}").to("direct:countOlderThan")
+            .post().consumes("application/json").type(Person.class)
+                .to("direct:add")
+            .delete("/{id}").to("direct:delete");
+
+        from("direct:findById").bean(PersonService.class, "findById(${header.id})");
+        from("direct:findAll").bean(PersonService.class, "findAll");
+        from("direct:countOlderThan").bean(PersonService.class, "countOlderThan(${header.age})");
+        from("direct:add")
+                .bean(PersonService.class, "add(${body})")
+                .log("New: ${body}");
+        from("direct:delete").bean(PersonService.class, "delete(${header.id})");
     }
 }
