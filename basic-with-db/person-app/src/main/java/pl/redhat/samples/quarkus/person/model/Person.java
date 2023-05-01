@@ -2,7 +2,7 @@ package pl.redhat.samples.quarkus.person.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class Person extends PanacheEntityBase {
