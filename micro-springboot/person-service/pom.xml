@@ -103,4 +103,25 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>openshift</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.dekorate</groupId>
+                    <artifactId>openshift-spring-starter</artifactId>
+                    <version>${dekorate.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>kubernetes-httpclient-okhttp</artifactId>
+                    <version>6.6.2</version>
+                </dependency>
+            </dependencies>
+            <properties>
+                <dekorate.build>true</dekorate.build>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+    </profiles>
 </project>
