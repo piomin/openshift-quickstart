@@ -16,7 +16,7 @@
         <compiler-plugin.version>3.11.0</compiler-plugin.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <quarkus.platform.version>3.0.3.Final</quarkus.platform.version>
+        <quarkus.platform.version>3.0.4.Final</quarkus.platform.version>
         <surefire-plugin.version>3.1.0</surefire-plugin.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
