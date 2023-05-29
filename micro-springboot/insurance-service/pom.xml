@@ -74,7 +74,7 @@
         <dependency>
             <groupId>org.instancio</groupId>
             <artifactId>instancio-junit</artifactId>
-            <version>2.13.0</version>
+            <version>2.15.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -87,5 +87,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>openshift</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.dekorate</groupId>
+                    <artifactId>openshift-spring-starter</artifactId>
+                    <version>${dekorate.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>kubernetes-httpclient-okhttp</artifactId>
+                    <version>6.6.2</version>
+                </dependency>
+            </dependencies>
+            <properties>
+                <dekorate.build>true</dekorate.build>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+    </profiles>
 
 </project>
