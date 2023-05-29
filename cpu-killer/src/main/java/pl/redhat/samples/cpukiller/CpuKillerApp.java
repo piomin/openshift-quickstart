@@ -1,11 +1,11 @@
 package pl.redhat.samples.cpukiller;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.jboss.logging.Logger;
 import pl.redhat.samples.cpukiller.message.PingEvent;
 
-import javax.enterprise.context.ApplicationScoped;
 import java.math.BigInteger;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
