@@ -10,7 +10,7 @@ import jakarta.ws.rs.PathParam;
 
 @Path("/persons")
 @ApplicationScoped
-@RegisterRestClient
+@RegisterRestClient(configKey = "person")
 public interface PersonService {
 
     @GET
