@@ -2,7 +2,7 @@ package pl.redhat.samples.quarkus.insurance.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
