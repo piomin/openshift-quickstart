@@ -84,7 +84,7 @@
             <plugin>
                 <groupId>io.quarkus</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
-                <version>${quarkus.platform.version}</version>
+                <version>${quarkus.version}</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -109,7 +109,6 @@
                 <configuration>
                     <systemPropertyVariables>
                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-<!--                        <maven.home>${maven.home}</maven.home>-->
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -139,7 +138,6 @@
                                     <systemPropertyVariables>
                                         <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
                                         <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-<!--                                        <maven.home>${maven.home}</maven.home>-->
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>
