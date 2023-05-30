@@ -23,7 +23,7 @@
     <properties>
         <java.version>17</java.version>
         <spring-boot.version>2.6.1</spring-boot.version>
-        <testcontainers.version>1.18.1</testcontainers.version>
+        <testcontainers.version>1.18.2</testcontainers.version>
         <blaze.version>1.6.8</blaze.version>
         <dekorate.version>3.6.1</dekorate.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
