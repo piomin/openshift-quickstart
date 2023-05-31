@@ -13,7 +13,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <quarkus.platform.version>3.0.4.Final</quarkus.platform.version>
+        <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
