@@ -17,7 +17,7 @@
     </modules>
 
     <properties>
-        <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>3.1.1.Final</quarkus.platform.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
