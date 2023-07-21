@@ -36,12 +36,12 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.5.10</version>
+            <version>1.6.15</version>
         </dependency>
 
         <dependency>
             <groupId>com.blazebit</groupId>
-            <artifactId>blaze-persistence-integration-spring-data-2.6</artifactId>
+            <artifactId>blaze-persistence-integration-spring-data-2.7</artifactId>
             <version>${blaze.version}</version>
         </dependency>
         <dependency>

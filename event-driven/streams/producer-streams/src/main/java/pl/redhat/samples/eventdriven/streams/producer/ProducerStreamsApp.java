@@ -32,7 +32,7 @@ public class ProducerStreamsApp {
     public Supplier<Message<Order>> orderSupplier() {
         return () -> orders.peek() != null ? MessageBuilder
                 .withPayload(orders.peek())
-                .setHeader(KafkaHeaders.MESSAGE_KEY, orders.poll().getId())
+                .setHeader(KafkaHeaders.KEY, orders.poll().getId())
                 .build() : null;
     }
 
@@ -46,7 +46,7 @@ public class ProducerStreamsApp {
     public Supplier<Message<Customer>> customerSupplier() {
         return () -> customers.peek() != null ? MessageBuilder
                 .withPayload(customers.peek())
-                .setHeader(KafkaHeaders.MESSAGE_KEY, customers.poll().getId())
+                .setHeader(KafkaHeaders.KEY, customers.poll().getId())
                 .build() : null;
     }
 }

@@ -1,6 +1,6 @@
 package pl.redhat.samples.insurance.domain;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity

@@ -1,6 +1,6 @@
 package pl.redhat.samples.person.domain;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 public class Person {
