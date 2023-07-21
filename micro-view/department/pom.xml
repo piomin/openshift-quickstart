@@ -4,18 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.13</version>
-        <relativePath/>
+        <groupId>pl.redhat.samples</groupId>
+        <artifactId>micro-view</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>pl.redhat.samples</groupId>
     <artifactId>department</artifactId>
 
     <properties>
-        <java.version>11</java.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
