@@ -27,3 +27,23 @@ management:
     probes:
       enabled: true
 #  server.port: 8081
+
+dekorate:
+  openshift:
+    auto-deploy-enabled: true
+#    deployment-kind: Deployment
+    replicas: 2
+    expose: true
+    env-vars:
+      - name: DATABASE_USER
+        value: database-user
+        secret: person-db
+      - name: DATABASE_PASSWORD
+        value: database-password
+        secret: person-db
+      - name: DATABASE_NAME
+        value: database-name
+        secret: person-db
+  s2i:
+    enable: true
+    auto-deploy-enabled: true

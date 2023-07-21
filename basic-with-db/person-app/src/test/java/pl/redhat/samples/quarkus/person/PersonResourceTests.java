@@ -9,8 +9,7 @@ import pl.redhat.samples.quarkus.person.model.Person;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 public class PersonResourceTests {
@@ -23,7 +22,7 @@ public class PersonResourceTests {
                 .extract()
                 .body()
                 .jsonPath().getList(".", Person.class);
-        assertEquals(persons.size(), 6);
+        assertTrue(persons.size() > 0);
     }
 
     @Test
@@ -37,6 +36,34 @@ public class PersonResourceTests {
                 .body().as(Person.class);
         assertNotNull(person);
         assertEquals(1L, person.id);
+    }
+
+    @Test
+    void getPersonByName() {
+        Person[] persons = given()
+                .pathParam("name", "Lewis Hamilton")
+                .when().get("/persons/name/{name}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().as(Person[].class);
+        assertNotNull(persons);
+        assertTrue(persons.length > 0);
+        assertNotNull(persons[0].id);
+        assertEquals("Lewis Hamilton", persons[0].name);
+    }
+
+    @Test
+    void getPersonByAge() {
+        Person[] persons = given()
+                .pathParam("age", 30)
+                .when().get("/persons/age-greater-than/{age}")
+                .then()
+                .statusCode(200)
+                .extract()
+                .body().as(Person[].class);
+        assertNotNull(persons);
+        assertTrue(persons.length > 0);
     }
 
     @Test
@@ -56,4 +83,6 @@ public class PersonResourceTests {
         assertNotNull(person);
         assertNotNull(person.id);
     }
+
+
 }

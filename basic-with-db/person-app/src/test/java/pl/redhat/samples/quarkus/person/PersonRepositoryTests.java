@@ -8,7 +8,7 @@ import pl.redhat.samples.quarkus.person.model.Gender;
 import pl.redhat.samples.quarkus.person.model.Person;
 import pl.redhat.samples.quarkus.person.repository.PersonRepository;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 @QuarkusTest
 @TestTransaction

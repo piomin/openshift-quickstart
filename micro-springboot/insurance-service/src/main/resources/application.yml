@@ -2,7 +2,7 @@ spring:
   application:
     name: insurance-service
   datasource:
-    url: jdbc:postgresql://person-db:5432/${DATABASE_NAME}
+    url: jdbc:postgresql://insurance-db:5432/${DATABASE_NAME}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
   jpa:
@@ -12,3 +12,23 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
+dekorate:
+  openshift:
+    auto-deploy-enabled: true
+    #    deployment-kind: Deployment
+    replicas: 2
+    expose: true
+    env-vars:
+      - name: DATABASE_USER
+        value: database-user
+        secret: person-db
+      - name: DATABASE_PASSWORD
+        value: database-password
+        secret: person-db
+      - name: DATABASE_NAME
+        value: database-name
+        secret: person-db
+  s2i:
+    enable: true
+    auto-deploy-enabled: true

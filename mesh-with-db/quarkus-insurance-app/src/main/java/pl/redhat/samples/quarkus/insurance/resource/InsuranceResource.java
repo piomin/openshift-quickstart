@@ -7,9 +7,9 @@ import pl.redhat.samples.quarkus.insurance.model.Insurance;
 import pl.redhat.samples.quarkus.insurance.model.InsuranceDetails;
 import pl.redhat.samples.quarkus.insurance.repository.InsuranceRepository;
 
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.*;
 import java.util.List;
 
 @Path("/insurances")
