@@ -26,7 +26,7 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <spring-boot.version>2.7.13</spring-boot.version>
         <testcontainers.version>1.18.3</testcontainers.version>
-        <blaze.version>1.6.8</blaze.version>
+        <blaze.version>1.6.9</blaze.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
