@@ -12,7 +12,7 @@
     <artifactId>cpu-killer</artifactId>
 
     <properties>
-        <quarkus.version>3.2.3.Final</quarkus.version>
+        <quarkus.version>3.2.4.Final</quarkus.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
