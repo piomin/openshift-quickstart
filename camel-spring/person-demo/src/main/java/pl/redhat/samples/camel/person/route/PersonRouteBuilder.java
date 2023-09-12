@@ -14,7 +14,7 @@ public class PersonRouteBuilder extends RouteBuilder {
 
         restConfiguration()
                 .contextPath("/camel")
-                .apiContextPath("/v3/api-docs")
+                .apiContextPath("/api-doc")
                 .apiProperty("api.title", "Person Management API")
                 .apiProperty("api.version", "1.0")
                 .apiContextRouteId("doc-api")

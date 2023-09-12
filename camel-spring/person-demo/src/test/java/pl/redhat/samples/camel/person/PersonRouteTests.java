@@ -39,26 +39,26 @@ public class PersonRouteTests {
         assertEquals(200, res.getStatusCodeValue());
     }
 
-//    @Test
+    @Test
     void findAll() {
-        Person[] persons = restTemplate.getForObject("/persons/", Person[].class);
+        Person[] persons = restTemplate.getForObject("/camel/persons/", Person[].class);
         assertTrue(persons.length > 0);
     }
 
-//    @Test
+    @Test
     void findById() {
-        Person person = restTemplate.getForObject("/persons/{id}", Person.class, 1);
+        Person person = restTemplate.getForObject("/camel/persons/{id}", Person.class, 1);
         assertNotNull(person);
         assertEquals(1, person.getId());
     }
 
-//    @Test
+    @Test
     void add() {
         Person p = new Person();
         p.setGender(Gender.MALE);
         p.setName("Test1");
         p.setAge(20);
-        p = restTemplate.postForObject("/persons/", p, Person.class);
+        p = restTemplate.postForObject("/camel/persons/", p, Person.class);
         assertNotNull(p);
         assertNotNull(p.getId());
     }
