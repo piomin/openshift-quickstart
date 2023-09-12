@@ -11,8 +11,6 @@ import pl.redhat.samples.insurance.domain.InsuranceView;
 import pl.redhat.samples.insurance.repository.InsuranceRepository;
 import pl.redhat.samples.insurance.repository.InsuranceViewRepository;
 
-import javax.websocket.server.PathParam;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -55,7 +53,7 @@ public class InsuranceController {
     }
 
     @GetMapping("/{id}/details")
-    public InsuranceDetails getInsuranceDetailsById(@PathParam("id") Integer id) {
+    public InsuranceDetails getInsuranceDetailsById(@PathVariable("id") Integer id) {
         Insurance insurance = repository.findById(id).orElseThrow();
         Person person = personClient.getPersonById(insurance.getId());
         // TODO - detect why person==null
