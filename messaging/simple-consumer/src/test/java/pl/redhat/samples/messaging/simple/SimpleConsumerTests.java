@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class SimpleConsumerTests {
 
     @Container
-    static final GenericContainer artemis = new GenericContainer<>("quay.io/artemiscloud/activemq-artemis-broker:dev.latest")
+    static final GenericContainer artemis = new GenericContainer<>("quay.io/artemiscloud/activemq-artemis-broker:latest")
             .withExposedPorts(5672)
             .withEnv("AMQ_USER", "guest")
             .withEnv("AMQ_PASSWORD", "guest");
