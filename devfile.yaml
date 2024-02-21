@@ -1,0 +1,53 @@
+schemaVersion: 2.1.0
+metadata:
+  name: openshift-quickstart
+projects:
+  - name: openshift-quickstart
+    zip:
+      location: http://devfile-registry.devspaces.svc:8080/resources/v2/openshift-quickstart.zip
+components:
+  - name: tools
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8@sha256:7e942155ebd808256e34a9411b85e41ae41d771353146cf6c15ed0b6bd4caacd
+      env:
+        - name: DEBUG_PORT
+          value: "5858"
+      endpoints:
+        - exposure: none
+          name: debug
+          protocol: tcp
+          targetPort: 5858
+        - exposure: public
+          name: http-endpoint
+          protocol: https
+          targetPort: 8080
+      volumeMounts:
+        - name: m2
+          path: /home/user/.m2
+      cpuLimit: '2'
+      cpuRequest: '1'
+      memoryLimit: 8G
+      memoryRequest: 2G
+      mountSources: true
+  - name: m2
+    volume:
+      size: 1G
+commands:
+  - id: 1-package
+    exec:
+      label: 1. Package the application
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/openshift-quickstart/basic-with-db/person-app
+      commandLine: mvn package
+      group:
+        kind: build
+        isDefault: true
+  - id: 2-startdev
+    exec:
+      label: 2. Start Development mod
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/quarkus-quickstarts/basic-with-db/person-app
+      commandLine: mvn compile spring-boot:run
+      group:
+        kind: run
+        isDefault: true
