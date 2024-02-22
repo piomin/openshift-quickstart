@@ -42,7 +42,6 @@ components:
   - name: postgres
     kubernetes:
       uri: deployment.yaml
-      deployByDefault: true
   - name: m2
     volume:
       size: 1G
