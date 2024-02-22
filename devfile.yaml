@@ -10,10 +10,6 @@ metadata:
   displayName: OpenShift Quickstart Apps
   icon: https://raw.githubusercontent.com/devfile-samples/devfile-stack-icons/main/spring.svg
 components:
-  - name: postgres
-    openshift:
-      uri: deployment.yaml
-      deployByDefault: true
   - name: tools
     container:
       image: registry.redhat.io/devspaces/udi-rhel8@sha256:7e942155ebd808256e34a9411b85e41ae41d771353146cf6c15ed0b6bd4caacd
@@ -43,6 +39,10 @@ components:
       memoryLimit: 8G
       memoryRequest: 2G
       mountSources: true
+  - name: postgres
+    kubernetes:
+      uri: deployment.yaml
+      deployByDefault: true
   - name: m2
     volume:
       size: 1G
