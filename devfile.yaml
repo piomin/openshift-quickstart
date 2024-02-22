@@ -39,12 +39,40 @@ components:
       memoryLimit: 8G
       memoryRequest: 2G
       mountSources: true
+
+  - name: postgresql
+    container:
+      image: registry.redhat.io/rhel9/postgresql-15
+      env:
+        - name: POSTGRESQL_USER
+          value: spring
+        - name: POSTGRESQL_PASSWORD
+          value: spring123
+        - name: POSTGRESQL_DATABASE
+          value: sampledb
+      endpoints:
+        - name: postgresql
+          exposure: internal
+          targetPort: 5432
+          attributes:
+            discoverable: 'true'
+      memoryLimit: 512Mi
+      mountSources: true
+      volumeMounts:
+        - name: postgresql-storage
+          path: /var/lib/mongodb/data
+
   - name: postgres
     openshift:
       uri: deployment.yaml
+
   - name: m2
     volume:
       size: 1G
+
+  - name: postgresql-storage
+    volume:
+      size: 256Mi
 commands:
   - id: 1-package
     exec:
