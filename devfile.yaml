@@ -1,17 +1,30 @@
 schemaVersion: 2.1.0
 metadata:
   name: openshift-quickstart
-projects:
-  - name: openshift-quickstart
-    zip:
-      location: http://devfile-registry.devspaces.svc:8080/resources/v2/openshift-quickstart.zip
+  version: 1.0.0
+  description: OpenShift Quickstart Apps
+  projectType: springboot
+  language: Java
+  provider: Red Hat
+  tags: [ 'Java', 'spring' ]
+  displayName: OpenShift Quickstart Apps
+  icon: https://raw.githubusercontent.com/devfile-samples/devfile-stack-icons/main/spring.svg
 components:
+  - name: postgres
+    openshift:
+      uri: deployment.yaml
   - name: tools
     container:
       image: registry.redhat.io/devspaces/udi-rhel8@sha256:7e942155ebd808256e34a9411b85e41ae41d771353146cf6c15ed0b6bd4caacd
       env:
         - name: DEBUG_PORT
           value: "5858"
+        - name: POSTGRES_DB
+          value: "sampledb"
+        - name: POSTGRES_USER
+          value: "spring"
+        - name: POSTGRES_PASSWORD
+          value: "spring123"
       endpoints:
         - exposure: none
           name: debug
