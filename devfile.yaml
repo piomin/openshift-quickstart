@@ -40,7 +40,7 @@ components:
       memoryRequest: 2G
       mountSources: true
   - name: postgres
-    kubernetes:
+    openshift:
       uri: deployment.yaml
   - name: m2
     volume:
@@ -64,3 +64,6 @@ commands:
       group:
         kind: run
         isDefault: true
+  - id: 3-deploy
+    apply:
+      component: postgres
