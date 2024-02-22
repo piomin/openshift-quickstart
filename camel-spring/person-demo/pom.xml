@@ -16,7 +16,7 @@
     <properties>
         <java.version>17</java.version>
         <camel.version>4.4.0</camel.version>
-        <testcontainers.version>1.19.4</testcontainers.version>
+        <testcontainers.version>1.19.6</testcontainers.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
