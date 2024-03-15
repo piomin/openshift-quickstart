@@ -24,9 +24,9 @@ public class PersonController {
     }
 
     @GetMapping
-    public List<Person> getAll() {
+    public List<PersonView> getAll() {
         LOG.info("Get all persons");
-        return (List<Person>) repository.findAll();
+        return (List<PersonView>) viewRepository.findAll();
     }
 
     @GetMapping("/{id}")

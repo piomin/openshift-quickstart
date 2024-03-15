@@ -46,6 +46,7 @@ components:
       value: springboot123
     - name: DATABASE_NAME
       value: sampledb
+#    image: docker.io/eclipse-temurin:21
     image: registry.access.redhat.com/ubi9/openjdk-21:latest
     memoryLimit: 768Mi
     mountSources: true
@@ -55,6 +56,15 @@ components:
   name: tools
 - name: postgresql
   container:
+# uncomment for Kubernetes
+#    image: postgres:15
+#    env:
+#      - name: POSTGRES_USER
+#        value: springboot
+#      - name: POSTGRES_PASSWORD
+#        value: springboot123
+#      - name: POSTGRES_DB
+#        value: sampledb
     image: registry.redhat.io/rhel9/postgresql-15
     env:
       - name: POSTGRESQL_USER
@@ -70,16 +80,16 @@ components:
         attributes:
           discoverable: 'true'
     memoryLimit: 512Mi
-    mountSources: true
+#    mountSources: true
     volumeMounts:
       - name: postgresql-storage
         path: /var/lib/postgresql/data
 - name: postgresql-storage
   volume:
-    size: 256Mi
+    size: 1Gi
 - name: m2
   volume:
-    size: 3Gi
+    size: 1Gi
 metadata:
   description: Java application using Spring Boot® and OpenJDK 21
   displayName: Spring Boot®
