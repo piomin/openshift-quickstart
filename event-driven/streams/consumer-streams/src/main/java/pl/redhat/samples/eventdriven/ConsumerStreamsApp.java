@@ -2,7 +2,6 @@ package pl.redhat.samples.eventdriven;
 
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.TimeWindows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class ConsumerStreamsApp {
     @Bean
     public Consumer<KStream<Integer, Order>> eventStream() {
         return input -> input.groupByKey()
-                .windowedBy(TimeWindows.of(Duration.ofMillis(10000)))
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(10000)))
                 .count()
                 .toStream()
                 .foreach((key, value) -> LOG.info("Stream: key={}, val={}", key, value));
