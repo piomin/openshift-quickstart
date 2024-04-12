@@ -111,7 +111,7 @@
                 <dependency>
                     <groupId>io.fabric8</groupId>
                     <artifactId>kubernetes-httpclient-okhttp</artifactId>
-                    <version>6.11.0</version>
+                    <version>6.12.0</version>
                 </dependency>
             </dependencies>
             <properties>
