@@ -68,7 +68,7 @@
         <dependency>
             <groupId>io.hawt</groupId>
             <artifactId>hawtio-springboot</artifactId>
-            <version>3.0.1</version>
+            <version>4.0.0</version>
         </dependency>
 
         <dependency>
