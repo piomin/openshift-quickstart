@@ -12,7 +12,6 @@
     <artifactId>cpu-killer</artifactId>
 
     <properties>
-        <quarkus.version>3.8.2</quarkus.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
