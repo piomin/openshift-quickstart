@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>quarkus-insurance-app</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
 
   <properties>
     <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
@@ -48,10 +47,6 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-client-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client-jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
