@@ -22,7 +22,6 @@
     </modules>
 
     <properties>
-        <java.version>17</java.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
 
