@@ -10,7 +10,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>basic-with-db</artifactId>
+    <version>1.1</version>
     <packaging>pom</packaging>
+
     <modules>
         <module>person-app</module>
         <module>insurance-app</module>
