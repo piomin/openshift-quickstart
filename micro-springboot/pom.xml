@@ -20,7 +20,7 @@
     </modules>
 
     <properties>
-        <testcontainers.version>1.20.0</testcontainers.version>
+        <testcontainers.version>1.20.1</testcontainers.version>
         <blaze.version>1.6.11</blaze.version>
         <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     </properties>
