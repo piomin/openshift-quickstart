@@ -23,7 +23,7 @@
         <maven.compiler.release>${java.version}</maven.compiler.release>
 
         <spring.version>3.2.5</spring.version>
-        <quarkus.version>3.18.4</quarkus.version>
+        <quarkus.version>3.19.1</quarkus.version>
         <testcontainers.version>1.18.0</testcontainers.version>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
