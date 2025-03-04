@@ -1,6 +1,6 @@
 package pl.redhat.samples.eventdriven.shipment.message;
 
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
