@@ -26,7 +26,7 @@
         <quarkus.version>3.26.3</quarkus.version>
         <testcontainers.version>1.18.0</testcontainers.version>
         <compiler-plugin.version>3.14.0</compiler-plugin.version>
-        <surefire-plugin.version>3.5.3</surefire-plugin.version>
+        <surefire-plugin.version>3.5.4</surefire-plugin.version>
     </properties>
 
     <modules>
