@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.5</version>
+        <version>3.5.7</version>
         <relativePath />
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -52,7 +52,7 @@
 
         <dependency>
             <groupId>com.blazebit</groupId>
-            <artifactId>blaze-persistence-integration-spring-data-3.3</artifactId>
+            <artifactId>blaze-persistence-integration-spring-data-3.4</artifactId>
             <version>${blaze.version}</version>
         </dependency>
         <dependency>
