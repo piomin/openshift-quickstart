@@ -25,7 +25,7 @@
         <spring.version>3.5.0</spring.version>
         <quarkus.version>3.30.8</quarkus.version>
         <testcontainers.version>1.18.0</testcontainers.version>
-        <compiler-plugin.version>3.14.1</compiler-plugin.version>
+        <compiler-plugin.version>3.15.0</compiler-plugin.version>
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
     </properties>
 
