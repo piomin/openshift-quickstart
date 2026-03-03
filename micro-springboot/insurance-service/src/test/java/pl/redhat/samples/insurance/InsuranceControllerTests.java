@@ -3,24 +3,33 @@ package pl.redhat.samples.insurance;
 import org.instancio.Instancio;
 import org.instancio.Select;
 import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.redhat.samples.insurance.domain.Insurance;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class InsuranceControllerTests {
 
-    @Autowired
-    TestRestTemplate restTemplate;
+    @LocalServerPort
+    int port;
+
+    WebTestClient webTestClient;
+
+    @BeforeEach
+    void setUp() {
+        webTestClient = WebTestClient.bindToServer()
+                .baseUrl("http://localhost:" + port)
+                .build();
+    }
 
     @Container
     @ServiceConnection
@@ -33,9 +42,14 @@ public class InsuranceControllerTests {
         Insurance insurance = Instancio.of(Insurance.class)
                 .ignore(Select.field("id"))
                 .create();
-        insurance = restTemplate.postForObject("/insurances", insurance, Insurance.class);
-        Assertions.assertNotNull(insurance);
-        Assertions.assertNotNull(insurance.getId());
+        Insurance saved = webTestClient.post().uri("/insurances")
+                .bodyValue(insurance)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Insurance.class)
+                .returnResult().getResponseBody();
+        Assertions.assertNotNull(saved);
+        Assertions.assertNotNull(saved.getId());
     }
 
     @Test
@@ -45,25 +59,42 @@ public class InsuranceControllerTests {
         Insurance insurance = Instancio.of(Insurance.class)
                 .set(Select.field("id"), id)
                 .create();
-        restTemplate.put("/insurances", insurance);
-        Insurance updated = restTemplate.getForObject("/insurances/{id}", Insurance.class, id);
-        Assertions.assertNotNull(insurance);
-        Assertions.assertNotNull(insurance.getId());
-        Assertions.assertEquals(id, insurance.getId());
+        webTestClient.put().uri("/insurances")
+                .bodyValue(insurance)
+                .exchange();
+        Insurance updated = webTestClient.get().uri("/insurances/{id}", id)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Insurance.class)
+                .returnResult().getResponseBody();
+        Assertions.assertNotNull(updated);
+        Assertions.assertNotNull(updated.getId());
+        Assertions.assertEquals(id, updated.getId());
     }
 
     @Test
     @Order(3)
     void getAll() {
-        Insurance[] insurances = restTemplate.getForObject("/insurances", Insurance[].class);
-        Assertions.assertEquals(1, insurances.length);
+        List<Insurance> insurances = webTestClient.get().uri("/insurances")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Insurance.class)
+                .hasSize(8)
+                .returnResult().getResponseBody();
+        Assertions.assertNotNull(insurances);
+        Assertions.assertEquals(8, insurances.size());
     }
 
     @Test
     @Order(4)
     void deleteAndGet() {
-        restTemplate.delete("/insurances/{id}", 1);
-        Insurance insurance = restTemplate.getForObject("/insurances/{id}", Insurance.class, 1);
+        webTestClient.delete().uri("/insurances/{id}", 1)
+                .exchange()
+                .expectStatus().isOk();
+        Insurance insurance = webTestClient.get().uri("/insurances/{id}", 1)
+                .exchange()
+                .expectBody(Insurance.class)
+                .returnResult().getResponseBody();
         Assertions.assertNull(insurance);
     }
 

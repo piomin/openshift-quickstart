@@ -3,22 +3,33 @@ package pl.redhat.samples.person;
 import org.instancio.Instancio;
 import org.instancio.Select;
 import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import pl.redhat.samples.person.domain.Person;
+
+import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PersonControllerTests {
 
-    @Autowired
-    TestRestTemplate restTemplate;
+    @LocalServerPort
+    int port;
+
+    WebTestClient webTestClient;
+
+    @BeforeEach
+    void setUp() {
+        webTestClient = WebTestClient.bindToServer()
+                .baseUrl("http://localhost:" + port)
+                .build();
+    }
 
     @Container
     @ServiceConnection
@@ -31,9 +42,14 @@ public class PersonControllerTests {
         Person person = Instancio.of(Person.class)
                 .ignore(Select.field("id"))
                 .create();
-        person = restTemplate.postForObject("/persons", person, Person.class);
-        Assertions.assertNotNull(person);
-        Assertions.assertNotNull(person.getId());
+        Person saved = webTestClient.post().uri("/persons")
+                .bodyValue(person)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Person.class)
+                .returnResult().getResponseBody();
+        Assertions.assertNotNull(saved);
+        Assertions.assertNotNull(saved.getId());
     }
 
     @Test
@@ -43,8 +59,15 @@ public class PersonControllerTests {
         Person person = Instancio.of(Person.class)
                 .set(Select.field("id"), id)
                 .create();
-        restTemplate.put("/persons", person);
-        Person updated = restTemplate.getForObject("/persons/{id}", Person.class, id);
+        webTestClient.put().uri("/persons")
+                .bodyValue(person)
+                .exchange()
+                .expectStatus().isOk();
+        Person updated = webTestClient.get().uri("/persons/{id}", id)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(Person.class)
+                .returnResult().getResponseBody();
         Assertions.assertNotNull(updated);
         Assertions.assertNotNull(updated.getId());
         Assertions.assertEquals(id, updated.getId());
@@ -53,15 +76,26 @@ public class PersonControllerTests {
     @Test
     @Order(3)
     void getAll() {
-        Person[] persons = restTemplate.getForObject("/persons", Person[].class);
-        Assertions.assertEquals(1, persons.length);
+        List<Person> persons = webTestClient.get().uri("/persons")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBodyList(Person.class)
+                .hasSize(1)
+                .returnResult().getResponseBody();
+        Assertions.assertNotNull(persons);
+        Assertions.assertEquals(1, persons.size());
     }
 
     @Test
     @Order(4)
     void deleteAndGet() {
-        restTemplate.delete("/persons/{id}", 1);
-        Person person = restTemplate.getForObject("/persons/{id}", Person.class, 1);
+        webTestClient.delete().uri("/persons/{id}", 1)
+                .exchange()
+                .expectStatus().isOk();
+        Person person = webTestClient.get().uri("/persons/{id}", 1)
+                .exchange()
+                .expectBody(Person.class)
+                .returnResult().getResponseBody();
         Assertions.assertNull(person);
     }
 
