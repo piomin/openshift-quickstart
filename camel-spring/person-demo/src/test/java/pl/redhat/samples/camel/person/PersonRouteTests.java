@@ -7,9 +7,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.OracleContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.oracle.OracleContainer;
 import pl.redhat.samples.camel.person.domain.Gender;
 import pl.redhat.samples.camel.person.domain.Person;
 
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PersonRouteTests {
 
     @Container
-    static final OracleContainer oracle = new OracleContainer("gvenzl/oracle-xe:21-slim-faststart")
+    static final OracleContainer oracle = new OracleContainer("gvenzl/oracle-free:23.4-slim-faststart")
             .withDatabaseName("ORCLPDB1")
             .withUsername("camel")
             .withPassword("qw21QW@!");
