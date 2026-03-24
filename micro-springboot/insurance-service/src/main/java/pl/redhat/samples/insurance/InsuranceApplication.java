@@ -10,7 +10,7 @@ import com.blazebit.persistence.view.spi.EntityViewConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceUnit;
@@ -25,8 +25,8 @@ public class InsuranceApplication {
     }
 
     @Bean
-    RestTemplate restTemplate() {
-        return new RestTemplate();
+    RestClient restClient() {
+        return RestClient.builder().build();
     }
 
     @PersistenceUnit

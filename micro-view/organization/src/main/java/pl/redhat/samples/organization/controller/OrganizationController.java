@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import pl.redhat.samples.organization.model.Department;
 import pl.redhat.samples.organization.model.Employee;
 import pl.redhat.samples.organization.model.Organization;
@@ -22,7 +22,7 @@ public class OrganizationController {
     @Autowired
     OrganizationRepository repository;
     @Autowired
-    RestTemplate restTemplate;
+    RestClient restClient;
 
     @PostMapping
     public Organization add(@RequestBody Organization organization) {
@@ -82,20 +82,26 @@ public class OrganizationController {
     }
 
     private List<Employee> findEmployeesByOrganization(Long organizationId) {
-        Employee[] employees = restTemplate.getForObject("http//employee:8080/organization/{organizationId}",
-                Employee[].class, organizationId);
+        Employee[] employees = restClient.get()
+                .uri("http//employee:8080/organization/{organizationId}", organizationId)
+                .retrieve()
+                .body(Employee[].class);
         return Arrays.asList(employees);
     }
 
     private List<Department> findDepartmentsByOrganization(Long organizationId) {
-        Department[] departments = restTemplate.getForObject("http//department:8080/organization/{organizationId}",
-                Department[].class, organizationId);
+        Department[] departments = restClient.get()
+                .uri("http//department:8080/organization/{organizationId}", organizationId)
+                .retrieve()
+                .body(Department[].class);
         return Arrays.asList(departments);
     }
 
     private List<Department> findDepartmentsByOrganizationWithEmployees(Long organizationId) {
-        Department[] departments = restTemplate.getForObject("http//department:8080/organization/{organizationId}/with-employees",
-                Department[].class, organizationId);
+        Department[] departments = restClient.get()
+                .uri("http//department:8080/organization/{organizationId}/with-employees", organizationId)
+                .retrieve()
+                .body(Department[].class);
         return Arrays.asList(departments);
     }
 }

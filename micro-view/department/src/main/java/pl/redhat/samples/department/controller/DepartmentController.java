@@ -3,7 +3,7 @@ package pl.redhat.samples.department.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import pl.redhat.samples.department.model.Department;
 import pl.redhat.samples.department.model.Employee;
 import pl.redhat.samples.department.repository.DepartmentRepository;
@@ -18,11 +18,11 @@ public class DepartmentController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DepartmentController.class);
 
     DepartmentRepository repository;
-    RestTemplate restTemplate;
+    RestClient restClient;
 
-    public DepartmentController(DepartmentRepository repository, RestTemplate restTemplate) {
+    public DepartmentController(DepartmentRepository repository, RestClient restClient) {
         this.repository = repository;
-        this.restTemplate = restTemplate;
+        this.restClient = restClient;
     }
 
     @PostMapping("/")
@@ -70,8 +70,10 @@ public class DepartmentController {
     }
 
     private List<Employee> findEmployeesByDepartment(Long departmentId) {
-        Employee[] employees = restTemplate
-                .getForObject("http://employee:8080//department/{departmentId}", Employee[].class, departmentId);
+        Employee[] employees = restClient.get()
+                .uri("http://employee:8080//department/{departmentId}", departmentId)
+                .retrieve()
+                .body(Employee[].class);
         return Arrays.asList(employees);
     }
 
