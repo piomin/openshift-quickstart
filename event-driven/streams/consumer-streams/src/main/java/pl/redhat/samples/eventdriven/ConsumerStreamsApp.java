@@ -34,7 +34,7 @@ public class ConsumerStreamsApp {
     @Bean
     public Consumer<KStream<Integer, Order>> eventStream() {
         return input -> input.groupByKey()
-                .windowedBy(TimeWindows.of(Duration.ofMillis(10000)))
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMillis(10000)))
                 .count()
                 .toStream()
                 .foreach((key, value) -> LOG.info("Stream: key={}, val={}", key, value));
