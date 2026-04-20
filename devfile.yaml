@@ -12,7 +12,7 @@ metadata:
 components:
   - name: tools
     container:
-      image: registry.redhat.io/devspaces/udi-rhel8@sha256:7e942155ebd808256e34a9411b85e41ae41d771353146cf6c15ed0b6bd4caacd
+      image: registry.redhat.io/devspaces/udi-rhel9:3.27
       env:
         - name: DEBUG_PORT
           value: "5858"
@@ -42,7 +42,7 @@ components:
 
   - name: postgresql
     container:
-      image: registry.redhat.io/rhel9/postgresql-15
+      image: registry.redhat.io/rhel9/postgresql-16
       env:
         - name: POSTGRESQL_USER
           value: spring
