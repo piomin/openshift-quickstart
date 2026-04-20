@@ -78,12 +78,12 @@ commands:
     exec:
       label: Install odo CLI
       component: tools
-      workingDir: /
+      workingDir: ${HOME}
       commandLine: |
         echo "Installing odo..."
-        curl -L https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/odo/v3.16.1/odo-linux-amd64 -o odo
-        mv odo /usr/local/bin/odo
-        chmod +x /usr/local/bin/odo
+        mkdir -p ${HOME}/.local/bin
+        curl -L https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/odo/v3.16.1/odo-linux-amd64 -o ${HOME}/.local/bin/odo
+        chmod +x ${HOME}/.local/bin/odo
         odo version
 
   - id: 1-package
