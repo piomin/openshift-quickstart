@@ -74,6 +74,18 @@ components:
     volume:
       size: 256Mi
 commands:
+  - id: install-odo
+    exec:
+      label: Install odo CLI
+      component: tools
+      workingDir: /
+      commandLine: |
+        echo "Installing odo..."
+        curl -L https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/odo/v3.16.1/odo-linux-amd64 -o odo
+        mv odo /usr/local/bin/odo
+        chmod +x /usr/local/bin/odo
+        odo version
+
   - id: 1-package
     exec:
       label: 1. Package the application
@@ -95,3 +107,7 @@ commands:
   - id: 3-deploy
     apply:
       component: postgres
+
+events:
+  postStart:
+    - install-odo
