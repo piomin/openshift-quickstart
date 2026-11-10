@@ -3,7 +3,8 @@ package pl.redhat.samples.camel.person;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
+@AutoConfigureTestRestTemplate
 public class PersonRouteTests {
 
     @Container
@@ -36,7 +38,7 @@ public class PersonRouteTests {
     @Test
     void startup() {
         ResponseEntity<String> res = restTemplate.getForEntity("/actuator/health", String.class);
-        assertEquals(200, res.getStatusCodeValue());
+        assertEquals(200, res.getStatusCode().value());
     }
 
     @Test
